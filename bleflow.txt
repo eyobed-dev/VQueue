@@ -1,0 +1,35 @@
+The following describes the design for a local queue management system utilizing Bluetooth Low Energy (BLE) on the Android platform, incorporating the required use of a Foreground Service for client reliability.
+
+I. Queue Server (Peripheral) Operations
+
+The device hosting the queue (the Server) operates continuously in the foreground as a BLE Peripheral.
+
+    Queue Initialization: The server application collects the queue details (e.g., @queuename, waittime, currentnumber) and formats this data into a packet that adheres to the 31-byte BLE Advertisement payload limit.
+
+    Continuous Broadcasting: The Peripheral initiates a continuous, high-frequency non-connectable advertising regimen. This broadcast constantly and repeatedly transmits the formatted queue status packet, ensuring high reliability and rapid discovery by nearby devices.
+
+    Foreground Assumption: By operating in the foreground, the Peripheral bypasses all Android power management restrictions that would otherwise throttle or halt background advertising.
+
+II. Queue Client (Central) Operations
+
+The user device joining the queue (the Client) operates in the Central role, with its scanner logic running within a dedicated Foreground Service.
+
+    Discovery (Foreground): The client application runs a standard BLE scan, receiving the continuous broadcasts from nearby Peripherals. The received data is parsed and displayed to the user as available queues (the "radar").
+
+    Joining and Connection: Upon user selection, the client initiates a GATT connection to the chosen Peripheral. It transmits its unique device ID (via a GATT Write operation) and receives its sequential ticket number from the Peripheral. The client then cleanly disconnects.
+
+    Monitoring (Foreground Service): After disconnection, the client initiates a Foreground Service to manage the subsequent monitoring phase.
+
+        Persistent Scanning: The service immediately begins a continuous BLE scan, utilizing the granted background and location permissions. This dedicated service prevents the Android OS from throttling or killing the scanning process.
+
+        Data Filtration: The scanner efficiently filters for the specific Peripheral's advertisements.
+
+    Alarm Trigger: When the Foreground Service receives a broadcast packet where the advertised currentnumber matches the client's assigned ticket number, the following sequence occurs:
+
+        The service instantly executes the alarm logic.
+
+        The BLE scan is immediately terminated to conserve power.
+
+        The Foreground Service is stopped (dismissing its persistent notification).
+
+        A high-priority, system-level alarm (e.g., a full-screen notification or loud audio alert) is triggered to immediately notify the user.

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splash_background">
+
+    <!-- App Logo/Icon -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_centerInParent="true"
+        android:src="@raw/o2"
+        android:contentDescription="App Logo"
+        android:scaleType="centerInside" />
+
+    <!-- App Name -->
+    <TextView
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="Test MIC"
+        android:textStyle="bold"
+        android:textSize="28sp"
+        android:textColor="@android:color/white" />
+
+
+
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/loading_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="100dp"
+        android:layout_marginEnd="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@android:color/holo_blue_bright"/>
+
+
+
+</RelativeLayout>
