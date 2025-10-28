@@ -10,8 +10,8 @@
     <color name="white">#FFFFFFFF</color>
     
     <!-- VQueue App Colors -->
-    <color name="primary">#FF0000</color>
-    <color name="primary_dark">#FF1976D2</color>
+    <color name="primary">#C80000</color>
+    <color name="primary_dark">#BB0000</color>
     <color name="accent">#FF03DAC5</color>
     
     <!-- Background Colors -->
