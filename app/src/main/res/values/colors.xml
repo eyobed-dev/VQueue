@@ -1,32 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design Colors -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    
-    <!-- VQueue App Colors -->
-    <color name="primary">#C80000</color>
-    <color name="primary_dark">#BB0000</color>
-    <color name="accent">#FF03DAC5</color>
-    
-    <!-- Background Colors -->
-    <color name="background_primary">#FFFFFF</color>
-    <color name="background_secondary">#FFFFFFFF</color>
-    <color name="surface">#FFFFFFFF</color>
-    
-    <!-- Text Colors -->
-    <color name="text_primary">#FF212121</color>
-    <color name="text_secondary">#FF757575</color>
-    <color name="text_hint">#FFBDBDBD</color>
-    <color name="text_on_primary">#FFFFFFFF</color>
-    
-    <!-- Status Colors -->
-    <color name="success">#FF4CAF50</color>
-    <color name="warning">#FFFF9800</color>
-    <color name="error">#FFF44336</color>
+
+    <!-- ===== Canonical app palette (new names) ===== -->
+
+    <!-- Brand colors -->
+    <color name="colorPrimary">#C80000</color>
+    <color name="colorPrimaryDark">#A00000</color>
+    <color name="colorPrimaryLight">#FFF5E6E6</color>
+
+    <!-- Backgrounds -->
+    <color name="colorBackground">#FFF5F5F5</color>
+    <color name="colorSurface">#FFFFFFFF</color>
+    <color name="colorDivider">#FFE0E0E0</color>
+
+    <!-- Text -->
+    <color name="colorTextPrimary">#FF212121</color>
+    <color name="colorTextSecondary">#FF757575</color>
+    <color name="colorTextOnPrimary">#FFFFFFFF</color>
+
+    <!-- Buttons / status -->
+    <color name="colorButtonPositive">#4CAF50</color>   <!-- green -->
+    <color name="colorButtonNeutral">#FFC107</color>    <!-- amber -->
+    <color name="colorButtonDanger">#F44336</color>     <!-- red -->
+
+
+    <!-- ===== Legacy names kept for compatibility ===== -->
+    <!-- (pour ne pas casser les vieux layouts / styles) -->
+
+    <!-- Old brand names -->
+    <color name="primary">@color/colorPrimary</color>
+    <color name="primary_dark">@color/colorPrimaryDark</color>
+    <color name="accent">@color/colorButtonPositive</color>
+
+    <!-- Old background names -->
+    <color name="background_primary">@color/colorBackground</color>
+    <color name="background_secondary">@color/colorSurface</color>
+    <color name="surface">@color/colorSurface</color>
+
+    <!-- Old text names -->
+    <color name="text_primary">@color/colorTextPrimary</color>
+    <color name="text_secondary">@color/colorTextSecondary</color>
+    <color name="text_hint">@color/colorTextSecondary</color>
+    <color name="text_on_primary">@color/colorTextOnPrimary</color>
+
+    <!-- Old status names -->
+    <color name="success">@color/colorButtonPositive</color>
+    <color name="warning">@color/colorButtonNeutral</color>
+    <color name="error">@color/colorButtonDanger</color>
+
 </resources>

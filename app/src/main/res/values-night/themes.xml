@@ -20,7 +20,7 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <!-- No Action Bar version (for HomeFragment or Splash) -->
+    <!-- No Action Bar version -->
     <style name="Theme.VQueue.NoActionBar" parent="Theme.VQueue">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

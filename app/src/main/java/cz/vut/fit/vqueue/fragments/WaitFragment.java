@@ -1,103 +1,76 @@
 package cz.vut.fit.vqueue.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.google.android.material.button.MaterialButton;
-import cz.vut.fit.vqueue.R;
 
+import com.google.android.material.button.MaterialButton;
+
+import cz.vut.fit.vqueue.R;
+import cz.vut.fit.vqueue.activities.MainActivity;
+
+/**
+ * Waiting screen shown to a client after joining a queue.
+ *
+ * Behavior:
+ * - Blocks the system back button: user must explicitly leave the queue.
+ * - "Leave queue" brings the user back to the home screen (JoinSearchFragment)
+ *   and will later be responsible for cleaning up the BLE client connection.
+ *
+ * Currently, this fragment only shows static UI and mocks the leave behavior.
+ * Real-time updates will be wired to QueueConnectionService + ViewModel later.
+ */
 public class WaitFragment extends Fragment {
-    
-    private TextView positionText;
-    private TextView estimatedWaitText;
-    private TextView currentNumberText;
-    private TextView statusText;
-    private ProgressBar waitProgressBar;
-    private MaterialButton leaveQueueButton;
-    private MaterialButton backButton;
-    
-    private int userPosition = 3;
-    private int currentServing = 2;
-    private int estimatedWaitMinutes = 15;
-    
+
+    private MaterialButton leaveButton;
+
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wait, container, false);
-        
-        initializeViews(view);
-        setupClickListeners();
-        updateQueueStatus();
-        startMonitoring();
-        
+
+        // Intercept the system back button while this fragment is visible.
+        // The user should not be able to silently "back out" of the queue.
+        requireActivity()
+                .getOnBackPressedDispatcher()
+                .addCallback(
+                        getViewLifecycleOwner(),
+                        new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {
+                                Toast.makeText(
+                                        getContext(),
+                                        "You must leave the queue first",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
+                        });
+
+        // In older versions there was a "backButton" in the layout.
+        // If it still exists, hide it to force using "Leave queue".
+        View backHome = view.findViewById(R.id.backButton);
+        if (backHome != null) {
+            backHome.setVisibility(View.GONE);
+        }
+
+        // Main action: explicit leave button.
+        // Layout id: @+id/leaveQueueButton
+        leaveButton = view.findViewById(R.id.leaveQueueButton);
+        leaveButton.setOnClickListener(v -> {
+            // TODO: add real BLE client teardown / unsubscribe / disconnect here.
+            Toast.makeText(getContext(), "You left the queue", Toast.LENGTH_SHORT).show();
+            ((MainActivity) requireActivity()).resetToHome();
+        });
+
         return view;
-    }
-    
-    private void initializeViews(View view) {
-        positionText = view.findViewById(R.id.positionText);
-        estimatedWaitText = view.findViewById(R.id.estimatedWaitText);
-        currentNumberText = view.findViewById(R.id.currentNumberText);
-        statusText = view.findViewById(R.id.statusText);
-        waitProgressBar = view.findViewById(R.id.waitProgressBar);
-        leaveQueueButton = view.findViewById(R.id.leaveQueueButton);
-        backButton = view.findViewById(R.id.backButton);
-    }
-    
-    private void setupClickListeners() {
-        leaveQueueButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Left the queue", Toast.LENGTH_SHORT).show();
-            requireActivity().onBackPressed();
-        });
-        
-        backButton.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
-        });
-    }
-    
-    private void updateQueueStatus() {
-        positionText.setText("Position: #" + userPosition);
-        estimatedWaitText.setText("Estimated Wait: " + estimatedWaitMinutes + " minutes");
-        currentNumberText.setText("Currently Serving: #" + currentServing);
-        
-        // Update progress bar (simplified calculation)
-        int progress = Math.max(0, 100 - (userPosition - currentServing) * 20);
-        waitProgressBar.setProgress(progress);
-    }
-    
-    private void startMonitoring() {
-        // Simulate queue monitoring (replace with actual BLE monitoring)
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Simulate queue progression
-                if (currentServing < userPosition) {
-                    currentServing++;
-                    estimatedWaitMinutes = Math.max(0, estimatedWaitMinutes - 5);
-                    updateQueueStatus();
-                    
-                    if (currentServing == userPosition) {
-                        // User's turn!
-                        Toast.makeText(getContext(), "It's your turn! Please proceed to the counter.", Toast.LENGTH_LONG).show();
-                        statusText.setText("It's your turn! Please proceed to the counter.");
-                        statusText.setTextColor(getResources().getColor(R.color.success));
-                    }
-                }
-                
-                // Continue monitoring if not user's turn
-                if (currentServing < userPosition) {
-                    handler.postDelayed(this, 5000); // Check every 5 seconds
-                }
-            }
-        }, 5000);
     }
 }
