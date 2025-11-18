@@ -1,150 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_primary"
-    android:fillViewport="true">
+    android:background="@color/colorBackground"
+    android:fillViewport="true"
+    tools:context=".fragments.WaitFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:layout_height="wrap_content">
 
-        <!-- Header -->
-        <TextView
-            android:id="@+id/headerText"
-            android:layout_width="0dp"
+        <!-- Controls banner height -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/headerGuide"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="You're in Queue"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:gravity="center"
-            android:layout_marginTop="32dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.24" />
+
+        <!-- Red gradient banner -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerSection"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_banner_red"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Queue Status Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/queueStatusCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            app:cardBackgroundColor="@color/surface"
-            app:layout_constraintTop_toBottomOf="@id/headerText"
+            app:layout_constraintBottom_toTopOf="@id/headerGuide"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:id="@+id/headerContent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
+                    android:id="@+id/headerText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Position"
-                    android:textSize="20sp"
+                    android:text="Waiting Room"
+                    android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp" />
+                    android:textColor="@color/colorTextOnPrimary" />
 
                 <TextView
-                    android:id="@+id/positionText"
+                    android:id="@+id/headerSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Position: #3"
-                    android:textSize="18sp"
-                    android:textColor="@color/primary"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/estimatedWaitText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Estimated Wait: 15 minutes"
-                    android:textSize="16sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:id="@+id/currentNumberText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Currently Serving: #2"
-                    android:textSize="16sp"
-                    android:textColor="@color/text_secondary" />
-
+                    android:layout_marginTop="6dp"
+                    android:text="You joined a queue. Please wait for your turn."
+                    android:textSize="14sp"
+                    android:textColor="@color/colorTextOnPrimary" />
             </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Progress Indicator -->
-        <ProgressBar
-            android:id="@+id/waitProgressBar"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_marginTop="32dp"
-            android:progress="60"
-            android:max="100"
-            style="?android:attr/progressBarStyleHorizontal"
-            app:layout_constraintTop_toBottomOf="@id/queueStatusCard"
+        <!-- Body with status card, progress and action -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/body"
+            android:layout_width="410dp"
+            android:layout_height="559dp"
+            android:padding="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/headerSection"
+            app:layout_constraintVertical_bias="0.0">
 
-        <!-- Status Text -->
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Please wait... You will be notified when it's your turn"
-            android:textSize="16sp"
-            android:textColor="@color/text_secondary"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/waitProgressBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <!-- Queue status card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/queueStatusCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/colorSurface"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/colorDivider"
+                app:strokeWidth="1dp">
 
-        <!-- Leave Queue Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/leaveQueueButton"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="48dp"
-            android:text="Leave Queue"
-            android:textSize="16sp"
-            android:textColor="@color/error"
-            app:backgroundTint="@color/white"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/error"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toBottomOf="@id/statusText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-        <!-- Back Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/backButton"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:text="Back to Home"
-            android:textSize="16sp"
-            android:textColor="@color/primary"
-            app:backgroundTint="@color/white"
-            app:cornerRadius="8dp"
-            app:strokeColor="@color/primary"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toBottomOf="@id/leaveQueueButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+                    <TextView
+                        android:id="@+id/positionText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="Position: #3"
+                        android:textColor="@color/colorButtonPositive"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
+                    <TextView
+                        android:id="@+id/estimatedWaitText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:text="Estimated Wait: 15 minutes"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/currentNumberText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Currently Serving: #2"
+                        android:textColor="@color/colorTextSecondary"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Progress bar -->
+            <ProgressBar
+                android:id="@+id/waitProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="6dp"
+                android:layout_marginTop="24dp"
+                android:max="100"
+                android:progress="60"
+                android:progressTint="@color/colorButtonPositive"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/queueStatusCard" />
+
+            <!-- Informational text under progress bar -->
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="Please wait... You will be notified when it's your turn."
+                android:textColor="@color/colorTextSecondary"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/waitProgressBar" />
+
+            <!-- Leave queue button -->
+
+            <!-- Legacy back button kept for compatibility, hidden -->
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/leaveQueueButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="228dp"
+                android:text="LEAVE QUEUE"
+                android:textAllCaps="true"
+                android:textColor="@color/colorTextOnPrimary"
+                android:textSize="16sp"
+                app:backgroundTint="@color/colorButtonDanger"
+                app:cornerRadius="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/statusText"
+                app:strokeColor="@color/colorButtonDanger"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/backButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/leaveQueueButton" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.core.widget.NestedScrollView>
