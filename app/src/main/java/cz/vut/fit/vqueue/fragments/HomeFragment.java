@@ -2,11 +2,13 @@ package cz.vut.fit.vqueue.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.activities.MainActivity;
@@ -15,6 +17,12 @@ public class HomeFragment extends Fragment {
     
     private View createQueueArea;
     private View joinQueueArea;
+    
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
     
     @Nullable
     @Override
@@ -25,6 +33,29 @@ public class HomeFragment extends Fragment {
         setupClickListeners();
         
         return view;
+    }
+    
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.home_menu, menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        
+        if (id == R.id.menu_settings) {
+            SettingsFragment settingsFragment = new SettingsFragment();
+            ((MainActivity) requireActivity()).replaceFragment(settingsFragment);
+            return true;
+        } else if (id == R.id.menu_about) {
+            AboutFragment aboutFragment = new AboutFragment();
+            ((MainActivity) requireActivity()).replaceFragment(aboutFragment);
+            return true;
+        }
+        
+        return super.onOptionsItemSelected(item);
     }
     
     private void initializeViews(View view) {

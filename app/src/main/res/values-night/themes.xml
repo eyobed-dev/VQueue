@@ -22,7 +22,7 @@
 
     <!-- No Action Bar version (for HomeFragment or Splash) -->
     <style name="Theme.VQueue.NoActionBar" parent="Theme.VQueue">
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">true</item>
         <item name="windowNoTitle">true</item>
     </style>
 

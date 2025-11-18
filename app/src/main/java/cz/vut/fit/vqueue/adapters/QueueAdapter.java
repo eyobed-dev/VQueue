@@ -56,8 +56,19 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
 
         public void bind(AdvertisedQueue queue) {
             queueNameText.setText(queue.getName());
-            currentNumberText.setText("Currently: #" + queue.getCurrentNumber());
-            waitTimeText.setText("Wait: " + queue.getWaitTimeMinutes() + " min");
+            
+            // Check if this is a real queue (-1 indicates generic device)
+            boolean isQueue = queue.getCurrentNumber() >= 0 && queue.getWaitTimeMinutes() >= 0;
+            
+            if (isQueue) {
+                // Real queue - show queue info
+                currentNumberText.setText("Currently: #" + queue.getCurrentNumber());
+                waitTimeText.setText("Wait: " + queue.getWaitTimeMinutes() + " min");
+            } else {
+                // Generic BLE device - show device info
+                currentNumberText.setText("BLE Device");
+                waitTimeText.setText(queue.getDeviceAddress());
+            }
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {

@@ -1,11 +1,14 @@
 package cz.vut.fit.vqueue.activities;
 
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.fragments.HomeFragment;
@@ -38,11 +41,34 @@ public class MainActivity extends AppCompatActivity {
         granter = new PermissionGranter(this, permissionLauncher);
         granter.requestAllIfNeeded();
 
-        showHomeFragment();
+        // Only attach the initial fragment on first creation.
+        // This prevents duplicate fragments after configuration changes.
+        if (savedInstanceState == null) {
+            showHomeFragment();
+        }
+
+        // Modern back navigation using OnBackPressedDispatcher:
+        // - If there are fragments in back stack (more than home) → pop one.
+        // - Otherwise → finish the activity / app.
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                int count = getSupportFragmentManager().getBackStackEntryCount();
+                if (count > 1) {
+                    getSupportFragmentManager().popBackStack();
+                } else {
+                    finish();
+                }
+            }
+        });
     }
     
     private void initializeViews() {
         fragmentContainer = findViewById(R.id.fragmentContainer);
+        
+        // Setup toolbar
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
     
     private void showHomeFragment() {

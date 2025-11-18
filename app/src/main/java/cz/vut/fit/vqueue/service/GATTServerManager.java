@@ -200,10 +200,17 @@ public class GATTServerManager {
             int ticketNumber = queueRepo.addWaiter(deviceId);
             
             if (ticketNumber > 0) {
-                // Success - send ticket number back
+                // Success - prepare ticket number response
                 byte[] response = new byte[2];
                 response[0] = (byte) (ticketNumber & 0xFF);
                 response[1] = (byte) ((ticketNumber >> 8) & 0xFF);
+                
+                // Set the characteristic value so client can read it
+                BluetoothGattCharacteristic joinCharacteristic = gattServer.getService(UUID.fromString(SERVICE_UUID))
+                        .getCharacteristic(UUID.fromString(JOIN_CHARACTERISTIC_UUID));
+                if (joinCharacteristic != null) {
+                    joinCharacteristic.setValue(response);
+                }
                 
                 if (responseNeeded) {
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, response);
