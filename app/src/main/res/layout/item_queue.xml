@@ -1,40 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginTop="6dp"
-    android:layout_marginBottom="6dp"
+    android:layout_margin="8dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="3dp"
-    app:strokeColor="@color/colorDivider"
-    app:strokeWidth="1dp"
-    app:cardBackgroundColor="@color/colorSurface">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface">
 
-    <!-- Contains queue name and stats -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Queue name -->
         <TextView
             android:id="@+id/queueNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Queue Name"
+            android:text="Coffee Shop"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/colorTextPrimary" />
+            android:textColor="@color/text_primary" />
 
-        <!-- Two-line horizontal layout: current number + wait time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,18 +37,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Currently: #0"
+                android:text="Currently: #5"
                 android:textSize="14sp"
-                android:textColor="@color/colorTextSecondary" />
+                android:textColor="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/waitTimeText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Wait: 0 min"
+                android:text="Wait: 10 min"
                 android:textSize="14sp"
-                android:textColor="@color/colorTextSecondary"
+                android:textColor="@color/text_secondary"
                 android:gravity="end" />
 
         </LinearLayout>
