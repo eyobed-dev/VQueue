@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.24" />
+            app:layout_constraintGuide_percent="0.18" />
 
         <!-- 2. Red gradient banner -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -48,10 +48,11 @@
                     android:id="@+id/headerTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available Queues"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
+                    android:text="AVAILABLE QUEUES"
+                    android:textColor="@color/text_on_primary"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    />
 
                 <!-- Java code updates this text automatically -->
                 <TextView
@@ -61,7 +62,7 @@
                     android:layout_marginTop="6dp"
                     android:gravity="center"
                     android:text="Tap a queue to see details or join"
-                    android:textColor="?attr/colorOnPrimary"
+                    android:textColor="@color/text_on_primary"
                     android:textSize="14sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -75,7 +76,7 @@
             android:layout_marginTop="-8dp"
             android:elevation="5dp"
             android:indeterminate="true"
-            android:indeterminateTint="@color/primary"
+            android:indeterminateTint="@color/text_on_primary"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
