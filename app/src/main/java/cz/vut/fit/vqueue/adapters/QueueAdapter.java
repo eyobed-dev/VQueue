@@ -4,16 +4,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import cz.vut.fit.vqueue.R;
-import cz.vut.fit.vqueue.model.AdvertisedQueue;
+
 import java.util.List;
 
-public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHolder> { // Changed to QueueAdapter
+import cz.vut.fit.vqueue.R;
+import cz.vut.fit.vqueue.model.AdvertisedQueue;
 
-    private List<AdvertisedQueue> queues;
-    private OnQueueClickListener listener;
+public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHolder> {
+
+    private final List<AdvertisedQueue> queues;
+    private final OnQueueClickListener listener;
 
     public interface OnQueueClickListener {
         void onQueueClick(AdvertisedQueue queue);
@@ -27,14 +30,16 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     @NonNull
     @Override
     public QueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_queue, parent, false);
+        // Inflate the new circular layout
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_queue_circle, parent, false);
         return new QueueViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
         AdvertisedQueue queue = queues.get(position);
-        holder.bind(queue);
+        holder.bind(queue, listener);
     }
 
     @Override
@@ -42,39 +47,39 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         return queues.size();
     }
 
-    class QueueViewHolder extends RecyclerView.ViewHolder {
-        private TextView queueNameText;
-        private TextView currentNumberText;
-        private TextView waitTimeText;
+    static class QueueViewHolder extends RecyclerView.ViewHolder {
+        private final TextView queueName;
+        private final TextView queueWaitInfo;
+        private final View cardView;
 
         public QueueViewHolder(@NonNull View itemView) {
             super(itemView);
-            queueNameText = itemView.findViewById(R.id.queueNameText);
-            currentNumberText = itemView.findViewById(R.id.currentNumberText);
-            waitTimeText = itemView.findViewById(R.id.waitTimeText);
+            queueName = itemView.findViewById(R.id.queueName);
+            queueWaitInfo = itemView.findViewById(R.id.queueWaitInfo);
+            cardView = itemView.findViewById(R.id.cardView);
         }
 
-        public void bind(AdvertisedQueue queue) {
-            queueNameText.setText(queue.getName());
-            
-            // Check if this is a real queue (-1 indicates generic device)
-            boolean isQueue = queue.getCurrentNumber() >= 0 && queue.getWaitTimeMinutes() >= 0;
-            
-            if (isQueue) {
-                // Real queue - show queue info
-                currentNumberText.setText("Currently: #" + queue.getCurrentNumber());
-                waitTimeText.setText("Wait: " + queue.getWaitTimeMinutes() + " min");
+        public void bind(final AdvertisedQueue queue, final OnQueueClickListener listener) {
+            // Set Device/Queue Name
+            if (queue.getName() != null && !queue.getName().isEmpty()) {
+                queueName.setText(queue.getName());
             } else {
-                // Generic BLE device - show device info
-                currentNumberText.setText("BLE Device");
-                waitTimeText.setText(queue.getDeviceAddress());
+                queueName.setText("Unknown Device");
             }
 
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onQueueClick(queue);
-                }
-            });
+            // Set Details (Wait time or generic info)
+            if (queue.getWaitTimeMinutes() >= 0 && queue.getCurrentNumber() >= 0) {
+                queueWaitInfo.setText(queue.getWaitTimeMinutes() + " min wait");
+                queueWaitInfo.setVisibility(View.VISIBLE);
+            } else {
+                // If it's just a device not fully advertising queue stats yet
+                queueWaitInfo.setVisibility(View.GONE);
+            }
+
+            // FIX: Set listener on the cardView specifically.
+            // Because the CardView is clickable (for the ripple), it intercepts
+            // clicks before they reach itemView.
+            cardView.setOnClickListener(v -> listener.onQueueClick(queue));
         }
     }
 }

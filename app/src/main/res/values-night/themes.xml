@@ -2,6 +2,8 @@
 
     <!-- Base application theme with Action Bar -->
     <style name="Theme.VQueue" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <!-- Brand colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
@@ -18,12 +20,11 @@
         <!-- System bar colors -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:windowLightStatusBar">false</item>
+
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
     </style>
 
-    <!-- No Action Bar version (for HomeFragment or Splash) -->
-    <style name="Theme.VQueue.NoActionBar" parent="Theme.VQueue">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+
 
 </resources>

@@ -1,55 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/text_hint"
+    tools:context=".fragments.HomeFragment">
 
-    <!-- Top Half: CREATE A QUEUE -->
-    <LinearLayout
-        android:id="@+id/createQueueArea"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/primary"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <TextView
+        <!-- 1. Controls the relative height of the red banner (24%) -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/headerGuide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CREATE A QUEUE"
-            android:textSize="72dp"
-            android:textStyle="bold"
-            android:textColor="@color/text_on_primary"
-            android:gravity="center" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.24" />
 
-    </LinearLayout>
+        <!-- 2. Red gradient banner -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headerSection"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_banner_red"
+            android:elevation="4dp"
+            app:layout_constraintBottom_toTopOf="@id/headerGuide"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Bottom Half: JOIN A QUEUE -->
-    <LinearLayout
-        android:id="@+id/joinQueueArea"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/white"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:gravity="center"
-        android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/headerContent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/headerTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Available Queues"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <!-- Java code updates this text automatically -->
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="Tap a queue to see details or join"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- 3. Loading Indicator (Positioned right below the header) -->
+        <ProgressBar
+            android:id="@+id/loadingIndicator"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="JOIN A QUEUE"
-            android:textSize="72dp"
-            android:textStyle="bold"
-            android:textColor="@color/primary"
-            android:gravity="center" />
+            android:layout_marginTop="-8dp"
+            android:elevation="5dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/primary"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerSection"
+            />
 
-    </LinearLayout>
+        <!-- 4. Queue List (Fills the remaining space) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/queuesRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingTop="16dp"
+            android:paddingBottom="80dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/headerSection" />
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- 5. Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreateQueue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Create Queue"
+        app:backgroundTint="@color/primary"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:tint="@color/text_on_primary" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
