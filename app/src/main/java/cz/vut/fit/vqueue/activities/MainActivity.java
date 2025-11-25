@@ -6,13 +6,12 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.FrameLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.fragments.HomeFragment;
-import cz.vut.fit.vqueue.stuff.PermissionGranter;
+import cz.vut.fit.vqueue.utils.PermissionGranter;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 

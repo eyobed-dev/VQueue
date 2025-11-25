@@ -1,10 +1,8 @@
-package cz.vut.fit.vqueue.stuff;
+package cz.vut.fit.vqueue.utils;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;

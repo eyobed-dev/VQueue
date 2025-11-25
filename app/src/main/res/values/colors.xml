@@ -16,7 +16,7 @@
     
     <!-- Background Colors -->
     <color name="background_primary">#FFFFFF</color>
-    <color name="background_secondary">#FFFFFFFF</color>
+    <color name="background_secondary">#D1D1D1</color>
     <color name="surface">#FFFFFFFF</color>
     
     <!-- Text Colors -->

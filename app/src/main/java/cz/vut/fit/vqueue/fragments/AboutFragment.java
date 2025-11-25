@@ -26,12 +26,10 @@ public class AboutFragment extends Fragment {
     }
     
     private void initializeViews(View view) {
-        backButton = view.findViewById(R.id.backButton);
+
     }
     
     private void setupClickListeners() {
-        backButton.setOnClickListener(v -> {
-            requireActivity().onBackPressed();
-        });
+
     }
 }

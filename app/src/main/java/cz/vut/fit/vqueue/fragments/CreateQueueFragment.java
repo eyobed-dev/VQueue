@@ -20,7 +20,6 @@ public class CreateQueueFragment extends Fragment {
     private TextInputEditText queueNameEditText;
     private TextInputEditText waitTimeEditText;
     private MaterialButton createQueueButton;
-    private MaterialButton backButton;
     private QueueRepo queueRepo;
     
     @Nullable
@@ -38,7 +37,6 @@ public class CreateQueueFragment extends Fragment {
         queueNameEditText = view.findViewById(R.id.queueNameEditText);
         waitTimeEditText = view.findViewById(R.id.waitTimeEditText);
         createQueueButton = view.findViewById(R.id.createQueueButton);
-        backButton = view.findViewById(R.id.backButton);
         queueRepo = QueueRepo.getInstance();
     }
     
@@ -76,9 +74,6 @@ public class CreateQueueFragment extends Fragment {
             }
         });
         
-        backButton.setOnClickListener(v -> {
-            // Go back to home
-            requireActivity().onBackPressed();
-        });
+
     }
 }
