@@ -4,22 +4,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     tools:context=".activities.MainActivity">
 
+<<<<<<< HEAD
+=======
+    <!-- Minimal Toolbar for Menu -->
+
+    <!-- Fragment Container -->
+>>>>>>> 09cd85d03acc3849e8f6258bf6e53199f7cde3fe
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/primary"
+<<<<<<< HEAD
         android:elevation="@dimen/card_elevation"
         app:titleTextColor="@color/on_primary"
         app:layout_constraintTop_toTopOf="parent"
+=======
+        android:elevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+>>>>>>> 09cd85d03acc3849e8f6258bf6e53199f7cde3fe
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:title=""
+        app:titleTextColor="@color/text_on_primary" />
 
+<<<<<<< HEAD
     <!-- IMPORTANT: Class must be FragmentContainerView -->
     <androidx.fragment.app.FragmentContainerView
+=======
+    <FrameLayout
+>>>>>>> 09cd85d03acc3849e8f6258bf6e53199f7cde3fe
         android:id="@+id/fragmentContainer"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"

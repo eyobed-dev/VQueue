@@ -12,6 +12,14 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.utils.PermissionGranter;
+<<<<<<< HEAD
+=======
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatDelegate;
+
+import com.google.android.material.transition.MaterialSharedAxis;
+>>>>>>> 09cd85d03acc3849e8f6258bf6e53199f7cde3fe
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         setContentView(R.layout.activity_main);
 
         // --- 1. Permissions Logic (Kept exactly as you had it) ---
