@@ -179,7 +179,7 @@ public class BLEScanner {
 
             // Try to parse queue data if available
             byte[] serviceData = result.getScanRecord().getServiceData(ParcelUuid.fromString(SERVICE_UUID));
-            if (serviceData != null && serviceData.length >= 31) {
+            if (serviceData != null && serviceData.length >= 17) {
                 queue = parseAdvertisementData(serviceData, deviceAddress);
             }
 
