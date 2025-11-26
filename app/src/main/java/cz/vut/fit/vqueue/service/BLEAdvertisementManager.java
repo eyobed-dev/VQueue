@@ -1,12 +1,17 @@
 package cz.vut.fit.vqueue.service;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+
 import cz.vut.fit.vqueue.model.Queue;
 
 public class BLEAdvertisementManager {
@@ -16,7 +21,7 @@ public class BLEAdvertisementManager {
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeAdvertiser bluetoothLeAdvertiser;
     private boolean isAdvertising = false;
-    
+
     public BLEAdvertisementManager(Context context) {
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -24,51 +29,51 @@ public class BLEAdvertisementManager {
             this.bluetoothLeAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
         }
     }
-    
+
     public boolean isBluetoothEnabled() {
         return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
     }
-    
+
     public boolean isAdvertising() {
         return isAdvertising;
     }
-    
+
     public void startAdvertising(Queue queue) {
         if (!isBluetoothEnabled()) {
             Log.e(TAG, "Bluetooth is not enabled");
             return;
         }
-        
+
         if (bluetoothLeAdvertiser == null) {
             Log.e(TAG, "BluetoothLeAdvertiser is null");
             return;
         }
-        
+
         if (isAdvertising) {
             Log.w(TAG, "Already advertising, stopping first");
             stopAdvertising();
         }
-        
+
         try {
             AdvertiseSettings settings = new AdvertiseSettings.Builder()
                     .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY)
                     .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH)
                     .setConnectable(true)
                     .build();
-            
+
             AdvertiseData data = new AdvertiseData.Builder()
                     .setIncludeDeviceName(false).setIncludeTxPowerLevel(false)
                     .addManufacturerData(0x1234, formatAdvertisementData(queue))
                     .build();
-            
+
             bluetoothLeAdvertiser.startAdvertising(settings, data, advertiseCallback);
             Log.i(TAG, "Started advertising queue: " + queue.getName());
-            
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to start advertising", e);
         }
     }
-    
+
     public void stopAdvertising() {
         if (bluetoothLeAdvertiser != null && isAdvertising) {
             try {
@@ -80,7 +85,7 @@ public class BLEAdvertisementManager {
             }
         }
     }
-    
+
     public void updateAdvertisement(Queue queue) {
         if (isAdvertising) {
             Log.i(TAG, "Updating advertisement for queue: " + queue.getName());
@@ -94,7 +99,8 @@ public class BLEAdvertisementManager {
 
     private byte[] formatAdvertisementData(Queue queue) {
 
-        // [Header: 2B] [QueueID short hash: 2B] [ShortName: ≤15B] [Current#: 1B] [WaitTime: 1B] [Status: 1B]
+        // [Header: 2B] [QueueID short hash: 2B] [ShortName: ≤15B] [Current#: 1B]
+        // [WaitTime: 1B] [Status: 1B]
         // Total: 17 bytes (safe for BLE)
 
         byte[] data = new byte[22];
@@ -109,12 +115,17 @@ public class BLEAdvertisementManager {
         data[offset++] = (byte) (idHash & 0xFF);
         data[offset++] = (byte) ((idHash >> 8) & 0xFF);
 
-        // Short name (max 10 bytes)
+        // Short name (fixed 10 bytes)
         String name = queue.getName();
-        if (name.length() > 10) name = name.substring(0, 10);
+        if (name.length() > 10)
+            name = name.substring(0, 10);
         byte[] nameBytes = name.getBytes();
         System.arraycopy(nameBytes, 0, data, offset, nameBytes.length);
-        offset += nameBytes.length;
+        // Pad remaining bytes with 0 if name is shorter than 10
+        for (int i = nameBytes.length; i < 10; i++) {
+            data[offset + i] = 0;
+        }
+        offset += 10;
 
         // Current number (1 byte, capped at 255)
         int current = Math.min(queue.getCurrentNumber(), 255);
@@ -135,7 +146,6 @@ public class BLEAdvertisementManager {
         return data;
     }
 
-
     private final AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
@@ -143,7 +153,7 @@ public class BLEAdvertisementManager {
             isAdvertising = true;
             Log.i(TAG, "Advertising started successfully");
         }
-        
+
         @Override
         public void onStartFailure(int errorCode) {
             super.onStartFailure(errorCode);
@@ -173,4 +183,3 @@ public class BLEAdvertisementManager {
         }
     };
 }
-
