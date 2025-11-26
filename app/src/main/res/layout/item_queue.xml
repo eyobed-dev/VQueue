@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Coffee Shop"
-            android:textSize="18sp"
+            android:textSize="@dimen/text_size_large"
             android:textStyle="bold"
             android:textColor="@color/text_primary" />
 
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Currently: #5"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_size_body"
                 android:textColor="@color/text_secondary" />
 
             <TextView
@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Wait: 10 min"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_size_body"
                 android:textColor="@color/text_secondary"
                 android:gravity="end" />
 

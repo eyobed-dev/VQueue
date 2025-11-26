@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Margins & Paddings -->
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_xlarge">32dp</dimen>
+    <dimen name="margin_xxlarge">48dp</dimen>
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">24dp</dimen>
+
+    <!-- Text Sizes -->
+    <!-- Text Sizes (Material Design Scale) -->
+    <dimen name="text_size_small">12sp</dimen> <!-- Caption -->
+    <dimen name="text_size_body">14sp</dimen> <!-- Body 2 -->
+    <dimen name="text_size_medium">16sp</dimen> <!-- Body 1 / Subtitle 1 -->
+    <dimen name="text_size_large">18sp</dimen> <!-- Headline 6 -->
+    <dimen name="text_size_title">20sp</dimen> <!-- Headline 5 -->
+    <dimen name="text_size_header">24sp</dimen> <!-- Headline 4 -->
+
+    <!-- Element Sizes -->
+    <dimen name="button_height">48dp</dimen>
+    <dimen name="button_height_large">56dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="corner_radius">8dp</dimen>
+    <dimen name="corner_radius_large">12dp</dimen>
+    <dimen name="bottom_bar_height">56dp</dimen>
+</resources>

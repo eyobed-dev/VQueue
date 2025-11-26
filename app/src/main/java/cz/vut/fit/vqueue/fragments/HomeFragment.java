@@ -17,6 +17,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +48,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private List<AdvertisedQueue> availableQueues;
     private BLEScanner bleScanner;
     private BLEClientManager bleClientManager;
+    private String pendingDeviceAddress;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +58,9 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the updated layout (see fragment_home.xml)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        // Inflate the updated layout
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         initializeViews(view);
@@ -76,19 +81,12 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+        NavController navController = NavHostFragment.findNavController(this);
 
-        if (id == R.id.menu_settings) {
-            SettingsFragment settingsFragment = new SettingsFragment();
-            ((MainActivity) requireActivity()).replaceFragment(settingsFragment);
-            return true;
-        } else if (id == R.id.menu_about) {
-            AboutFragment aboutFragment = new AboutFragment();
-            ((MainActivity) requireActivity()).replaceFragment(aboutFragment);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        // Checks if the Menu Item ID matches a Destination ID in the graph.
+        // If they match, it navigates automatically.
+        return NavigationUI.onNavDestinationSelected(item, navController)
+                || super.onOptionsItemSelected(item);
     }
 
     private void initializeViews(View view) {
@@ -107,8 +105,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         fabCreateQueue.setOnClickListener(v -> {
             // Stop scanning before leaving the screen
             stopScanning();
-            CreateQueueFragment createQueueFragment = new CreateQueueFragment();
-            ((MainActivity) requireActivity()).replaceFragment(createQueueFragment);
+            NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_createQueueFragment);
         });
     }
 
@@ -149,9 +146,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                         }
                     }
                     if (queueCount > 0) {
-                        statusText.setText("Found " + availableQueues.size() + " device(s) (" + queueCount + " queue(s))");
+                        statusText.setText(
+                                "Found " + availableQueues.size() + " Queues(s) (" + queueCount + " queue(s))");
                     } else {
-                        statusText.setText("Found " + availableQueues.size() + " device(s) nearby");
+                        statusText.setText("Found " + availableQueues.size() + " Queues(s) nearby");
                     }
                     queuesRecyclerView.setVisibility(View.VISIBLE);
                     queueAdapter.notifyDataSetChanged();
@@ -163,7 +161,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                 new Handler(Looper.getMainLooper()).post(() -> {
                     loadingIndicator.setVisibility(View.GONE);
                     if (availableQueues.isEmpty()) {
-                        statusText.setText("No devices found nearby");
+                        statusText.setText("No Queues found nearby");
                     } else {
                         int queueCount = 0;
                         for (AdvertisedQueue q : availableQueues) {
@@ -172,9 +170,11 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                             }
                         }
                         if (queueCount > 0) {
-                            statusText.setText("Found " + availableQueues.size() + " device(s) (" + queueCount + " queue(s)). Tap a queue to join.");
+                            statusText.setText("Found " + availableQueues.size() + " Queues(s) (" + queueCount
+                                    + " queue(s)). Tap a queue to join.");
                         } else {
-                            statusText.setText("Found " + availableQueues.size() + " device(s) nearby. No queues found.");
+                            statusText
+                                    .setText("Found " + availableQueues.size() + " Queues(s) nearby. No queues found.");
                         }
                     }
                 });
@@ -186,10 +186,14 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             @Override
             public void onJoinSuccess(int ticketNumber) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getContext(), "Successfully joined queue! Your ticket number: #" + ticketNumber, Toast.LENGTH_LONG).show();
-                    // Navigate to WaitFragment
-                    WaitFragment waitFragment = new WaitFragment();
-                    ((MainActivity) requireActivity()).replaceFragment(waitFragment);
+                    Toast.makeText(getContext(), "Successfully joined queue! Your ticket number: #" + ticketNumber,
+                            Toast.LENGTH_LONG).show();
+                    // Navigate to WaitFragment with arguments
+                    Bundle bundle = new Bundle();
+                    bundle.putString("DEVICE_ADDRESS", pendingDeviceAddress);
+                    bundle.putInt("TICKET_NUMBER", ticketNumber);
+                    NavHostFragment.findNavController(HomeFragment.this)
+                            .navigate(R.id.action_homeFragment_to_waitFragment, bundle);
                 });
             }
 
@@ -264,6 +268,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         if (isQueue) {
             builder.setPositiveButton("Join Queue", (dialog, which) -> {
                 stopScanning();
+                pendingDeviceAddress = queue.getDeviceAddress();
                 Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
                 bleClientManager.connectAndJoin(queue.getDeviceAddress());
             });

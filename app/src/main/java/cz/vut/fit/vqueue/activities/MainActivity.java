@@ -1,87 +1,71 @@
 package cz.vut.fit.vqueue.activities;
 
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.activity.OnBackPressedCallback;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.FrameLayout;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
-import cz.vut.fit.vqueue.fragments.HomeFragment;
 import cz.vut.fit.vqueue.utils.PermissionGranter;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
-import com.google.android.material.transition.MaterialSharedAxis;
 
 public class MainActivity extends AppCompatActivity {
+
+    private NavController navController;
+    private AppBarConfiguration appBarConfiguration;
     private PermissionGranter granter;
-    
-    private FrameLayout fragmentContainer;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initializeViews();
-
-        // Register the permission result callback
+        // --- 1. Permissions Logic (Kept exactly as you had it) ---
         ActivityResultLauncher<String[]> permissionLauncher =
                 registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
                         result -> {
-                            // You could inspect 'result' here if needed
-                            // e.g., check if critical permissions were denied
+                            // Inspect result if needed
                         });
-
         granter = new PermissionGranter(this, permissionLauncher);
         granter.requestAllIfNeeded();
 
-        // Only attach the initial fragment on first creation.
-        // This prevents duplicate fragments after configuration changes.
-        if (savedInstanceState == null) {
-            showHomeFragment();
-        }
 
-        // Modern back navigation using OnBackPressedDispatcher:
-        // - If there are fragments in back stack (more than home) → pop one.
-        // - Otherwise → finish the activity / app.
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                int count = getSupportFragmentManager().getBackStackEntryCount();
-                if (count > 1) {
-                    getSupportFragmentManager().popBackStack();
-                } else {
-                    finish();
-                }
-            }
-        });
-    }
-    
-    private void initializeViews() {
-        fragmentContainer = findViewById(R.id.fragmentContainer);
-        
-        // Setup toolbar
+        // --- 2. Setup Toolbar ---
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-    }
-    
-    private void showHomeFragment() {
-        HomeFragment homeFragment = new HomeFragment();
-        replaceFragment(homeFragment);
+
+
+        // --- 3. Setup Navigation Component ---
+        // We find the NavHostFragment using the ID from your XML layout.
+        // Make sure your XML uses <androidx.fragment.app.FragmentContainerView>
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentContainer);
+
+        if (navHostFragment != null) {
+            navController = navHostFragment.getNavController();
+        }
+
+        // --- 4. Define Top-Level Screens ---
+        // Pass the ID of your Home Fragment (from nav_graph.xml) here.
+        // This prevents the "Back Arrow" from showing on the Home screen.
+        appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.homeFragment // ENSURE THIS ID MATCHES YOUR NAV_GRAPH.XML
+        ).build();
+
+
+        // --- 5. Link Toolbar to Navigation ---
+        // This makes the Title update and the Back Button work automatically.
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }
 
-    public void replaceFragment(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        fragment.setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.Y, true));
-        fragment.setReturnTransition(new MaterialSharedAxis(MaterialSharedAxis.Y, false));
-        transaction.replace(R.id.fragmentContainer, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    // --- 6. Handle the Back Button / Up Arrow ---
+    @Override
+    public boolean onSupportNavigateUp() {
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
     }
-
 }

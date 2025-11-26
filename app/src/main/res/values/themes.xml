@@ -6,15 +6,15 @@
         <item name="windowNoTitle">true</item>
         <!-- Brand colors -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/text_on_primary</item>
-        <item name="android:textColorSecondary">@color/text_on_primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="android:textColorSecondary">@color/on_primary</item>
 
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorOnSecondary">@color/text_on_primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
 
         <!-- Background / Surface -->
-        <item name="android:colorBackground">@color/background_primary</item>
+        <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/text_primary</item>
 

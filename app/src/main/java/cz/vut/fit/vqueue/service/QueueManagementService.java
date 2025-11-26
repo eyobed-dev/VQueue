@@ -5,17 +5,21 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import androidx.annotation.Nullable;
+
+import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.model.Queue;
 import cz.vut.fit.vqueue.repo.QueueRepo;
 
 public class QueueManagementService extends Service {
     private static final String TAG = "QueueManagementService";
-    
+    private static final String CHANNEL_ID = "QueueManagementChannel";
+    private static final int NOTIFICATION_ID = 1;
+
     private QueueRepo queueRepo;
     private BLEAdvertisementManager bleManager;
     private GATTServerManager gattManager;
     private Queue currentQueue;
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -24,8 +28,36 @@ public class QueueManagementService extends Service {
         bleManager = new BLEAdvertisementManager(this);
         gattManager = new GATTServerManager(this);
         currentQueue = queueRepo.getCurrentQueue();
+        createNotificationChannel();
     }
-    
+
+    private void createNotificationChannel() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            android.app.NotificationChannel serviceChannel = new android.app.NotificationChannel(
+                    CHANNEL_ID,
+                    "Queue Management Service",
+                    android.app.NotificationManager.IMPORTANCE_LOW);
+            android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(serviceChannel);
+            }
+        }
+    }
+
+    private android.app.Notification createNotification() {
+        android.content.Intent intent = new android.content.Intent(this,
+                cz.vut.fit.vqueue.activities.MainActivity.class);
+        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(this, 0, intent,
+                android.app.PendingIntent.FLAG_IMMUTABLE);
+
+        return new androidx.core.app.NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Queue Active")
+                .setContentText("Your queue is currently running.")
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                .setContentIntent(pendingIntent)
+                .build();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
@@ -50,21 +82,22 @@ public class QueueManagementService extends Service {
                 }
             }
         }
-        
+
         return START_STICKY; // Restart service if killed
     }
-    
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null; // Not a bound service
     }
-    
+
     public void startQueue() {
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue != null) {
             Log.i(TAG, "Starting queue: " + currentQueue.getName());
-            
+            startForeground(NOTIFICATION_ID, createNotification());
+
             // Setup GATT server first
             if (gattManager.setupGATTServer()) {
                 // Start BLE advertising
@@ -77,37 +110,34 @@ public class QueueManagementService extends Service {
             Log.e(TAG, "No queue to start");
         }
     }
-    
+
     public void callNext() {
         queueRepo.callNext();
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue != null) {
             Log.i(TAG, "Called next number: " + currentQueue.getCurrentNumber());
             bleManager.updateAdvertisement(currentQueue);
-            gattManager.notifyQueueUpdate(currentQueue);
         }
     }
-    
+
     public void pauseQueue() {
         queueRepo.pauseQueue();
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue != null) {
             Log.i(TAG, "Paused queue: " + currentQueue.getName());
             bleManager.updateAdvertisement(currentQueue);
-            gattManager.notifyQueueUpdate(currentQueue);
         }
     }
-    
+
     public void resumeQueue() {
         queueRepo.resumeQueue();
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue != null) {
             Log.i(TAG, "Resumed queue: " + currentQueue.getName());
             bleManager.updateAdvertisement(currentQueue);
-            gattManager.notifyQueueUpdate(currentQueue);
         }
     }
-    
+
     public void stopQueue() {
         Log.i(TAG, "Stopping queue");
         bleManager.stopAdvertising();
@@ -115,7 +145,7 @@ public class QueueManagementService extends Service {
         queueRepo.stopQueue();
         stopSelf(); // Stop the service
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
