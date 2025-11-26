@@ -10,6 +10,9 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import android.os.ParcelUuid;
+import java.util.UUID;
+
 import androidx.core.app.ActivityCompat;
 
 import cz.vut.fit.vqueue.model.Queue;
@@ -66,7 +69,12 @@ public class BLEAdvertisementManager {
                     .addManufacturerData(0x1234, formatAdvertisementData(queue))
                     .build();
 
-            bluetoothLeAdvertiser.startAdvertising(settings, data, advertiseCallback);
+            // Add Service UUID to Scan Response so external scanners can find it
+            AdvertiseData scanResponse = new AdvertiseData.Builder()
+                    .addServiceUuid(new ParcelUuid(UUID.fromString(GATTServerManager.SERVICE_UUID)))
+                    .build();
+
+            bluetoothLeAdvertiser.startAdvertising(settings, data, scanResponse, advertiseCallback);
             Log.i(TAG, "Started advertising queue: " + queue.getName());
 
         } catch (Exception e) {
@@ -98,12 +106,11 @@ public class BLEAdvertisementManager {
     }
 
     private byte[] formatAdvertisementData(Queue queue) {
+        // [Header: 2B] [QueueID short hash: 2B] [ShortName: 10B] [Current#: 2B]
+        // [WaitTime: 2B] [Status: 1B]
+        // Total: 19 bytes (safe for BLE)
 
-        // [Header: 2B] [QueueID short hash: 2B] [ShortName: ≤15B] [Current#: 1B]
-        // [WaitTime: 1B] [Status: 1B]
-        // Total: 17 bytes (safe for BLE)
-
-        byte[] data = new byte[22];
+        byte[] data = new byte[19];
         int offset = 0;
 
         // Header (magic number to identify our packets)
@@ -127,21 +134,18 @@ public class BLEAdvertisementManager {
         }
         offset += 10;
 
-        // Current number (1 byte, capped at 255)
-        int current = Math.min(queue.getCurrentNumber(), 255);
-        data[offset++] = (byte) current;
+        // Current number (2 bytes)
+        int current = queue.getCurrentNumber();
+        data[offset++] = (byte) (current & 0xFF);
+        data[offset++] = (byte) ((current >> 8) & 0xFF);
 
-        // Wait time (1 byte, capped at 255)
-        int wait = Math.min(queue.getWaitTimeMinutes(), 255);
-        data[offset++] = (byte) wait;
+        // Wait time (2 bytes)
+        int wait = queue.getWaitTimeMinutes();
+        data[offset++] = (byte) (wait & 0xFF);
+        data[offset++] = (byte) ((wait >> 8) & 0xFF);
 
         // Status (1 byte)
         data[offset++] = (byte) queue.getStatus().ordinal();
-
-        // Zero-fill remainder (padding)
-        while (offset < data.length) {
-            data[offset++] = 0;
-        }
 
         return data;
     }

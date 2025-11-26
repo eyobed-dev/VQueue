@@ -13,32 +13,32 @@ import java.util.UUID;
 
 public class BLEClientManager {
     private static final String TAG = "BLEClientManager";
-    
+
     // Service and Characteristic UUIDs (must match server)
     private static final String SERVICE_UUID = "12345678-1234-1234-1234-123456789ABC";
     private static final String JOIN_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABD";
     private static final String STATUS_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABE";
-    
+
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGatt gatt;
     private OnJoinResultListener listener;
     private String deviceAddress;
-    
+
     public interface OnJoinResultListener {
         void onJoinSuccess(int ticketNumber);
         void onJoinFailed(String error);
     }
-    
+
     public BLEClientManager(Context context) {
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
-    
+
     public void setOnJoinResultListener(OnJoinResultListener listener) {
         this.listener = listener;
     }
-    
+
     public void connectAndJoin(String deviceAddress) {
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
             if (listener != null) {
@@ -46,21 +46,21 @@ public class BLEClientManager {
             }
             return;
         }
-        
+
         this.deviceAddress = deviceAddress;
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-        
+
         if (device == null) {
             if (listener != null) {
                 listener.onJoinFailed("Device not found");
             }
             return;
         }
-        
+
         Log.i(TAG, "Connecting to device: " + deviceAddress);
         gatt = device.connectGatt(context, false, gattCallback);
     }
-    
+
     public void disconnect() {
         if (gatt != null) {
             gatt.disconnect();
@@ -68,7 +68,7 @@ public class BLEClientManager {
             gatt = null;
         }
     }
-    
+
     private void joinQueue() {
         if (gatt == null) {
             if (listener != null) {
@@ -76,7 +76,7 @@ public class BLEClientManager {
             }
             return;
         }
-        
+
         BluetoothGattService service = gatt.getService(UUID.fromString(SERVICE_UUID));
         if (service == null) {
             if (listener != null) {
@@ -85,8 +85,9 @@ public class BLEClientManager {
             disconnect();
             return;
         }
-        
-        BluetoothGattCharacteristic joinCharacteristic = service.getCharacteristic(UUID.fromString(JOIN_CHARACTERISTIC_UUID));
+
+        BluetoothGattCharacteristic joinCharacteristic = service
+                .getCharacteristic(UUID.fromString(JOIN_CHARACTERISTIC_UUID));
         if (joinCharacteristic == null) {
             if (listener != null) {
                 listener.onJoinFailed("Join characteristic not found");
@@ -94,12 +95,17 @@ public class BLEClientManager {
             disconnect();
             return;
         }
-        
+
         // Send device ID to join the queue
         String deviceId = android.os.Build.MODEL;
+        // Truncate to 20 bytes (BLE default MTU payload limit)
+        if (deviceId.length() > 20) {
+            deviceId = deviceId.substring(0, 20);
+        }
         byte[] deviceIdBytes = deviceId.getBytes();
         joinCharacteristic.setValue(deviceIdBytes);
-        
+        joinCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+
         if (!gatt.writeCharacteristic(joinCharacteristic)) {
             if (listener != null) {
                 listener.onJoinFailed("Failed to write join request");
@@ -109,12 +115,12 @@ public class BLEClientManager {
             Log.i(TAG, "Sent join request");
         }
     }
-    
+
     private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            
+
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Connected to GATT server");
                 // Discover services
@@ -127,11 +133,11 @@ public class BLEClientManager {
                 }
             }
         }
-        
+
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
-            
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Services discovered");
                 // Now we can join the queue
@@ -143,11 +149,11 @@ public class BLEClientManager {
                 disconnect();
             }
         }
-        
+
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 String characteristicUuid = characteristic.getUuid().toString();
                 if (characteristicUuid.equals(JOIN_CHARACTERISTIC_UUID)) {
@@ -165,11 +171,11 @@ public class BLEClientManager {
                 disconnect();
             }
         }
-        
+
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            
+
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 String characteristicUuid = characteristic.getUuid().toString();
                 if (characteristicUuid.equals(JOIN_CHARACTERISTIC_UUID)) {
@@ -178,11 +184,11 @@ public class BLEClientManager {
                     if (value != null && value.length >= 2) {
                         int ticketNumber = (value[0] & 0xFF) | ((value[1] & 0xFF) << 8);
                         Log.i(TAG, "Received ticket number: " + ticketNumber);
-                        
+
                         if (listener != null) {
                             listener.onJoinSuccess(ticketNumber);
                         }
-                        
+
                         // Disconnect after successful join
                         disconnect();
                     } else {

@@ -19,9 +19,8 @@ public class GATTServerManager {
     private static final String TAG = "GATTServerManager";
 
     // Service and Characteristic UUIDs
-    private static final String SERVICE_UUID = "12345678-1234-1234-1234-123456789ABC";
+    public static final String SERVICE_UUID = "12345678-1234-1234-1234-123456789ABC";
     private static final String JOIN_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABD";
-    private static final String STATUS_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABE";
 
     private Context context;
     private BluetoothManager bluetoothManager;
@@ -29,11 +28,11 @@ public class GATTServerManager {
     private QueueRepo queueRepo;
     private BLEAdvertisementManager bleManager;
 
-    public GATTServerManager(Context context) {
+    public GATTServerManager(Context context, BLEAdvertisementManager bleManager) {
         this.context = context;
         this.bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         this.queueRepo = QueueRepo.getInstance();
-        this.bleManager = new BLEAdvertisementManager(context);
+        this.bleManager = bleManager;
     }
 
     public boolean setupGATTServer() {
@@ -59,15 +58,6 @@ public class GATTServerManager {
                     UUID.fromString(JOIN_CHARACTERISTIC_UUID),
                     BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_READ,
                     BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
-
-            // Create status characteristic (for broadcasting queue status)
-            BluetoothGattCharacteristic statusCharacteristic = new BluetoothGattCharacteristic(
-                    UUID.fromString(STATUS_CHARACTERISTIC_UUID),
-                    BluetoothGattCharacteristic.PROPERTY_READ | BluetoothGattCharacteristic.PROPERTY_NOTIFY,
-                    BluetoothGattCharacteristic.PERMISSION_READ);
-
-            service.addCharacteristic(joinCharacteristic);
-            service.addCharacteristic(statusCharacteristic);
 
             // Add service to GATT server
             boolean success = gattServer.addService(service);
@@ -95,23 +85,6 @@ public class GATTServerManager {
                 Log.e(TAG, "Error closing GATT server", e);
             }
         }
-    }
-
-    private byte[] formatQueueStatusData(Queue queue) {
-        // Format: [Current Number: 2 bytes] [Wait Time: 2 bytes] [Status: 1 byte]
-        byte[] data = new byte[5];
-
-        int currentNumber = queue.getCurrentNumber();
-        data[0] = (byte) (currentNumber & 0xFF);
-        data[1] = (byte) ((currentNumber >> 8) & 0xFF);
-
-        int waitTime = queue.getWaitTimeMinutes();
-        data[2] = (byte) (waitTime & 0xFF);
-        data[3] = (byte) ((waitTime >> 8) & 0xFF);
-
-        data[4] = (byte) queue.getStatus().ordinal();
-
-        return data;
     }
 
     private final BluetoothGattServerCallback gattServerCallback = new BluetoothGattServerCallback() {
@@ -146,18 +119,28 @@ public class GATTServerManager {
         }
 
         @Override
+        public void onServiceAdded(int status, BluetoothGattService service) {
+            super.onServiceAdded(status, service);
+            if (status == BluetoothGatt.GATT_SUCCESS) {
+                Log.i(TAG, "Service added successfully: " + service.getUuid());
+            } else {
+                Log.e(TAG, "Failed to add service: " + service.getUuid() + " Status: " + status);
+            }
+        }
+
+        @Override
         public void onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset,
                 BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
 
             String characteristicUuid = characteristic.getUuid().toString();
 
-            if (characteristicUuid.equals(STATUS_CHARACTERISTIC_UUID)) {
-                // Return current queue status
-                Queue currentQueue = queueRepo.getCurrentQueue();
-                if (currentQueue != null) {
-                    byte[] statusData = formatQueueStatusData(currentQueue);
-                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, statusData);
+            if (characteristicUuid.equals(JOIN_CHARACTERISTIC_UUID)) {
+                // Return the assigned ticket number
+                // The value was set in handleJoinRequest
+                byte[] value = characteristic.getValue();
+                if (value != null) {
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value);
                 } else {
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, 0, null);
                 }
@@ -190,7 +173,9 @@ public class GATTServerManager {
                 }
 
                 if (responseNeeded) {
-                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, response);
+                    // Send empty response for write request (client expects no data on write
+                    // response)
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null);
                 }
 
                 Log.i(TAG, "Assigned ticket number " + ticketNumber + " to device " + deviceId);

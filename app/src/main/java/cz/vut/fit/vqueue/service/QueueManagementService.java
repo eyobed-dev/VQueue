@@ -26,7 +26,7 @@ public class QueueManagementService extends Service {
         Log.i(TAG, "QueueManagementService created");
         queueRepo = QueueRepo.getInstance();
         bleManager = new BLEAdvertisementManager(this);
-        gattManager = new GATTServerManager(this);
+        gattManager = new GATTServerManager(this, bleManager);
         currentQueue = queueRepo.getCurrentQueue();
         createNotificationChannel();
     }

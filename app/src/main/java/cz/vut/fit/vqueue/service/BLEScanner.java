@@ -32,6 +32,7 @@ public class BLEScanner {
 
     public interface OnQueueFoundListener {
         void onQueueFound(AdvertisedQueue queue);
+
         void onScanComplete();
     }
 
@@ -80,12 +81,12 @@ public class BLEScanner {
 
         // List<ScanFilter> filters = null;
         // if (!showAllDevices) {
-        //     // Filter for queue service UUID only
-        //     ScanFilter scanFilter = new ScanFilter.Builder()
-        //             .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
-        //             .build();
-        //     filters = new ArrayList<>();
-        //     filters.add(scanFilter);
+        // // Filter for queue service UUID only
+        // ScanFilter scanFilter = new ScanFilter.Builder()
+        // .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
+        // .build();
+        // filters = new ArrayList<>();
+        // filters.add(scanFilter);
         // }
         // // If showAllDevices is true, filters remains null (scan all devices)
 
@@ -142,9 +143,9 @@ public class BLEScanner {
             bluetoothLeScanner.startScan(null, settings, scanCallback);
             isScanning = true;
             // if (showAllDevices) {
-            //     Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
+            // Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
             // } else {
-            //     Log.i(TAG, "Started BLE scanning (queues only)");
+            // Log.i(TAG, "Started BLE scanning (queues only)");
             // }
         } catch (Exception e) {
             Log.e(TAG, "Failed to start scanning", e);
@@ -233,10 +234,10 @@ public class BLEScanner {
     private AdvertisedQueue parseAdvertisementData(byte[] data, String deviceAddress) {
         try {
             // Format: [Header: 2B] [Queue ID: 2B] [Name: 10B]
-            // [Current Number: 1B] [Wait Time: 1B] [Status: 1B]
-            // Total: 17 bytes
+            // [Current Number: 2B] [Wait Time: 2B] [Status: 1B]
+            // Total: 19 bytes
 
-            if (data == null || data.length < 17) {
+            if (data == null || data.length < 19) {
                 Log.w(TAG, "Advertisement data too short: " + (data == null ? "null" : data.length));
                 return null;
             }
@@ -244,10 +245,11 @@ public class BLEScanner {
             int offset = 0;
 
             // Check header (2 bytes)
-if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
+            if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
                 Log.w(TAG, "Invalid header in advertisement data (Magic Number mismatch)");
-                // The packet belongs to the manufacturer ID 0x1234, but is not our queue protocol.
-                return null; 
+                // The packet belongs to the manufacturer ID 0x1234, but is not our queue
+                // protocol.
+                return null;
             }
 
             // Queue ID (2 bytes)
@@ -265,11 +267,13 @@ if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
             queueName = queueName.replace("\0", "");
             offset += 10;
 
-            // Current Number (1 byte)
-            int currentNumber = data[offset++] & 0xFF;
+            // Current Number (2 bytes)
+            int currentNumber = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+            offset += 2;
 
-            // Wait Time (1 byte)
-            int waitTime = data[offset++] & 0xFF;
+            // Wait Time (2 bytes)
+            int waitTime = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+            offset += 2;
 
             // Status (1 byte)
             int statusOrdinal = data[offset++] & 0xFF;
