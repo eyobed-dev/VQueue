@@ -12,14 +12,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.utils.PermissionGranter;
-<<<<<<< HEAD
-=======
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatDelegate;
-
-import com.google.android.material.transition.MaterialSharedAxis;
->>>>>>> 09cd85d03acc3849e8f6258bf6e53199f7cde3fe
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,19 +27,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // --- 1. Permissions Logic (Kept exactly as you had it) ---
-        ActivityResultLauncher<String[]> permissionLauncher =
-                registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
-                        result -> {
-                            // Inspect result if needed
-                        });
+        ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    // Inspect result if needed
+                });
         granter = new PermissionGranter(this, permissionLauncher);
         granter.requestAllIfNeeded();
-
 
         // --- 2. Setup Toolbar ---
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         // --- 3. Setup Navigation Component ---
         // We find the NavHostFragment using the ID from your XML layout.
@@ -64,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.homeFragment // ENSURE THIS ID MATCHES YOUR NAV_GRAPH.XML
         ).build();
-
 
         // --- 5. Link Toolbar to Navigation ---
         // This makes the Title update and the Back Button work automatically.
