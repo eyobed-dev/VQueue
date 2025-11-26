@@ -14,6 +14,7 @@ import cz.vut.fit.vqueue.fragments.HomeFragment;
 import cz.vut.fit.vqueue.utils.PermissionGranter;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.material.transition.MaterialSharedAxis;
 
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         setContentView(R.layout.activity_main);
 
         initializeViews();

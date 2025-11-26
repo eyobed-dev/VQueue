@@ -18,9 +18,9 @@
     <color name="background_primary">#FFFFFF</color>
     <color name="background_secondary">#D1D1D1</color>
     <color name="surface">#FFFFFFFF</color>
-    
+
     <!-- Text Colors -->
-    <color name="text_primary">#FF212121</color>
+    <color name="text_primary">#000000</color>
     <color name="text_secondary">#FF757575</color>
     <color name="text_hint">#D1D1D1</color>
     <color name="text_on_primary">#FFFFFFFF</color>
@@ -29,4 +29,12 @@
     <color name="success">#FF4CAF50</color>
     <color name="warning">#FFFF9800</color>
     <color name="error">#FFF44336</color>
+
+<!--    <color name="text_primary">#000000</color> &lt;!&ndash; Black text for day &ndash;&gt;-->
+<!--    <color name="text_on_primary">#FFFFFF</color>-->
+
+<!--    &lt;!&ndash; Backgrounds &ndash;&gt;-->
+<!--    <color name="background_primary">#FFFFFF</color> &lt;!&ndash; White background for day &ndash;&gt;-->
+<!--    <color name="surface">#FFFFFF</color>-->
+
 </resources>
