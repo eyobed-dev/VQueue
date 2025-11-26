@@ -201,9 +201,9 @@ public class GATTServerManager {
                     bleManager.updateAdvertisement(currentQueue);
                 }
 
-                // Disconnect device to free up slot
-                gattServer.cancelConnection(device);
-                Log.i(TAG, "Disconnected device " + deviceId + " after assigning ticket");
+                // Disconnect is handled by the client after reading the ticket
+                // gattServer.cancelConnection(device);
+                // Log.i(TAG, "Disconnected device " + deviceId + " after assigning ticket");
 
             } else {
                 // Failed to add waiter
