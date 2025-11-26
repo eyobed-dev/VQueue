@@ -67,7 +67,6 @@ public class CreateQueueFragment extends Fragment {
                 Queue queue = queueRepo.createQueue(queueName, waitTime);
 
                 // Navigate to QueueManagerFragment
-                // Navigate to QueueManagerFragment
                 androidx.navigation.fragment.NavHostFragment.findNavController(CreateQueueFragment.this)
                         .navigate(R.id.action_createQueueFragment_to_queueManagerFragment);
 

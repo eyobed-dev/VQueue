@@ -3,6 +3,7 @@ package cz.vut.fit.vqueue.activities;
 import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -15,56 +16,82 @@ import cz.vut.fit.vqueue.utils.PermissionGranter;
 import androidx.appcompat.app.AppCompatDelegate;
 
 public class MainActivity extends AppCompatActivity {
-
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
-    private PermissionGranter granter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         setContentView(R.layout.activity_main);
 
-        // --- 1. Permissions Logic (Kept exactly as you had it) ---
+        setupPermissions();
+        setupToolbar();
+        setupNavigation();
+    }
+
+    private void setupPermissions() {
         ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
-                    // Inspect result if needed
+                    if (result.isEmpty()) {
+                        return; // Already granted, callback shouldn't have fired
+                    }
+                    boolean anyDenied = false;
+                    for (Boolean granted : result.values()) {
+                        if (granted == null || !granted) {
+                            anyDenied = true;
+                            break;
+                        }
+                    }
+                    if (anyDenied) {
+                        showPermissionDeniedDialog();
+                    }
+
                 });
-        granter = new PermissionGranter(this, permissionLauncher);
-        granter.requestAllIfNeeded();
 
-        // --- 2. Setup Toolbar ---
+        PermissionGranter permissionHandler = new PermissionGranter(this, permissionLauncher);
+        permissionHandler.requestAllIfNeeded();
+    }
+
+    private void setupToolbar() {
         MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        if (toolbar == null) {
+            throw new IllegalStateException("Toolbar not found in layout");
+        }
         setSupportActionBar(toolbar);
+    }
 
-        // --- 3. Setup Navigation Component ---
-        // We find the NavHostFragment using the ID from your XML layout.
-        // Make sure your XML uses <androidx.fragment.app.FragmentContainerView>
+    private void setupNavigation() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainer);
 
-        if (navHostFragment != null) {
-            navController = navHostFragment.getNavController();
+        if (navHostFragment == null) {
+            throw new IllegalStateException(
+                    "NavHostFragment not found. Ensure fragmentContainer exists in activity_main.xml"
+            );
         }
 
-        // --- 4. Define Top-Level Screens ---
-        // Pass the ID of your Home Fragment (from nav_graph.xml) here.
-        // This prevents the "Back Arrow" from showing on the Home screen.
-        appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.homeFragment // ENSURE THIS ID MATCHES YOUR NAV_GRAPH.XML
-        ).build();
+        navController = navHostFragment.getNavController();
 
-        // --- 5. Link Toolbar to Navigation ---
-        // This makes the Title update and the Back Button work automatically.
+        appBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment).build();
+
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }
 
-    // --- 6. Handle the Back Button / Up Arrow ---
     @Override
     public boolean onSupportNavigateUp() {
+        if (navController == null) {
+            return super.onSupportNavigateUp();
+        }
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    private void showPermissionDeniedDialog() {
+        // Implement proper user feedback
+        new AlertDialog.Builder(this)
+                .setTitle("Permissions Required")
+                .setMessage("This app requires certain permissions to function properly.")
+                .setPositiveButton("OK", null)
+                .show();
     }
 }

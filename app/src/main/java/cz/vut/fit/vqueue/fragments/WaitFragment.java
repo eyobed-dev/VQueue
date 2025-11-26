@@ -56,7 +56,6 @@ public class WaitFragment extends Fragment {
     private void setupClickListeners() {
         leaveQueueButton.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Left the queue", Toast.LENGTH_SHORT).show();
-            Toast.makeText(getContext(), "Left the queue", Toast.LENGTH_SHORT).show();
             androidx.navigation.fragment.NavHostFragment.findNavController(this)
                     .navigate(R.id.action_waitFragment_to_homeFragment);
         });
@@ -76,36 +75,68 @@ public class WaitFragment extends Fragment {
         waitProgressBar.setProgress(progress);
     }
 
+    private android.content.BroadcastReceiver queueUpdateReceiver = new android.content.BroadcastReceiver() {
+        @Override
+        public void onReceive(android.content.Context context, android.content.Intent intent) {
+            if (cz.vut.fit.vqueue.service.QueueMonitoringService.ACTION_QUEUE_UPDATE.equals(intent.getAction())) {
+                int currentNumber = intent
+                        .getIntExtra(cz.vut.fit.vqueue.service.QueueMonitoringService.EXTRA_CURRENT_NUMBER, -1);
+                int waitTime = intent.getIntExtra(cz.vut.fit.vqueue.service.QueueMonitoringService.EXTRA_WAIT_TIME, -1);
+
+                if (currentNumber != -1) {
+                    currentServing = currentNumber;
+                    estimatedWaitMinutes = waitTime;
+                    updateQueueStatus();
+
+                    if (currentServing >= userPosition) {
+                        statusText.setText("It's your turn! Please proceed to the counter.");
+                        statusText.setTextColor(getResources().getColor(R.color.status_success));
+                        // Service stops itself on turn, so we just update UI here
+                    }
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        android.content.IntentFilter filter = new android.content.IntentFilter(
+                cz.vut.fit.vqueue.service.QueueMonitoringService.ACTION_QUEUE_UPDATE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            requireContext().registerReceiver(queueUpdateReceiver, filter,
+                    android.content.Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            requireContext().registerReceiver(queueUpdateReceiver, filter);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        requireContext().unregisterReceiver(queueUpdateReceiver);
+    }
+
     private void startMonitoring() {
         // Start QueueMonitoringService
         android.content.Intent intent = new android.content.Intent(getContext(),
                 cz.vut.fit.vqueue.service.QueueMonitoringService.class);
         intent.setAction("START_MONITORING");
-        // We need to pass the device address and ticket number.
-        // Ideally these should be passed as arguments to the fragment or stored in a
-        // shared ViewModel/Repo.
-        // For now, we'll assume they are available or mock them for the refactor.
-        // In a real app, you'd get these from the join result.
 
-        // Mock data for now as per previous logic, but service needs real data.
-        // Since we don't have the real data passed here yet, we'll just log it.
-        // TODO: Pass real device address and ticket number
-
-        // For demonstration of the service call:
-        // getContext().startForegroundService(intent);
-
-        // Reverting to dummy for now to avoid crash without real data,
-        // but the service is ready to be used.
-        // To properly integrate, we need to pass arguments to WaitFragment.
-
-        // Let's implement a proper start if arguments are present
         if (getArguments() != null) {
             String deviceAddress = getArguments().getString("DEVICE_ADDRESS");
             int ticketNumber = getArguments().getInt("TICKET_NUMBER", -1);
 
             if (deviceAddress != null && ticketNumber != -1) {
+                // Update local variables for UI
+                userPosition = ticketNumber;
+                // We don't know currentServing yet, wait for update
+                currentServing = 0;
+                updateQueueStatus();
+
                 intent.putExtra("DEVICE_ADDRESS", deviceAddress);
                 intent.putExtra("TICKET_NUMBER", ticketNumber);
+
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     getContext().startForegroundService(intent);
                 } else {
@@ -113,32 +144,5 @@ public class WaitFragment extends Fragment {
                 }
             }
         }
-
-        // Keep UI updates via handler for visual feedback in this demo
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // ... existing dummy logic for UI demo ...
-                if (currentServing < userPosition) {
-                    currentServing++;
-                    estimatedWaitMinutes = Math.max(0, estimatedWaitMinutes - 5);
-                    updateQueueStatus();
-
-                    if (currentServing == userPosition) {
-                        statusText.setText("It's your turn! Please proceed to the counter.");
-                        statusText.setTextColor(getResources().getColor(R.color.status_success));
-
-                        // Stop service when turn arrives
-                        android.content.Intent stopIntent = new android.content.Intent(getContext(),
-                                cz.vut.fit.vqueue.service.QueueMonitoringService.class);
-                        stopIntent.setAction("STOP_MONITORING");
-                        getContext().startService(stopIntent);
-                    } else {
-                        handler.postDelayed(this, 5000);
-                    }
-                }
-            }
-        }, 5000);
     }
 }

@@ -9,6 +9,8 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.os.ParcelUuid;
 import android.util.Log;
+import android.util.SparseArray;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +19,7 @@ import cz.vut.fit.vqueue.utils.AppPreferences;
 
 public class BLEScanner {
     private static final String TAG = "BLEScanner";
-    private static final String SERVICE_UUID = "12345678-1234-1234-1234-123456789ABC";
+    private static final int TARGET_MANUFACTURER_ID = 0x1234;
 
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
@@ -30,7 +32,6 @@ public class BLEScanner {
 
     public interface OnQueueFoundListener {
         void onQueueFound(AdvertisedQueue queue);
-
         void onScanComplete();
     }
 
@@ -74,19 +75,19 @@ public class BLEScanner {
 
         foundQueues.clear();
 
-        // Check preference: show all devices or only queues
-        boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
+        // // Check preference: show all devices or only queues
+        // boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
 
-        List<ScanFilter> filters = null;
-        if (!showAllDevices) {
-            // Filter for queue service UUID only
-            ScanFilter scanFilter = new ScanFilter.Builder()
-                    .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
-                    .build();
-            filters = new ArrayList<>();
-            filters.add(scanFilter);
-        }
-        // If showAllDevices is true, filters remains null (scan all devices)
+        // List<ScanFilter> filters = null;
+        // if (!showAllDevices) {
+        //     // Filter for queue service UUID only
+        //     ScanFilter scanFilter = new ScanFilter.Builder()
+        //             .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
+        //             .build();
+        //     filters = new ArrayList<>();
+        //     filters.add(scanFilter);
+        // }
+        // // If showAllDevices is true, filters remains null (scan all devices)
 
         // Configure scan settings
         ScanSettings settings = new ScanSettings.Builder()
@@ -99,14 +100,14 @@ public class BLEScanner {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                processScanResult(result, showAllDevices);
+                processScanResult(result);
             }
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
                 super.onBatchScanResults(results);
                 for (ScanResult result : results) {
-                    processScanResult(result, showAllDevices);
+                    processScanResult(result);
                 }
             }
 
@@ -138,13 +139,13 @@ public class BLEScanner {
 
         // Start scanning with or without filters based on preference
         try {
-            bluetoothLeScanner.startScan(filters, settings, scanCallback);
+            bluetoothLeScanner.startScan(null, settings, scanCallback);
             isScanning = true;
-            if (showAllDevices) {
-                Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
-            } else {
-                Log.i(TAG, "Started BLE scanning (queues only)");
-            }
+            // if (showAllDevices) {
+            //     Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
+            // } else {
+            //     Log.i(TAG, "Started BLE scanning (queues only)");
+            // }
         } catch (Exception e) {
             Log.e(TAG, "Failed to start scanning", e);
             isScanning = false;
@@ -167,7 +168,9 @@ public class BLEScanner {
         }
     }
 
-    private void processScanResult(ScanResult result, boolean showAllDevices) {
+    private void processScanResult(ScanResult result) {
+        // Check preference: show all devices or only queues
+        boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
         try {
             String deviceAddress = result.getDevice().getAddress();
             String deviceName = result.getDevice().getName();
@@ -177,10 +180,12 @@ public class BLEScanner {
 
             AdvertisedQueue queue = null;
 
-            // Try to parse queue data if available
-            byte[] serviceData = result.getScanRecord().getServiceData(ParcelUuid.fromString(SERVICE_UUID));
-            if (serviceData != null && serviceData.length >= 17) {
-                queue = parseAdvertisementData(serviceData, deviceAddress);
+            // CORRECTED DATA RETRIEVAL: Get Manufacturer Data using the known ID
+            SparseArray<byte[]> manufacturerDataMap = result.getScanRecord().getManufacturerSpecificData();
+            if (manufacturerDataMap != null && manufacturerDataMap.indexOfKey(TARGET_MANUFACTURER_ID) >= 0) {
+                byte[] manufacturerData = manufacturerDataMap.get(TARGET_MANUFACTURER_ID);
+                // Now parse and check the Magic Number Header inside the payload
+                queue = parseAdvertisementData(manufacturerData, deviceAddress);
             }
 
             // If not a queue device and showAllDevices is enabled, create a generic entry
@@ -231,17 +236,18 @@ public class BLEScanner {
             // [Current Number: 1B] [Wait Time: 1B] [Status: 1B]
             // Total: 17 bytes
 
-            if (data.length < 17) {
-                Log.w(TAG, "Advertisement data too short: " + data.length);
+            if (data == null || data.length < 17) {
+                Log.w(TAG, "Advertisement data too short: " + (data == null ? "null" : data.length));
                 return null;
             }
 
             int offset = 0;
 
             // Check header (2 bytes)
-            if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
-                Log.w(TAG, "Invalid header in advertisement data");
-                return null;
+if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
+                Log.w(TAG, "Invalid header in advertisement data (Magic Number mismatch)");
+                // The packet belongs to the manufacturer ID 0x1234, but is not our queue protocol.
+                return null; 
             }
 
             // Queue ID (2 bytes)

@@ -113,7 +113,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         availableQueues = new ArrayList<>();
         queueAdapter = new QueueAdapter(availableQueues, this);
 
-        // UPDATED: Use GridLayoutManager with 2 columns for the "Circle/Grid" look
         queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
         queuesRecyclerView.setAdapter(queueAdapter);
 
