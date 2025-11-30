@@ -3,9 +3,14 @@
     <!-- Base color -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/primary" />
+            <gradient
+                android:type="linear"
+                android:startColor="#AF0101"
+                android:endColor="#FD665F"
+                android:angle="45" />
         </shape>
     </item>
+
 
     <!-- Decorative PNG at bottom-right -->
     <item

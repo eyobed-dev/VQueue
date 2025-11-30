@@ -6,13 +6,15 @@ public class AdvertisedQueue {
     private int currentNumber;
     private int waitTimeMinutes;
     private String deviceAddress; // The BLE address of the advertising device
+    private int rssi; // The Received Signal Strength Indicator for sorting
 
-    public AdvertisedQueue(String id, String name, int currentNumber, int waitTimeMinutes, String deviceAddress) {
+    public AdvertisedQueue(String id, String name, int currentNumber, int waitTimeMinutes, String deviceAddress, int rssi) {
         this.id = id;
         this.name = name;
         this.currentNumber = currentNumber;
         this.waitTimeMinutes = waitTimeMinutes;
         this.deviceAddress = deviceAddress;
+        this.rssi = rssi;
     }
 
     // Getters
@@ -21,6 +23,7 @@ public class AdvertisedQueue {
     public int getCurrentNumber() { return currentNumber; }
     public int getWaitTimeMinutes() { return waitTimeMinutes; }
     public String getDeviceAddress() { return deviceAddress; }
+    public int getRssi() { return rssi; }
 
     // Setters (if needed, but for immutable data, they might not be)
     public void setId(String id) { this.id = id; }
@@ -28,4 +31,5 @@ public class AdvertisedQueue {
     public void setCurrentNumber(int currentNumber) { this.currentNumber = currentNumber; }
     public void setWaitTimeMinutes(int waitTimeMinutes) { this.waitTimeMinutes = waitTimeMinutes; }
     public void setDeviceAddress(String deviceAddress) { this.deviceAddress = deviceAddress; }
+    public void setRssi(int rssi) { this.rssi = rssi; }
 }
