@@ -26,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import cz.vut.fit.vqueue.R;
@@ -135,6 +137,17 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                 if (!exists) {
                     availableQueues.add(queue);
                 }
+
+                // Sort the list by RSSI (Received Signal Strength Indicator) in descending order.
+                // This ensures that the queues with the strongest signal (likely the closest ones)
+                // appear at the top of the list.
+                Collections.sort(availableQueues, new Comparator<AdvertisedQueue>() {
+                    @Override
+                    public int compare(AdvertisedQueue q1, AdvertisedQueue q2) {
+                        // A higher RSSI value means a stronger signal.
+                        return Integer.compare(q2.getRssi(), q1.getRssi());
+                    }
+                });
 
                 // Update UI on main thread
                 new Handler(Looper.getMainLooper()).post(() -> {

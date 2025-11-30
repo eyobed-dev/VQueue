@@ -175,6 +175,7 @@ public class BLEScanner {
         try {
             String deviceAddress = result.getDevice().getAddress();
             String deviceName = result.getDevice().getName();
+            int rssi = result.getRssi(); // Capture the RSSI (signal strength)
             if (deviceName == null || deviceName.isEmpty()) {
                 deviceName = "Unknown Device";
             }
@@ -186,7 +187,7 @@ public class BLEScanner {
             if (manufacturerDataMap != null && manufacturerDataMap.indexOfKey(TARGET_MANUFACTURER_ID) >= 0) {
                 byte[] manufacturerData = manufacturerDataMap.get(TARGET_MANUFACTURER_ID);
                 // Now parse and check the Magic Number Header inside the payload
-                queue = parseAdvertisementData(manufacturerData, deviceAddress);
+                queue = parseAdvertisementData(manufacturerData, deviceAddress, rssi);
             }
 
             // If not a queue device and showAllDevices is enabled, create a generic entry
@@ -199,7 +200,7 @@ public class BLEScanner {
                             deviceName,
                             -1, // currentNumber (-1 indicates not a queue)
                             -1, // waitTimeMinutes (-1 indicates not a queue)
-                            deviceAddress);
+                            deviceAddress, rssi); // Pass RSSI to constructor
                 } else {
                     // In normal mode, ignore non-queue devices
                     return;
@@ -231,7 +232,7 @@ public class BLEScanner {
         }
     }
 
-    private AdvertisedQueue parseAdvertisementData(byte[] data, String deviceAddress) {
+    private AdvertisedQueue parseAdvertisementData(byte[] data, String deviceAddress, int rssi) {
         try {
             // Format: [Header: 2B] [Queue ID: 2B] [Name: 10B]
             // [Current Number: 2B] [Wait Time: 2B] [Status: 1B]
@@ -278,8 +279,8 @@ public class BLEScanner {
             // Status (1 byte)
             int statusOrdinal = data[offset++] & 0xFF;
 
-            // Create AdvertisedQueue
-            return new AdvertisedQueue(queueId, queueName, currentNumber, waitTime, deviceAddress);
+            // Create AdvertisedQueue, now including the RSSI value
+            return new AdvertisedQueue(queueId, queueName, currentNumber, waitTime, deviceAddress, rssi);
 
         } catch (Exception e) {
             Log.e(TAG, "Error parsing advertisement data", e);
