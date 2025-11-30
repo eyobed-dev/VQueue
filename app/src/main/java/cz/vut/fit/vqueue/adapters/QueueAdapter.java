@@ -50,6 +50,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     static class QueueViewHolder extends RecyclerView.ViewHolder {
         private final TextView queueName;
         private final TextView queueWaitInfo;
+        private final TextView rssi;
         private final View cardView;
 
         public QueueViewHolder(@NonNull View itemView) {
@@ -57,12 +58,14 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
             queueName = itemView.findViewById(R.id.queueName);
             queueWaitInfo = itemView.findViewById(R.id.queueWaitInfo);
             cardView = itemView.findViewById(R.id.cardView);
+            rssi = itemView.findViewById(R.id.rssi);
         }
 
         public void bind(final AdvertisedQueue queue, final OnQueueClickListener listener) {
             // Set Device/Queue Name
             if (queue.getName() != null && !queue.getName().isEmpty()) {
                 queueName.setText(queue.getName());
+                rssi.setText(queue.getRssi() + " dbm");
             } else {
                 queueName.setText("Unknown Device");
             }

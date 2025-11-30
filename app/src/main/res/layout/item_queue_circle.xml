@@ -55,6 +55,18 @@
                 android:textColor="@color/primary"
                 android:alpha="0.8"
                 tools:text="~15 min wait" />
+            <TextView
+                android:id="@+id/rssi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:text="dbm"
+                android:textSize="9dp"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                tools:text="dbm" />
 
         </LinearLayout>
 
