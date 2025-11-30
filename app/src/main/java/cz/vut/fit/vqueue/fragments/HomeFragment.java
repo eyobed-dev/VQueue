@@ -115,7 +115,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         availableQueues = new ArrayList<>();
         queueAdapter = new QueueAdapter(availableQueues, this);
 
-        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         queuesRecyclerView.setAdapter(queueAdapter);
 
         // Setup BLE scanner listener

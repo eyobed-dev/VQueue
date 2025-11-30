@@ -9,8 +9,8 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:layout_margin="6dp"
         android:clickable="true"
@@ -38,7 +38,7 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:text="Device Name"
-                android:textSize="16dp"
+                android:textSize="22dp"
                 android:textColor="@color/primary"
                 android:textStyle="bold"
                 tools:text="Doctor Smith" />
@@ -51,7 +51,7 @@
                 android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:text="15 min"
-                android:textSize="10dp"
+                android:textSize="14dp"
                 android:textColor="@color/primary"
                 android:alpha="0.8"
                 tools:text="~15 min wait" />
