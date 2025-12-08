@@ -2,37 +2,65 @@
 <resources>
     <!-- Brand Palette -->
     <color name="brand_red">#C80000</color>
+    <color name="brand_red_light">#FF5252</color>
     <color name="brand_white">#FFFFFF</color>
     <color name="brand_gray_light">#E4E4E4</color>
     <color name="brand_gray_medium">#E0E0E0</color>
     <color name="brand_gray_dark">#757575</color>
     <color name="brand_black">#212121</color>
 
-    <!-- Semantic Colors -->
-    <color name="primary">@color/brand_red</color>
-    <color name="primary_variant">@color/brand_red</color>
-    <color name="on_primary">@color/brand_white</color>
+    <!-- Material 3 Color  - Light Theme -->
 
+    <!-- Primary   -->
+    <color name="primary">@color/brand_red</color>
+    <color name="on_primary">@color/brand_white</color>
+    <color name="primary_container">@color/brand_red_light</color>
+    <color name="on_primary_container">#3A0000</color>
+
+    <!-- Secondary -->
     <color name="secondary">@color/brand_black</color>
-    <color name="secondary_variant">@color/brand_gray_dark</color>
     <color name="on_secondary">@color/brand_white</color>
+    <color name="secondary_container">#C0C0C0</color>
+    <color name="on_secondary_container">#1A1A1A</color>
     
+    <!-- Tertiary -->
+    <color name="tertiary">@color/brand_gray_dark</color>
+    <color name="on_tertiary">@color/brand_white</color>
+    <color name="tertiary_container">#D0D0D0</color>
+    <color name="on_tertiary_container">#424242</color>
+
+    <!-- Error -->
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">@color/brand_white</color>
+    <color name="error_container">#FFDAD6</color>
+    <color name="on_error_container">#410002</color>
+
+    <!-- Background and Surface -->
     <color name="background">@color/brand_gray_light</color>
+    <color name="on_background">@color/brand_black</color>
     <color name="surface">@color/brand_white</color>
     <color name="on_surface">@color/brand_black</color>
-    
+    <color name="surface_variant">#F5F5F5</color>
+    <color name="on_surface_variant">#424242</color>
+
+    <!-- Outline colors -->
+    <color name="outline">@color/brand_gray_dark</color>
+    <color name="outline_variant">@color/brand_gray_medium</color>
+
+    <!-- Legacy semantic colors -->
+    <color name="primary_variant">@color/brand_red</color>
+    <color name="secondary_variant">@color/brand_gray_dark</color>
     <color name="text_primary">@color/brand_black</color>
     <color name="text_secondary">@color/brand_gray_dark</color>
     <color name="text_hint">@color/brand_gray_dark</color>
-    
     <color name="divider">@color/brand_gray_medium</color>
     
-    <!-- Status Colors (Mapped to Palette) -->
+    <!-- Status Colors -->
     <color name="status_error">@color/brand_red</color>
     <color name="status_success">@color/brand_black</color>
     <color name="status_warning">@color/brand_gray_dark</color>
 
-    <!-- Functional Colors (for buttons) -->
+    <!-- Functional Colors -->
     <color name="functional_green">#4CAF50</color>
     <color name="functional_green_ripple">#81C784</color>
     <color name="functional_orange">#FF9800</color>

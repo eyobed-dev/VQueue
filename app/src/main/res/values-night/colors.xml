@@ -1,51 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design Base Colors (Standard) -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Brand Palette (same as light) -->
+    <color name="brand_red">#C80000</color>
+    <color name="brand_red_light">#FF5252</color>
+    <color name="brand_white">#FFFFFF</color>
+    <color name="brand_gray_light">#E4E4E4</color>
+    <color name="brand_gray_medium">#E0E0E0</color>
+    <color name="brand_gray_dark">#757575</color>
+    <color name="brand_black">#212121</color>
 
-    <!-- VQueue App Brand Colors -->
-    <!-- In Night mode, Primary is usually pastel/lighter (200 variant) -->
-    <color name="primary">#C80000</color>
+    <!-- Material 3 Color Roles - Dark Theme -->
+    
+    <!-- Primary colors (Lighter in dark mode) -->
+    <color name="primary">#FFB4AB</color>
+    <color name="on_primary">#690005</color>
+    <color name="primary_container">#93000A</color>
+    <color name="on_primary_container">#FFDAD6</color>
 
-    <!-- Primary Dark is used for status bars in some versions, matches purple_700 -->
-    <color name="primary_dark">#BB0000</color>
+    <!-- Secondary colors -->
+    <color name="secondary">#E7E0EC</color>
+    <color name="on_secondary">#1D1B20</color>
+    <color name="secondary_container">#49454F</color>
+    <color name="on_secondary_container">#E8DEF8</color>
+    
+    <!-- Tertiary colors -->
+    <color name="tertiary">#CCC2DC</color>
+    <color name="on_tertiary">#332D41</color>
+    <color name="tertiary_container">#4A4458</color>
+    <color name="on_tertiary_container">#E8DEF8</color>
 
-    <color name="accent">#FF03DAC5</color>
+    <!-- Error colors -->
+    <color name="error">#FFB4AB</color>
+    <color name="on_error">#690005</color>
+    <color name="error_container">#93000A</color>
+    <color name="on_error_container">#FFDAD6</color>
 
-    <!-- Background Colors -->
-    <!-- #121212 is the standard Google Dark Mode background (not pure black) -->
-    <color name="background_primary">#121212</color>
+    <!-- Background and Surface (Dark) -->
+    <color name="background">#1C1B1F</color>
+    <color name="on_background">#E6E1E5</color>
+    <color name="surface">#1C1B1F</color>
+    <color name="on_surface">#E6E1E5</color>
+    <color name="surface_variant">#49454F</color>
+    <color name="on_surface_variant">#CAC4D0</color>
 
-    <!-- Secondary background for lists or dividers (Slightly lighter) -->
-    <color name="background_secondary">#1E1E1E</color>
+    <!-- Outline colors -->
+    <color name="outline">#938F99</color>
+    <color name="outline_variant">#49454F</color>
 
-    <!-- Surface is used for Cards/Dialogs. It should be lighter than background to look elevated -->
-    <color name="surface">#1E1E1E</color>
-
-    <!-- Text Colors -->
-    <!-- text_primary is usually 87% White, not 100%, to reduce eye strain -->
-    <color name="text_primary">#DEFFFFFF</color>
-
-    <!-- text_secondary is usually 60% White -->
-    <color name="text_secondary">#99FFFFFF</color>
-
-    <!-- Hint text -->
-    <color name="text_hint">#61FFFFFF</color>
-
-    <!-- IMPORTANT: Since your Primary is Light Purple, text ON it must be Black for contrast -->
-    <color name="text_on_primary">#000000</color>
-
+    <!-- Legacy semantic colors (kept for backwards compatibility) -->
+    <color name="primary_variant">#93000A</color>
+    <color name="secondary_variant">#49454F</color>
+    <color name="text_primary">#E6E1E5</color>
+    <color name="text_secondary">#CAC4D0</color>
+    <color name="text_hint">#938F99</color>
+    <color name="divider">#49454F</color>
+    
     <!-- Status Colors -->
-    <color name="success">#81C784</color> <!-- Softer Green -->
-    <color name="warning">#FFB74D</color> <!-- Softer Orange -->
+    <color name="status_error">#FFB4AB</color>
+    <color name="status_success">#E7E0EC</color>
+    <color name="status_warning">#CCC2DC</color>
 
-    <!-- Standard "Error" color for Dark Mode is a soft pink/red, not bright red -->
-    <color name="error">#CF6679</color>
-
+    <!-- Functional Colors (same as light) -->
+    <color name="functional_green">#4CAF50</color>
+    <color name="functional_green_ripple">#81C784</color>
+    <color name="functional_orange">#FF9800</color>
+    <color name="functional_orange_ripple">#FFB74D</color>
+    <color name="functional_red">#F44336</color>
+    <color name="functional_red_ripple">#E57373</color>
 </resources>
