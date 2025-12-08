@@ -7,31 +7,50 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import cz.vut.fit.vqueue.R;
-import cz.vut.fit.vqueue.activities.MainActivity;
 import cz.vut.fit.vqueue.model.Queue;
 import cz.vut.fit.vqueue.repo.QueueRepo;
 
-public class CreateQueueFragment extends Fragment {
+public class CreateQueueBottomSheet extends BottomSheetDialogFragment {
 
     private TextInputEditText queueNameEditText;
     private TextInputEditText waitTimeEditText;
     private MaterialButton createQueueButton;
     private QueueRepo queueRepo;
+    private OnQueueCreatedListener listener;
+
+    public interface OnQueueCreatedListener {
+        void onQueueCreated(Queue queue);
+    }
+
+    public void setOnQueueCreatedListener(OnQueueCreatedListener listener) {
+        this.listener = listener;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_create_queue, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_queue_bottom_sheet, container, false);
 
         initializeViews(view);
         setupClickListeners();
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Make the bottom sheet resize when keyboard appears
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setSoftInputMode(
+                android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+            );
+        }
     }
 
     private void initializeViews(View view) {
@@ -66,14 +85,17 @@ public class CreateQueueFragment extends Fragment {
                 // Create queue using QueueRepository
                 Queue queue = queueRepo.createQueue(queueName, waitTime);
 
-                // Navigate to QueueManagerFragment
-                androidx.navigation.fragment.NavHostFragment.findNavController(CreateQueueFragment.this)
-                        .navigate(R.id.action_createQueueFragment_to_queueManagerFragment);
+                // Notify listener
+                if (listener != null) {
+                    listener.onQueueCreated(queue);
+                }
+
+                // Dismiss bottom sheet
+                dismiss();
 
             } catch (NumberFormatException e) {
                 Toast.makeText(getContext(), "Please enter a valid number for wait time", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

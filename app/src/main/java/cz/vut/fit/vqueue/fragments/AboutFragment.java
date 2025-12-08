@@ -29,11 +29,6 @@ public class AboutFragment extends Fragment {
     private TextView gitlabLink;
     private TextView emailLink;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // Keep the menu (Settings/About) logic
-    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -50,21 +45,7 @@ public class AboutFragment extends Fragment {
         setupClickListeners();
         setAppVersion();
     }
- @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.home_menu, menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        NavController navController = NavHostFragment.findNavController(this);
-
-        // Checks if the Menu Item ID matches a Destination ID in the graph.
-        // If they match, it navigates automatically.
-        return NavigationUI.onNavDestinationSelected(item, navController)
-                || super.onOptionsItemSelected(item);
-    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -78,26 +59,20 @@ public class AboutFragment extends Fragment {
 
     private void setupClickListeners() {
         gitlabLink.setOnClickListener(v -> {
-            // Replace with your actual gitlab repository URL
-            String url = "https://gitlab.com/your-username/your-repo";
+            String url = "https://gitlab.com/fit-vut1/tama/vqueue";
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
             startActivity(intent);
         });
 
         emailLink.setOnClickListener(v -> {
-            // Replace with your actual contact email
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:your.email@example.com"));
+            intent.setData(Uri.parse("mailto:xnuriey00@fit.vut.cz"));
             intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on VQueue App");
             startActivity(intent);
         });
     }
 
-    /**
-     * Dynamically gets the app version from package info and sets it to the
-     * TextView.
-     */
     private void setAppVersion() {
         try {
             PackageInfo pInfo = requireActivity().getPackageManager().getPackageInfo(requireActivity().getPackageName(),
@@ -106,7 +81,7 @@ public class AboutFragment extends Fragment {
             versionText.setText("Version " + version);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-            versionText.setText("Version 1.0.0"); // Fallback
+            versionText.setText("Version 1.0.0");
         }
     }
 }

@@ -1,51 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design Base Colors (Standard) -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-
-    <!-- VQueue App Brand Colors -->
-    <!-- In Night mode, Primary is usually pastel/lighter (200 variant) -->
-    <color name="primary">#C80000</color>
-
-    <!-- Primary Dark is used for status bars in some versions, matches purple_700 -->
-    <color name="primary_dark">#BB0000</color>
-
-    <color name="accent">#FF03DAC5</color>
-
-    <!-- Background Colors -->
-    <!-- #121212 is the standard Google Dark Mode background (not pure black) -->
-    <color name="background_primary">#121212</color>
-
-    <!-- Secondary background for lists or dividers (Slightly lighter) -->
-    <color name="background_secondary">#1E1E1E</color>
-
-    <!-- Surface is used for Cards/Dialogs. It should be lighter than background to look elevated -->
-    <color name="surface">#1E1E1E</color>
-
+    <!-- Primary Brand Color -->
+    <color name="primary">#000000</color>
+    <color name="primary_variant">#000000</color>
+    <color name="on_primary">#FFFFFF</color>
+    
+    <!-- Secondary Colors -->
+    <color name="secondary">#CE0000</color>
+    <color name="secondary_variant">#000000</color>
+    <color name="on_secondary">#FFFFFF</color>
+    
+    <!-- Background & Surface -->
+    <color name="background">#121212</color>
+    <color name="surface">#181818</color>
+    <color name="on_surface">#FFFFFF</color>
+    
     <!-- Text Colors -->
-    <!-- text_primary is usually 87% White, not 100%, to reduce eye strain -->
-    <color name="text_primary">#DEFFFFFF</color>
-
-    <!-- text_secondary is usually 60% White -->
-    <color name="text_secondary">#99FFFFFF</color>
-
-    <!-- Hint text -->
-    <color name="text_hint">#61FFFFFF</color>
-
-    <!-- IMPORTANT: Since your Primary is Light Purple, text ON it must be Black for contrast -->
-    <color name="text_on_primary">#000000</color>
-
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B0B0B0</color>
+    
+    <!-- Other -->
+    <color name="divider">#2C2C2C</color>
+    
     <!-- Status Colors -->
-    <color name="success">#81C784</color> <!-- Softer Green -->
-    <color name="warning">#FFB74D</color> <!-- Softer Orange -->
-
-    <!-- Standard "Error" color for Dark Mode is a soft pink/red, not bright red -->
-    <color name="error">#CF6679</color>
-
+    <color name="status_error">#C80000</color>
+    
+    <!-- Functional Colors -->
+    <color name="functional_green">#4CAF50</color>
+    <color name="functional_green_ripple">#81C784</color>
+    <color name="functional_orange">#FF9800</color>
+    <color name="functional_orange_ripple">#FFB74D</color>
+    <color name="functional_red">#F44336</color>
+    <color name="functional_red_ripple">#E57373</color>
 </resources>

@@ -215,7 +215,7 @@
                         android:drawablePadding="@dimen/margin_xlarge"
                         android:drawableTint="@color/primary"
                         android:background="?attr/selectableItemBackground"
-                        app:drawableStartCompat="@drawable/baseline_email_24" />
+                        app:drawableStartCompat="@drawable/ic_email" />
 
                 </LinearLayout>
 

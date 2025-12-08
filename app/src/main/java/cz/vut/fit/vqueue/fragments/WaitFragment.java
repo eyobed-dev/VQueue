@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.android.material.button.MaterialButton;
 import cz.vut.fit.vqueue.R;
@@ -75,47 +76,9 @@ public class WaitFragment extends Fragment {
         waitProgressBar.setProgress(progress);
     }
 
-    private android.content.BroadcastReceiver queueUpdateReceiver = new android.content.BroadcastReceiver() {
-        @Override
-        public void onReceive(android.content.Context context, android.content.Intent intent) {
-            if (cz.vut.fit.vqueue.service.QueueMonitoringService.ACTION_QUEUE_UPDATE.equals(intent.getAction())) {
-                int currentNumber = intent
-                        .getIntExtra(cz.vut.fit.vqueue.service.QueueMonitoringService.EXTRA_CURRENT_NUMBER, -1);
-                int waitTime = intent.getIntExtra(cz.vut.fit.vqueue.service.QueueMonitoringService.EXTRA_WAIT_TIME, -1);
 
-                if (currentNumber != -1) {
-                    currentServing = currentNumber;
-                    estimatedWaitMinutes = waitTime;
-                    updateQueueStatus();
 
-                    if (currentServing >= userPosition) {
-                        statusText.setText("It's your turn! Please proceed to the counter.");
-                        statusText.setTextColor(getResources().getColor(R.color.status_success));
-                        // Service stops itself on turn, so we just update UI here
-                    }
-                }
-            }
-        }
-    };
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        android.content.IntentFilter filter = new android.content.IntentFilter(
-                cz.vut.fit.vqueue.service.QueueMonitoringService.ACTION_QUEUE_UPDATE);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            requireContext().registerReceiver(queueUpdateReceiver, filter,
-                    android.content.Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            requireContext().registerReceiver(queueUpdateReceiver, filter);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        requireContext().unregisterReceiver(queueUpdateReceiver);
-    }
 
     private void startMonitoring() {
         // Start QueueMonitoringService

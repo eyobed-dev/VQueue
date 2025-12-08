@@ -1,5 +1,6 @@
 package cz.vut.fit.vqueue.activities;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -9,22 +10,37 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import com.google.android.material.appbar.MaterialToolbar;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.utils.PermissionGranter;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
     private NavController navController;
     private AppBarConfiguration appBarConfiguration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String theme = prefs.getString("theme_preference", "system");
+
+        // 3. Apply the theme immediately
+        switch (theme) {
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            case "system":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
         setContentView(R.layout.activity_main);
 
         setupPermissions();
-        setupToolbar();
         setupNavigation();
     }
 
@@ -33,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
                     if (result.isEmpty()) {
-                        return; // Already granted, callback shouldn't have fired
+                        return; // Already granted, callback shouldn't have fired so ignore
                     }
                     boolean anyDenied = false;
                     for (Boolean granted : result.values()) {
@@ -52,22 +68,13 @@ public class MainActivity extends AppCompatActivity {
         permissionHandler.requestAllIfNeeded();
     }
 
-    private void setupToolbar() {
-        MaterialToolbar toolbar = findViewById(R.id.toolbar);
-        if (toolbar == null) {
-            throw new IllegalStateException("Toolbar not found in layout");
-        }
-        setSupportActionBar(toolbar);
-    }
-
     private void setupNavigation() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainer);
 
         if (navHostFragment == null) {
             throw new IllegalStateException(
-                    "NavHostFragment not found. Ensure fragmentContainer exists in activity_main.xml"
-            );
+                    "NavHostFragment not found.");
         }
 
         navController = navHostFragment.getNavController();
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         // Implement proper user feedback
         new AlertDialog.Builder(this)
                 .setTitle("Permissions Required")
-                .setMessage("This app requires certain permissions to function properly.")
+                .setMessage("This app requires certain permissions to function properly. You need to grant them in settings")
                 .setPositiveButton("OK", null)
                 .show();
     }

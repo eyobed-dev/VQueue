@@ -44,6 +44,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private ProgressBar loadingIndicator;
     private TextView statusText;
     private RecyclerView queuesRecyclerView;
+    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
 
     // Data & Logic
     private QueueAdapter queueAdapter;
@@ -96,18 +97,34 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         loadingIndicator = view.findViewById(R.id.loadingIndicator);
         statusText = view.findViewById(R.id.statusText);
         queuesRecyclerView = view.findViewById(R.id.queuesRecyclerView);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
 
         // Initialize BLE components
         bleScanner = new BLEScanner(getContext());
         bleClientManager = new BLEClientManager(getContext());
+        
+        // Setup pull-to-refresh
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            // Trigger a new scan when user pulls to refresh
+            startSearch();
+        });
+        
+        // Set refresh colors to match app theme
+        swipeRefreshLayout.setColorSchemeResources(
+            R.color.primary,
+            R.color.primary_variant
+        );
     }
 
     private void setupClickListeners() {
-        // The FAB launches the Create Queue Fragment
+        // The FAB shows a bottom sheet to create a queue
         fabCreateQueue.setOnClickListener(v -> {
-            // Stop scanning before leaving the screen
-            stopScanning();
-            NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_createQueueFragment);
+            CreateQueueBottomSheet bottomSheet = new CreateQueueBottomSheet();
+            bottomSheet.setOnQueueCreatedListener(queue -> {
+                // Navigate to QueueManagerFragment after queue is created
+                NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_queueManagerFragment);
+            });
+            bottomSheet.show(getChildFragmentManager(), "CreateQueueBottomSheet");
         });
     }
 
@@ -172,6 +189,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             public void onScanComplete() {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     loadingIndicator.setVisibility(View.GONE);
+                    // Stop refresh animation
+                    if (swipeRefreshLayout != null) {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
                     if (availableQueues.isEmpty()) {
                         statusText.setText("No Queues found nearby");
                     } else {

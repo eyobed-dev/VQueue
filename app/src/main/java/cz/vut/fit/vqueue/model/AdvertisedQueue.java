@@ -25,7 +25,7 @@ public class AdvertisedQueue {
     public String getDeviceAddress() { return deviceAddress; }
     public int getRssi() { return rssi; }
 
-    // Setters (if needed, but for immutable data, they might not be)
+    // Setters (if needed)
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setCurrentNumber(int currentNumber) { this.currentNumber = currentNumber; }

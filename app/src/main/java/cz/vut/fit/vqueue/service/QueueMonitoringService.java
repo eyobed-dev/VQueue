@@ -80,20 +80,10 @@ public class QueueMonitoringService extends Service {
         bleScanner.startScan();
     }
 
-    public static final String ACTION_QUEUE_UPDATE = "cz.vut.fit.vqueue.ACTION_QUEUE_UPDATE";
-    public static final String EXTRA_CURRENT_NUMBER = "EXTRA_CURRENT_NUMBER";
-    public static final String EXTRA_WAIT_TIME = "EXTRA_WAIT_TIME";
-    public static final String EXTRA_STATUS = "EXTRA_STATUS";
 
     private void checkQueueStatus(AdvertisedQueue queue) {
         int currentNumber = queue.getCurrentNumber();
         int waitTime = queue.getWaitTimeMinutes();
-
-        // Broadcast update to UI
-        Intent updateIntent = new Intent(ACTION_QUEUE_UPDATE);
-        updateIntent.putExtra(EXTRA_CURRENT_NUMBER, currentNumber);
-        updateIntent.putExtra(EXTRA_WAIT_TIME, waitTime);
-        sendBroadcast(updateIntent);
 
         if (currentNumber >= myTicketNumber) {
             // It's your turn!

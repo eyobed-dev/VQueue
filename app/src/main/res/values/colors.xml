@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand Palette -->
-    <color name="brand_red">#C80000</color>
-    <color name="brand_white">#FFFFFF</color>
-    <color name="brand_gray_light">#E4E4E4</color>
-    <color name="brand_gray_medium">#E0E0E0</color>
-    <color name="brand_gray_dark">#757575</color>
-    <color name="brand_black">#212121</color>
-
-    <!-- Semantic Colors -->
-    <color name="primary">@color/brand_red</color>
-    <color name="primary_variant">@color/brand_red</color>
-    <color name="on_primary">@color/brand_white</color>
-
-    <color name="secondary">@color/brand_black</color>
-    <color name="secondary_variant">@color/brand_gray_dark</color>
-    <color name="on_secondary">@color/brand_white</color>
+    <!-- Primary Brand Color -->
+    <color name="primary">#C80000</color>
+    <color name="primary_variant">#A00000</color>
+    <color name="on_primary">#FFFFFF</color>
     
-    <color name="background">@color/brand_gray_light</color>
-    <color name="surface">@color/brand_white</color>
-    <color name="on_surface">@color/brand_black</color>
+    <!-- Secondary Colors -->
+    <color name="secondary">#C80000</color>
+    <color name="secondary_variant">#7E0000</color>
+    <color name="on_secondary">#FFFFFF</color>
     
-    <color name="text_primary">@color/brand_black</color>
-    <color name="text_secondary">@color/brand_gray_dark</color>
-    <color name="text_hint">@color/brand_gray_dark</color>
+    <!-- Background & Surface -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#F3F3F3</color>
+    <color name="on_surface">#000000</color>
     
-    <color name="divider">@color/brand_gray_medium</color>
+    <!-- Text Colors -->
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#686868</color>
     
-    <!-- Status Colors (Mapped to Palette) -->
-    <color name="status_error">@color/brand_red</color>
-    <color name="status_success">@color/brand_black</color>
-    <color name="status_warning">@color/brand_gray_dark</color>
-
-    <!-- Functional Colors (for buttons) -->
+    <!-- Other -->
+    <color name="divider">#E0E0E0</color>
+    
+    <!-- Status Colors -->
+    <color name="status_error">#C80000</color>
+    
+    <!-- Functional Colors -->
     <color name="functional_green">#4CAF50</color>
     <color name="functional_green_ripple">#81C784</color>
     <color name="functional_orange">#FF9800</color>

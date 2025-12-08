@@ -65,7 +65,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
             // Set Device/Queue Name
             if (queue.getName() != null && !queue.getName().isEmpty()) {
                 queueName.setText(queue.getName());
-                rssi.setText(queue.getRssi() + " dbm");
+                rssi.setText(queue.getRssi() + " dBm");
             } else {
                 queueName.setText("Unknown Device");
             }

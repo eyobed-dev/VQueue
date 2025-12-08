@@ -59,6 +59,9 @@ public class GATTServerManager {
                     BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_READ,
                     BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
 
+            // Add characteristic to service
+            service.addCharacteristic(joinCharacteristic);
+
             // Add service to GATT server
             boolean success = gattServer.addService(service);
             if (success) {

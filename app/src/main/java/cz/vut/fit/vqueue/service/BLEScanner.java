@@ -19,7 +19,6 @@ import cz.vut.fit.vqueue.utils.AppPreferences;
 
 public class BLEScanner {
     private static final String TAG = "BLEScanner";
-    private static final int TARGET_MANUFACTURER_ID = 0x1234;
 
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
@@ -182,12 +181,19 @@ public class BLEScanner {
 
             AdvertisedQueue queue = null;
 
-            // CORRECTED DATA RETRIEVAL: Get Manufacturer Data using the known ID
+            // Scan all manufacturer data entries and validate by header magic number
             SparseArray<byte[]> manufacturerDataMap = result.getScanRecord().getManufacturerSpecificData();
-            if (manufacturerDataMap != null && manufacturerDataMap.indexOfKey(TARGET_MANUFACTURER_ID) >= 0) {
-                byte[] manufacturerData = manufacturerDataMap.get(TARGET_MANUFACTURER_ID);
-                // Now parse and check the Magic Number Header inside the payload
-                queue = parseAdvertisementData(manufacturerData, deviceAddress, rssi);
+            if (manufacturerDataMap != null) {
+                // Iterate through all manufacturer data entries
+                for (int i = 0; i < manufacturerDataMap.size(); i++) {
+                    byte[] manufacturerData = manufacturerDataMap.valueAt(i);
+                    // Try to parse - will return null if header doesn't match
+                    queue = parseAdvertisementData(manufacturerData, deviceAddress, rssi);
+                    if (queue != null) {
+                        // Found valid queue data, stop searching
+                        break;
+                    }
+                }
             }
 
             // If not a queue device and showAllDevices is enabled, create a generic entry
@@ -245,11 +251,9 @@ public class BLEScanner {
 
             int offset = 0;
 
-            // Check header (2 bytes)
+            // Check header (2 bytes) - validates this is a VQueue advertisement
             if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
-                Log.w(TAG, "Invalid header in advertisement data (Magic Number mismatch)");
-                // The packet belongs to the manufacturer ID 0x1234, but is not our queue
-                // protocol.
+                // Not a VQueue advertisement, silently ignore
                 return null;
             }
 

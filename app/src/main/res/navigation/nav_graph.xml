@@ -8,9 +8,9 @@
         android:name="cz.vut.fit.vqueue.fragments.HomeFragment"
         android:label="VQueue">
         <action
-            android:id="@+id/action_homeFragment_to_createQueueFragment"
-            app:destination="@id/createQueueFragment" />
-
+            android:id="@+id/action_homeFragment_to_queueManagerFragment"
+            app:destination="@id/queueManagerFragment"
+            app:popUpTo="@id/homeFragment" />
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
@@ -20,19 +20,8 @@
         <action
             android:id="@+id/action_homeFragment_to_waitFragment"
             app:destination="@id/waitFragment" />
+
     </fragment>
-
-    <fragment
-        android:id="@+id/createQueueFragment"
-        android:name="cz.vut.fit.vqueue.fragments.CreateQueueFragment"
-        android:label="Create Queue">
-        <action
-            android:id="@+id/action_createQueueFragment_to_queueManagerFragment"
-            app:destination="@id/queueManagerFragment"
-            app:popUpTo="@id/homeFragment" />
-    </fragment>
-
-
 
     <fragment
         android:id="@+id/queueManagerFragment"
