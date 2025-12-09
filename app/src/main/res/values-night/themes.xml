@@ -14,7 +14,30 @@
         <item name="colorSurface">@color/surface</item>
         <item name="colorOnSurface">@color/on_surface</item>
 
-        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:statusBarColor">@color/background</item>
+
+        <!-- Text Colors -->
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+
+        <!-- Divider -->
+        <item name="dividerColor">@color/divider</item>
+
+        <!-- Functional Colors -->
+        <item name="functionalGreen">@color/functional_green</item>
+        <item name="functionalGreenRipple">@color/functional_green_ripple</item>
+        <item name="functionalOrange">@color/functional_orange</item>
+        <item name="functionalOrangeRipple">@color/functional_orange_ripple</item>
+        <item name="functionalRed">@color/functional_red</item>
+        <item name="functionalRedRipple">@color/functional_red_ripple</item>
+        <item name="functionalBlue">@color/functional_blue</item>
+        <item name="functionalBlueRipple">@color/functional_blue_ripple</item>
+
+
+
+
+        <!-- Status Colors -->
+        <item name="statusError">@color/status_error</item>
 
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>

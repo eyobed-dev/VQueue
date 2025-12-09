@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/surface"
+    app:cardBackgroundColor="?attr/colorSurface"
     app:cardCornerRadius="4dp"
     app:cardElevation="1dp">
 
@@ -23,7 +23,7 @@
             android:text="#5"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/text_primary"
+            android:textColor="?attr/android:textColorPrimary"
             android:minWidth="40dp" />
 
         <LinearLayout
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="Device ID"
                 android:textSize="16sp"
-                android:textColor="@color/text_primary" />
+                android:textColor="?attr/android:textColorPrimary" />
 
             <TextView
                 android:id="@+id/statusText"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="Waiting"
                 android:textSize="14sp"
-                android:textColor="@color/text_secondary" />
+                android:textColor="?attr/android:textColorSecondary" />
 
         </LinearLayout>
 
@@ -57,7 +57,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_queue"
-            app:tint="@color/text_secondary" />
+            app:tint="?attr/android:textColorSecondary" />
 
     </LinearLayout>
 

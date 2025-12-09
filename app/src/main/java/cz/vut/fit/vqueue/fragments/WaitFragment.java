@@ -30,6 +30,8 @@ public class WaitFragment extends Fragment {
     private int currentServing = 2;
     private int estimatedWaitMinutes = 15;
 
+    private android.content.BroadcastReceiver queueStatusReceiver;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -39,9 +41,48 @@ public class WaitFragment extends Fragment {
         initializeViews(view);
         setupClickListeners();
         updateQueueStatus();
+        setupBroadcastReceiver();
         startMonitoring();
 
         return view;
+    }
+
+    private void setupBroadcastReceiver() {
+        queueStatusReceiver = new android.content.BroadcastReceiver() {
+            @Override
+            public void onReceive(android.content.Context context, android.content.Intent intent) {
+                if ("QUEUE_STATUS_UPDATE".equals(intent.getAction())) {
+                    int currentNumber = intent.getIntExtra("CURRENT_NUMBER", 0);
+                    int myTicket = intent.getIntExtra("MY_TICKET", 0);
+                    int waitTime = intent.getIntExtra("WAIT_TIME", 0);
+
+                    // Update UI on main thread
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            currentServing = currentNumber;
+                            userPosition = myTicket;
+                            estimatedWaitMinutes = waitTime;
+                            updateQueueStatus();
+                        });
+                    }
+                }
+            }
+        };
+
+        // Register receiver
+        if (getContext() != null) {
+            android.content.IntentFilter filter = new android.content.IntentFilter("QUEUE_STATUS_UPDATE");
+            getContext().registerReceiver(queueStatusReceiver, filter, android.content.Context.RECEIVER_NOT_EXPORTED);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Unregister receiver
+        if (queueStatusReceiver != null && getContext() != null) {
+            getContext().unregisterReceiver(queueStatusReceiver);
+        }
     }
 
     private void initializeViews(View view) {
@@ -51,7 +92,6 @@ public class WaitFragment extends Fragment {
         statusText = view.findViewById(R.id.statusText);
         waitProgressBar = view.findViewById(R.id.waitProgressBar);
         leaveQueueButton = view.findViewById(R.id.leaveQueueButton);
-        backButton = view.findViewById(R.id.backButton);
     }
 
     private void setupClickListeners() {
@@ -87,17 +127,17 @@ public class WaitFragment extends Fragment {
         intent.setAction("START_MONITORING");
 
         if (getArguments() != null) {
-            String deviceAddress = getArguments().getString("DEVICE_ADDRESS");
+            String queueName = getArguments().getString("QUEUE_NAME");
             int ticketNumber = getArguments().getInt("TICKET_NUMBER", -1);
 
-            if (deviceAddress != null && ticketNumber != -1) {
+            if (queueName != null && ticketNumber != -1) {
                 // Update local variables for UI
                 userPosition = ticketNumber;
                 // We don't know currentServing yet, wait for update
                 currentServing = 0;
                 updateQueueStatus();
 
-                intent.putExtra("DEVICE_ADDRESS", deviceAddress);
+                intent.putExtra("QUEUE_NAME", queueName);
                 intent.putExtra("TICKET_NUMBER", ticketNumber);
 
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

@@ -26,6 +26,7 @@ public class QueueManagerFragment extends Fragment {
     private TextView currentNumberText;
     private TextView waitTimeText;
     private MaterialButton nextButton;
+    private MaterialButton manualAddButton;
     private MaterialButton pauseButton;
     private MaterialButton stopButton;
     private RecyclerView waitersRecyclerView;
@@ -54,6 +55,7 @@ public class QueueManagerFragment extends Fragment {
         currentNumberText = view.findViewById(R.id.currentNumberText);
         waitTimeText = view.findViewById(R.id.waitTimeText);
         nextButton = view.findViewById(R.id.nextButton);
+        manualAddButton = view.findViewById(R.id.manualAddButton);
         pauseButton = view.findViewById(R.id.pauseButton);
         stopButton = view.findViewById(R.id.stopButton);
         waitersRecyclerView = view.findViewById(R.id.waitersRecyclerView);
@@ -92,6 +94,8 @@ public class QueueManagerFragment extends Fragment {
                     .show();
         });
 
+        manualAddButton.setOnClickListener(v -> showManualAddDialog());
+
         pauseButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), QueueManagementService.class);
             if (currentQueue.isPaused()) {
@@ -120,11 +124,53 @@ public class QueueManagerFragment extends Fragment {
 
     }
 
+    private void showManualAddDialog() {
+        android.widget.EditText input = new android.widget.EditText(getContext());
+        input.setHint("Enter name (optional)");
+        input.setPadding(50, 30, 50, 30);
+
+        new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                .setTitle("Add Person to Queue")
+                .setMessage("Add someone without a smartphone to the queue")
+                .setView(input)
+                .setPositiveButton("Add", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (name.isEmpty()) {
+                        name = "Walk-in";
+                    }
+                    addManualWaiter(name);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void addManualWaiter(String name) {
+        if (currentQueue != null) {
+            int ticketNumber = queueRepo.addWaiter(name);
+            if (ticketNumber > 0) {
+                Toast.makeText(getContext(), "Added: " + name + " - Ticket #" + ticketNumber, 
+                    Toast.LENGTH_LONG).show();
+                updateQueueInfo();
+                
+                // Update advertisement
+                Intent intent = new Intent(getContext(), QueueManagementService.class);
+                intent.putExtra("action", "update_advertisement");
+                getContext().startService(intent);
+            } else {
+                Toast.makeText(getContext(), "Failed to add person", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void updateQueueInfo() {
+        android.util.Log.i("QueueManager", "updateQueueInfo called");
+        
         if (currentQueue != null) {
             queueNameText.setText(currentQueue.getName());
             currentNumberText.setText(String.valueOf(currentQueue.getCurrentNumber()));
             waitTimeText.setText(currentQueue.getWaitTimeMinutes() + " minutes");
+
+            android.util.Log.i("QueueManager", "Current number: " + currentQueue.getCurrentNumber());
 
             // Update pause button state
             if (pauseButton != null) {
@@ -137,14 +183,45 @@ public class QueueManagerFragment extends Fragment {
 
             // Update waiters list
             if (waiterAdapter != null && currentQueue.getWaiters() != null) {
+                android.util.Log.i("QueueManager", "Updating adapter with " + currentQueue.getWaiters().size() + " waiters");
                 waiterAdapter.updateData(currentQueue.getWaiters(), currentQueue.getCurrentNumber());
 
                 if (currentQueue.getWaiters().isEmpty()) {
                     waitersRecyclerView.setVisibility(View.GONE);
                     emptyStateText.setVisibility(View.VISIBLE);
+                    android.util.Log.i("QueueManager", "Queue is empty");
                 } else {
                     waitersRecyclerView.setVisibility(View.VISIBLE);
                     emptyStateText.setVisibility(View.GONE);
+                    android.util.Log.i("QueueManager", "Queue has waiters, calling scrollToCurrentPerson");
+                    
+                    // Auto-scroll to currently served person
+                    scrollToCurrentPerson();
+                }
+            } else {
+                android.util.Log.w("QueueManager", "Adapter or waiters is null");
+            }
+        } else {
+            android.util.Log.w("QueueManager", "currentQueue is null");
+        }
+    }
+
+    private void scrollToCurrentPerson() {
+        if (currentQueue != null && currentQueue.getWaiters() != null && !currentQueue.getWaiters().isEmpty()) {
+            int currentNumber = currentQueue.getCurrentNumber();
+            
+            // Find the position of the currently served person
+            for (int i = 0; i < currentQueue.getWaiters().size(); i++) {
+                if (currentQueue.getWaiters().get(i).getTicketNumber() == currentNumber) {
+                    final int position = i;
+                    android.util.Log.i("QueueManager", "Scrolling to position " + position + " (ticket #" + currentNumber + ")");
+                    
+                    // Post to ensure RecyclerView layout is complete
+                    waitersRecyclerView.post(() -> {
+                        waitersRecyclerView.smoothScrollToPosition(position);
+                        android.util.Log.i("QueueManager", "Smooth scroll triggered");
+                    });
+                    break;
                 }
             }
         }

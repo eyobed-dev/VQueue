@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="?attr/android:colorBackground">
 
     <!-- Header Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Queue Manager"
-            android:textColor="@color/on_primary"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/text_size_header"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
             android:text="Manage your active queue"
-            android:textColor="@color/on_primary"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="@dimen/text_size_body"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/headerText" />
@@ -75,7 +75,7 @@
                 android:layout_marginBottom="@dimen/margin_medium"
                 app:cardCornerRadius="2dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
@@ -96,8 +96,9 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_queue"
-                            android:tint="@color/primary"
-                            android:contentDescription="Queue icon" />
+                            android:contentDescription="Queue icon"
+                            app:tint="?attr/colorOnSurface"
+                             />
 
                         <TextView
                             android:id="@+id/queueNameText"
@@ -107,7 +108,7 @@
                             android:layout_marginStart="@dimen/margin_medium"
                             android:text="Coffee Shop Queue"
                             android:textSize="@dimen/text_size_medium"
-                            android:textColor="@color/text_primary"
+                android:textColor="?attr/android:textColorPrimary"
                             android:fontFamily="sans-serif-medium" />
 
                     </LinearLayout>
@@ -116,7 +117,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/divider"
+                        android:background="?attr/dividerColor"
                         android:layout_marginBottom="12dp" />
 
                     <!-- Current Number -->
@@ -132,7 +133,7 @@
                             android:layout_weight="1"
                             android:text="Current Number"
                             android:textSize="@dimen/text_size_body"
-                            android:textColor="@color/text_secondary"
+                android:textColor="?attr/android:textColorSecondary"
                             android:fontFamily="sans-serif" />
 
                         <TextView
@@ -141,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:text="5"
                             android:textSize="@dimen/text_size_title"
-                            android:textColor="@color/text_primary"
+                android:textColor="?attr/android:textColorPrimary"
                             android:fontFamily="sans-serif-medium" />
 
                     </LinearLayout>
@@ -150,7 +151,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/divider" />
+                        android:background="?attr/dividerColor" />
 
                     <!-- Wait Time -->
                     <LinearLayout
@@ -165,7 +166,7 @@
                             android:layout_weight="1"
                             android:text="Estimated Wait Time"
                             android:textSize="@dimen/text_size_body"
-                            android:textColor="@color/text_secondary"
+                android:textColor="?attr/android:textColorSecondary"
                             android:fontFamily="sans-serif" />
 
                         <TextView
@@ -174,7 +175,7 @@
                             android:layout_height="wrap_content"
                             android:text="10 min"
                             android:textSize="@dimen/text_size_medium"
-                            android:textColor="@color/text_primary"
+                android:textColor="?attr/android:textColorPrimary"
                             android:fontFamily="sans-serif" />
 
                     </LinearLayout>
@@ -183,7 +184,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/divider" />
+                        android:background="?attr/dividerColor" />
 
                     <!-- People in Queue -->
                     <LinearLayout
@@ -198,7 +199,7 @@
                             android:layout_weight="1"
                             android:text="People in Queue"
                             android:textSize="@dimen/text_size_body"
-                            android:textColor="@color/text_secondary"
+                android:textColor="?attr/android:textColorSecondary"
                             android:fontFamily="sans-serif" />
 
                         <TextView
@@ -207,7 +208,7 @@
                             android:layout_height="wrap_content"
                             android:text="12"
                             android:textSize="@dimen/text_size_medium"
-                            android:textColor="@color/text_primary"
+                android:textColor="?attr/android:textColorPrimary"
                             android:fontFamily="sans-serif" />
 
                     </LinearLayout>
@@ -234,15 +235,15 @@
                 android:layout_height="wrap_content"
                 android:text="People in Queue"
                 android:textSize="@dimen/text_size_title"
-                android:textColor="@color/text_primary"
+                android:textColor="?attr/android:textColorPrimary"
                 android:fontFamily="sans-serif-medium"
                 android:paddingBottom="@dimen/padding_small" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/waitersRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                android:layout_height="400dp"
+                android:nestedScrollingEnabled="true" />
 
             <TextView
                 android:id="@+id/emptyStateText"
@@ -250,7 +251,7 @@
                 android:layout_height="wrap_content"
                 android:text="No one is currently in the queue."
                 android:textSize="@dimen/text_size_body"
-                android:textColor="@color/text_secondary"
+                android:textColor="?attr/android:textColorSecondary"
                 android:gravity="center"
                 android:padding="@dimen/padding_medium"
                 android:visibility="gone" />
@@ -268,7 +269,7 @@
         android:layout_gravity="bottom"
         android:orientation="horizontal"
         android:elevation="8dp"
-        android:background="@color/surface"
+        android:background="?attr/colorSurface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -290,9 +291,33 @@
             android:insetLeft="0dp"
             android:insetRight="0dp"
             app:cornerRadius="0dp"
-            app:backgroundTint="@color/functional_green"
-            app:rippleColor="@color/functional_green_ripple"
+            app:backgroundTint="?attr/functionalGreen"
+            app:rippleColor="?attr/functionalGreenRipple"
             app:icon="@drawable/ic_arrow_forward"
+            app:iconTint="@android:color/white"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+        <!-- Manual Add Button (Blue) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/manualAddButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Add"
+            android:textSize="@dimen/text_size_body"
+            android:textColor="@android:color/white"
+            android:fontFamily="sans-serif-medium"
+            android:textAllCaps="true"
+            android:letterSpacing="0.1"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            app:cornerRadius="0dp"
+            app:backgroundTint="?attr/functionalBlue"
+            app:rippleColor="?attr/functionalBlueRipple"
+            app:icon="@drawable/ic_add"
             app:iconTint="@android:color/white"
             app:iconGravity="textStart"
             app:iconPadding="8dp" />
@@ -302,7 +327,7 @@
             android:id="@+id/pauseButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="1.1"
             android:text="Pause"
             android:textSize="@dimen/text_size_body"
             android:textColor="@android:color/white"
@@ -314,8 +339,8 @@
             android:insetLeft="0dp"
             android:insetRight="0dp"
             app:cornerRadius="0dp"
-            app:backgroundTint="@color/functional_orange"
-            app:rippleColor="@color/functional_orange_ripple"
+            app:backgroundTint="?attr/functionalOrange"
+            app:rippleColor="?attr/functionalOrangeRipple"
             app:icon="@drawable/ic_pause"
             app:iconTint="@android:color/white"
             app:iconGravity="textStart"
@@ -338,8 +363,8 @@
             android:insetLeft="0dp"
             android:insetRight="0dp"
             app:cornerRadius="0dp"
-            app:backgroundTint="@color/functional_red"
-            app:rippleColor="@color/functional_red_ripple"
+            app:backgroundTint="?attr/functionalRed"
+            app:rippleColor="?attr/functionalRedRipple"
             app:icon="@drawable/ic_stop"
             app:iconTint="@android:color/white"
             app:iconGravity="textStart"

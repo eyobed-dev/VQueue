@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/android:colorBackground"
     tools:context=".fragments.AboutFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -43,7 +43,7 @@
                     android:layout_marginTop="@dimen/margin_medium"
                     android:text="@string/app_name"
                     android:textSize="@dimen/text_size_header"
-                    android:textColor="@color/text_primary"
+                        android:textColor="?attr/android:textColorPrimary"
                     android:fontFamily="sans-serif-light" />
 
                 <TextView
@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/margin_small"
                     android:textSize="@dimen/text_size_body"
-                    android:textColor="@color/text_secondary"
+                        android:textColor="?attr/android:textColorSecondary"
                     android:fontFamily="sans-serif"
                     tools:text="Version 1.0.0" />
 
@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_medium"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="2dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true">
@@ -81,7 +81,7 @@
                         android:paddingBottom="@dimen/padding_small"
                         android:text="About the App"
                         android:textSize="@dimen/text_size_title"
-                        android:textColor="@color/text_primary"
+                            android:textColor="?attr/android:textColorPrimary"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -89,7 +89,7 @@
                         android:layout_height="wrap_content"
                         android:text="VQueue is a Bluetooth Low Energy (BLE) based queue management system that allows devices to create and join virtual queues locally without requiring internet connectivity."
                         android:textSize="@dimen/text_size_body"
-                        android:textColor="@color/text_secondary"
+                            android:textColor="?attr/android:textColorSecondary"
                         android:lineSpacingMultiplier="1.5"
                         android:fontFamily="sans-serif" />
 
@@ -103,7 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_medium"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="2dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true">
@@ -120,7 +120,7 @@
                         android:paddingBottom="@dimen/padding_small"
                         android:text="Developers"
                         android:textSize="@dimen/text_size_title"
-                        android:textColor="@color/text_primary"
+                            android:textColor="?attr/android:textColorPrimary"
                         android:fontFamily="sans-serif-medium" />
 
                     <TextView
@@ -129,7 +129,7 @@
                         android:paddingBottom="@dimen/padding_medium"
                         android:text="Developed by Eyobed, Kaung, Lucas, Adam and Krystof as part of a project for TAMa at:"
                         android:textSize="@dimen/text_size_body"
-                        android:textColor="@color/text_secondary"
+                            android:textColor="?attr/android:textColorSecondary"
                         android:lineSpacingMultiplier="1.5"
                         android:fontFamily="sans-serif" />
 
@@ -151,7 +151,7 @@
                 android:id="@+id/contactCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/surface"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="2dp"
                 app:cardElevation="2dp"
                 app:cardUseCompatPadding="true">
@@ -168,7 +168,7 @@
                         android:paddingBottom="@dimen/padding_small"
                         android:text="Contact &amp; Feedback"
                         android:textSize="@dimen/text_size_title"
-                        android:textColor="@color/text_primary"
+                            android:textColor="?attr/android:textColorPrimary"
                         android:fontFamily="sans-serif-medium" />
 
                     <!-- GitLab Link -->
@@ -179,7 +179,7 @@
                         android:minHeight="@dimen/button_height"
                         android:text="View on GitLab"
                         android:textSize="@dimen/text_size_medium"
-                        android:textColor="@color/primary"
+                        android:textColor="?attr/colorPrimary"
                         android:fontFamily="sans-serif"
                         android:gravity="center_vertical"
                         android:paddingStart="0dp"
@@ -187,7 +187,7 @@
                         android:paddingTop="@dimen/corner_radius_large"
                         android:paddingBottom="@dimen/corner_radius_large"
                         android:drawablePadding="@dimen/margin_xlarge"
-                        android:drawableTint="@color/primary"
+                        android:drawableTint="?attr/colorPrimary"
                         android:background="?attr/selectableItemBackground"
                         app:drawableStartCompat="@drawable/gitlab_icon" />
 
@@ -195,7 +195,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/divider" />
+                        android:background="?attr/dividerColor" />
 
                     <!-- Email Link -->
                     <TextView
@@ -205,7 +205,7 @@
                         android:minHeight="@dimen/button_height"
                         android:text="Send an Email"
                         android:textSize="@dimen/text_size_medium"
-                        android:textColor="@color/primary"
+                        android:textColor="?attr/colorPrimary"
                         android:fontFamily="sans-serif"
                         android:gravity="center_vertical"
                         android:paddingStart="0dp"
@@ -213,7 +213,7 @@
                         android:paddingTop="@dimen/corner_radius_large"
                         android:paddingBottom="@dimen/corner_radius_large"
                         android:drawablePadding="@dimen/margin_xlarge"
-                        android:drawableTint="@color/primary"
+                        android:drawableTint="?attr/colorPrimary"
                         android:background="?attr/selectableItemBackground"
                         app:drawableStartCompat="@drawable/ic_email" />
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/android:colorBackground"
     tools:context=".fragments.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Available Queues"
-                android:textColor="@color/on_primary"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/text_size_header"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@+id/statusText"
@@ -43,7 +43,7 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:gravity="center"
                 android:text="Tap a queue to see details or join"
-                android:textColor="@color/on_primary"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="@dimen/text_size_body"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -59,7 +59,7 @@
             android:layout_marginTop="-8dp"
             android:elevation="5dp"
             android:indeterminate="true"
-            android:indeterminateTint="@color/on_primary"
+            android:indeterminateTint="?attr/colorOnPrimary"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,8 +96,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/margin_medium"
         android:contentDescription="Create a Queue"
-        app:backgroundTint="@color/primary"
+        app:backgroundTint="?attr/colorPrimary"
         app:srcCompat="@android:drawable/ic_input_add"
-        app:tint="@color/on_primary" />
+        app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

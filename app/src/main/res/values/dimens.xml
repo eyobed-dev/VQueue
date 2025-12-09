@@ -13,7 +13,7 @@
     <!-- Text Sizes -->
     <!-- Text Sizes (Material Design Scale) -->
     <dimen name="text_size_small">12sp</dimen> <!-- Caption -->
-    <dimen name="text_size_body">14sp</dimen> <!-- Body 2 -->
+    <dimen name="text_size_body">12sp</dimen> <!-- Body 2 -->
     <dimen name="text_size_medium">16sp</dimen> <!-- Body 1 / Subtitle 1 -->
     <dimen name="text_size_large">18sp</dimen> <!-- Headline 6 -->
     <dimen name="text_size_title">20sp</dimen> <!-- Headline 5 -->

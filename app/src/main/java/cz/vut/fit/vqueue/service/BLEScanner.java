@@ -244,8 +244,9 @@ public class BLEScanner {
             // [Current Number: 2B] [Wait Time: 2B] [Status: 1B]
             // Total: 19 bytes
 
-            if (data == null || data.length < 19) {
-                Log.w(TAG, "Advertisement data too short: " + (data == null ? "null" : data.length));
+            // First check if we have at least the header
+            if (data == null || data.length < 2) {
+                // Silently ignore - likely not a VQueue advertisement
                 return null;
             }
 
@@ -254,6 +255,12 @@ public class BLEScanner {
             // Check header (2 bytes) - validates this is a VQueue advertisement
             if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
                 // Not a VQueue advertisement, silently ignore
+                return null;
+            }
+
+            // Now check if the VQueue advertisement has enough data
+            if (data.length < 19) {
+                Log.w(TAG, "VQueue advertisement data too short: " + data.length + " bytes (expected 19)");
                 return null;
             }
 

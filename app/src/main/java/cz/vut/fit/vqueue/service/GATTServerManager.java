@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattServer;
 import android.bluetooth.BluetoothGattServerCallback;
 import android.bluetooth.BluetoothGattService;
@@ -54,10 +55,20 @@ public class GATTServerManager {
                     BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
             // Create join characteristic (for clients to join the queue)
+            // Added NOTIFY property for Android 13+ compatibility
             BluetoothGattCharacteristic joinCharacteristic = new BluetoothGattCharacteristic(
                     UUID.fromString(JOIN_CHARACTERISTIC_UUID),
-                    BluetoothGattCharacteristic.PROPERTY_WRITE | BluetoothGattCharacteristic.PROPERTY_READ,
-                    BluetoothGattCharacteristic.PERMISSION_WRITE | BluetoothGattCharacteristic.PERMISSION_READ);
+                    BluetoothGattCharacteristic.PROPERTY_WRITE | 
+                    BluetoothGattCharacteristic.PROPERTY_READ | 
+                    BluetoothGattCharacteristic.PROPERTY_NOTIFY,
+                    BluetoothGattCharacteristic.PERMISSION_WRITE | 
+                    BluetoothGattCharacteristic.PERMISSION_READ);
+
+            // Add Client Characteristic Configuration Descriptor (required for notifications)
+            BluetoothGattDescriptor descriptor = new BluetoothGattDescriptor(
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"), // Standard CCCD UUID
+                    BluetoothGattDescriptor.PERMISSION_READ | BluetoothGattDescriptor.PERMISSION_WRITE);
+            joinCharacteristic.addDescriptor(descriptor);
 
             // Add characteristic to service
             service.addCharacteristic(joinCharacteristic);
@@ -97,6 +108,23 @@ public class GATTServerManager {
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Client connected: " + device.getAddress());
+                
+                // List all services to verify they're available
+                if (gattServer != null) {
+                    java.util.List<BluetoothGattService> services = gattServer.getServices();
+                    Log.i(TAG, "GATT Server has " + services.size() + " service(s):");
+                    for (BluetoothGattService svc : services) {
+                        Log.i(TAG, "  Service: " + svc.getUuid() + " with " + 
+                            svc.getCharacteristics().size() + " characteristic(s)");
+                        for (BluetoothGattCharacteristic chr : svc.getCharacteristics()) {
+                            Log.i(TAG, "    Characteristic: " + chr.getUuid() + 
+                                " Properties: " + chr.getProperties() + 
+                                " Permissions: " + chr.getPermissions());
+                        }
+                    }
+                } else {
+                    Log.e(TAG, "GATT Server is NULL when client connected!");
+                }
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "Client disconnected: " + device.getAddress());
             }
@@ -109,12 +137,51 @@ public class GATTServerManager {
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset,
                     value);
 
-            String characteristicUuid = characteristic.getUuid().toString();
+            Log.i(TAG, "onCharacteristicWriteRequest called!");
+            Log.i(TAG, "  Device: " + device.getAddress());
+            Log.i(TAG, "  RequestId: " + requestId);
+            Log.i(TAG, "  Characteristic UUID: " + characteristic.getUuid());
+            Log.i(TAG, "  PreparedWrite: " + preparedWrite);
+            Log.i(TAG, "  ResponseNeeded: " + responseNeeded);
+            Log.i(TAG, "  Offset: " + offset);
+            Log.i(TAG, "  Value length: " + (value != null ? value.length : 0));
 
-            if (characteristicUuid.equals(JOIN_CHARACTERISTIC_UUID)) {
+            String characteristicUuid = characteristic.getUuid().toString();
+            Log.i(TAG, "  Comparing UUID: " + characteristicUuid + " with " + JOIN_CHARACTERISTIC_UUID);
+
+            if (characteristicUuid.equalsIgnoreCase(JOIN_CHARACTERISTIC_UUID)) {
+                Log.i(TAG, "  UUID match! Handling join request");
                 handleJoinRequest(device, requestId, value, responseNeeded);
             } else {
+                Log.w(TAG, "  UUID mismatch! Rejecting write request");
                 // Reject other write requests
+                if (responseNeeded) {
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, 0, null);
+                }
+            }
+        }
+
+        @Override
+        public void onDescriptorWriteRequest(BluetoothDevice device, int requestId,
+                BluetoothGattDescriptor descriptor, boolean preparedWrite, boolean responseNeeded,
+                int offset, byte[] value) {
+            super.onDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
+
+            Log.i(TAG, "onDescriptorWriteRequest called!");
+            Log.i(TAG, "  Device: " + device.getAddress());
+            Log.i(TAG, "  Descriptor UUID: " + descriptor.getUuid());
+            Log.i(TAG, "  ResponseNeeded: " + responseNeeded);
+
+            // Check if this is the CCCD descriptor (for enabling notifications)
+            if (descriptor.getUuid().toString().equals("00002902-0000-1000-8000-00805f9b34fb")) {
+                Log.i(TAG, "  CCCD write request - client enabling notifications");
+                
+                if (responseNeeded) {
+                    gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value);
+                    Log.i(TAG, "  Sent success response for CCCD write");
+                }
+            } else {
+                Log.w(TAG, "  Unknown descriptor write request");
                 if (responseNeeded) {
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, 0, null);
                 }
@@ -168,17 +235,24 @@ public class GATTServerManager {
                 response[0] = (byte) (ticketNumber & 0xFF);
                 response[1] = (byte) ((ticketNumber >> 8) & 0xFF);
 
-                // Set the characteristic value so client can read it
+                // Set the characteristic value for potential read requests
                 BluetoothGattCharacteristic joinCharacteristic = gattServer.getService(UUID.fromString(SERVICE_UUID))
                         .getCharacteristic(UUID.fromString(JOIN_CHARACTERISTIC_UUID));
                 if (joinCharacteristic != null) {
                     joinCharacteristic.setValue(response);
+                    Log.i(TAG, "Set characteristic value for potential read request");
                 }
 
+                // Send write response first
                 if (responseNeeded) {
-                    // Send empty response for write request (client expects no data on write
-                    // response)
+                    Log.i(TAG, "Sending write response (status: SUCCESS)");
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, null);
+                }
+
+                // Send notification with ticket number (works on all Android versions!)
+                if (joinCharacteristic != null) {
+                    boolean notificationSent = gattServer.notifyCharacteristicChanged(device, joinCharacteristic, false);
+                    Log.i(TAG, "Notification sent: " + notificationSent + ", ticket number: " + ticketNumber);
                 }
 
                 Log.i(TAG, "Assigned ticket number " + ticketNumber + " to device " + deviceId);
@@ -188,10 +262,6 @@ public class GATTServerManager {
                 if (currentQueue != null) {
                     bleManager.updateAdvertisement(currentQueue);
                 }
-
-                // Disconnect is handled by the client after reading the ticket
-                // gattServer.cancelConnection(device);
-                // Log.i(TAG, "Disconnected device " + deviceId + " after assigning ticket");
 
             } else {
                 // Failed to add waiter

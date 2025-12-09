@@ -22,6 +22,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -52,6 +54,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private BLEScanner bleScanner;
     private BLEClientManager bleClientManager;
     private String pendingDeviceAddress;
+    private String pendingQueueName;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -223,7 +226,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                             Toast.LENGTH_LONG).show();
                     // Navigate to WaitFragment with arguments
                     Bundle bundle = new Bundle();
-                    bundle.putString("DEVICE_ADDRESS", pendingDeviceAddress);
+                    bundle.putString("QUEUE_NAME", pendingQueueName);  // Pass queue name for monitoring
                     bundle.putInt("TICKET_NUMBER", ticketNumber);
                     NavHostFragment.findNavController(HomeFragment.this)
                             .navigate(R.id.action_homeFragment_to_waitFragment, bundle);
@@ -302,6 +305,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             builder.setPositiveButton("Join Queue", (dialog, which) -> {
                 stopScanning();
                 pendingDeviceAddress = queue.getDeviceAddress();
+                pendingQueueName = queue.getName();  // Store queue name for monitoring
                 Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
                 bleClientManager.connectAndJoin(queue.getDeviceAddress());
             });

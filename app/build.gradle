@@ -33,7 +33,9 @@ android {
 dependencies {
     implementation libs.appcompat
     implementation libs.material
-    
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+
     // Navigation Component
     implementation 'androidx.navigation:navigation-fragment:2.7.5'
     implementation 'androidx.navigation:navigation-ui:2.7.5'

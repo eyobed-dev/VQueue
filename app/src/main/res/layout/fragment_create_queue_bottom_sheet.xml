@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="@dimen/padding_medium"
-    android:background="@color/background">
+    android:background="?attr/android:colorBackground">
 
     <!-- Bottom Sheet Handle -->
     <View
@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create a Queue"
-        android:textColor="@color/on_surface"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="@dimen/text_size_header"
         android:textStyle="bold"
         android:layout_marginBottom="@dimen/margin_medium" />
@@ -34,8 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
         android:hint="Queue Name"
-        app:boxStrokeColor="@color/primary"
-        app:hintTextColor="@color/primary">
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/queueNameEditText"
@@ -54,8 +54,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_medium"
         android:hint="Wait Time (min)"
-        app:boxStrokeColor="@color/primary"
-        app:hintTextColor="@color/primary">
+        app:boxStrokeColor="?attr/colorPrimary"
+        app:hintTextColor="?attr/colorPrimary">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/waitTimeEditText"
@@ -80,7 +80,7 @@
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_large"
-        app:backgroundTint="@color/primary"
+        app:backgroundTint="?attr/colorPrimary"
         app:cornerRadius="2dp"
         app:elevation="@dimen/card_elevation" />
 

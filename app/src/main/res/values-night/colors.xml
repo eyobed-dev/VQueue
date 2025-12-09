@@ -1,35 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Brand Color -->
-    <color name="primary">#000000</color>
-    <color name="primary_variant">#000000</color>
-    <color name="on_primary">#FFFFFF</color>
+    <!-- Material Design 3 Color System - Dark Theme -->
     
-    <!-- Secondary Colors -->
-    <color name="secondary">#CE0000</color>
-    <color name="secondary_variant">#000000</color>
-    <color name="on_secondary">#FFFFFF</color>
+    <!-- Primary Colors (Red Brand - Lighter in dark mode) -->
+    <color name="primary">#2C2C2C</color>              <!-- Light red tint for dark mode -->
+    <color name="primary_variant">#313131</color>      <!-- Slightly darker tint -->
+    <color name="on_primary">#E2E2E2</color>           <!-- Dark red text on primary -->
     
-    <!-- Background & Surface -->
-    <color name="background">#121212</color>
-    <color name="surface">#181818</color>
-    <color name="on_surface">#FFFFFF</color>
+    <!-- Secondary Colors (Complementary) -->
+    <color name="secondary">#B0BEC5</color>            <!-- Blue Grey 200 (lighter for dark) -->
+    <color name="secondary_variant">#90A4AE</color>    <!-- Blue Grey 300 -->
+    <color name="on_secondary">#1C1B1F</color>         <!-- Dark text on secondary -->
     
-    <!-- Text Colors -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B0B0B0</color>
+    <!-- Background & Surface (Material 3 Dark) -->
+    <color name="background">#121212</color>           <!-- Material 3 dark background -->
+    <color name="surface">#1C1B1F</color>              <!-- Same as background -->
+    <color name="on_surface">#E6E1E5</color>           <!-- Light text on surface -->
     
-    <!-- Other -->
-    <color name="divider">#2C2C2C</color>
+    <!-- Text Colors (Material 3 dark theme) -->
+    <color name="text_primary">#E6E1E5</color>         <!-- High emphasis -->
+    <color name="text_secondary">#CAC4D0</color>       <!-- Medium emphasis -->
     
-    <!-- Status Colors -->
-    <color name="status_error">#C80000</color>
+    <!-- Error Colors (Dark theme) -->
+    <color name="status_error">#F2B8B5</color>         <!-- Light error for dark mode -->
+    <color name="on_error">#601410</color>             <!-- Dark text on error -->
     
-    <!-- Functional Colors -->
-    <color name="functional_green">#4CAF50</color>
-    <color name="functional_green_ripple">#81C784</color>
-    <color name="functional_orange">#FF9800</color>
-    <color name="functional_orange_ripple">#FFB74D</color>
-    <color name="functional_red">#F44336</color>
-    <color name="functional_red_ripple">#E57373</color>
+    <!-- Outline & Divider (Dark theme) -->
+    <color name="divider">#49454F</color>              <!-- Subtle divider -->
+    <color name="outline">#938F99</color>              <!-- Material 3 outline dark -->
+    
+    <!-- Functional Colors (Adjusted for dark theme) -->
+    <color name="functional_green">#81C784</color>     <!-- Green 300 (lighter) -->
+    <color name="functional_green_ripple">#A5D6A7</color> <!-- Green 200 -->
+    <color name="functional_orange">#FFB74D</color>    <!-- Orange 300 (lighter) -->
+    <color name="functional_orange_ripple">#FFCC80</color> <!-- Orange 200 -->
+    <color name="functional_red">#E57373</color>       <!-- Red 300 (lighter) -->
+    <color name="functional_red_ripple">#EF9A9A</color> <!-- Red 200 -->
+    <color name="functional_blue">#1C6DA0</color>        <!-- Blue 300 (lighter) -->
+    <color name="functional_blue_ripple">#B3E5FC</color> <!-- Blue 200 -->
 </resources>

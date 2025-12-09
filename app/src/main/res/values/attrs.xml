@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Custom theme attributes -->
+    <attr name="dividerColor" format="color" />
+    <attr name="functionalGreen" format="color" />
+    <attr name="functionalGreenRipple" format="color" />
+    <attr name="functionalOrange" format="color" />
+    <attr name="functionalOrangeRipple" format="color" />
+    <attr name="functionalRed" format="color" />
+    <attr name="functionalRedRipple" format="color" />
+    <attr name="functionalBlue" format="color" />
+    <attr name="functionalBlueRipple" format="color" />
+    <attr name="statusError" format="color" />
+</resources>

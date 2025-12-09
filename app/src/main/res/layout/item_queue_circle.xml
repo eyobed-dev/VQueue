@@ -15,10 +15,10 @@
         android:layout_margin="6dp"
         android:clickable="true"
         android:focusable="true"
-        app:cardBackgroundColor="@color/surface"
+        app:cardBackgroundColor="?attr/colorSurface"
         app:cardCornerRadius="80dp"
         app:cardElevation="4dp"
-        app:rippleColor="@color/primary"
+        app:rippleColor="?attr/colorPrimary"
         app:strokeWidth="0dp">
 
         <!-- Content container centered in the circle -->
@@ -38,8 +38,8 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:text="Device Name"
-                android:textSize="22dp"
-                android:textColor="@color/primary"
+                android:textSize="22sp"
+                android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
                 tools:text="Doctor Smith" />
 
@@ -51,8 +51,8 @@
                 android:layout_marginTop="4dp"
                 android:gravity="center"
                 android:text="15 min"
-                android:textSize="14dp"
-                android:textColor="@color/primary"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"
                 android:alpha="0.8"
                 tools:text="~15 min wait" />
             <TextView
@@ -62,9 +62,9 @@
                 android:gravity="center"
                 android:maxLines="2"
                 android:ellipsize="end"
-                android:text="dbm"
-                android:textSize="9dp"
-                android:textColor="@color/primary"
+                android:text="dBm"
+                android:textSize="11sp"
+                android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
                 tools:text="dbm" />
 

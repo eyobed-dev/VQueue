@@ -16,7 +16,7 @@
     <item
         android:drawable="@drawable/img"
         android:gravity="bottom|end"
-        android:width="240dp"
-        android:height="240dp"
+        android:width="200dp"
+        android:height="200dp"
         android:tileMode="disabled" />
 </layer-list>
