@@ -1,0 +1,19 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches: [ main, master ] # Add other branches if needed
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches all history for all branches and tags
+      - name: Push to GitLab
+        uses: wangchucheng/git-repo-sync@v0.1.0
+        with:
+          target-url: https://gitlab.com/fit-vut1/tama/vqueue.git
+          target-username: eyobed-dev
+          target-token: ${{ secrets.GITLAB_TOKEN }}
