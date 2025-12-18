@@ -1,46 +1,104 @@
 <resources>
 
-    <style name="Theme.VQueue" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-
+    <style name="Theme.VQueue" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Colors -->
         <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_variant</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorAccent">@color/accent</item>
 
-        <item name="colorSecondary">@color/secondary</item>
-        <item name="colorSecondaryVariant">@color/secondary_variant</item>
-        <item name="colorOnSecondary">@color/on_secondary</item>
-
-        <item name="android:colorBackground">@color/background</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/on_surface</item>
-
-        <item name="android:statusBarColor">@color/primary_variant</item>
-
-        <!-- Text Colors -->
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
 
-        <!-- Divider -->
-        <item name="dividerColor">@color/divider</item>
+        <!-- Button Style -->
+        <item name="buttonStyle">@style/Widget.VQueue.Button</item>
+        <item name="borderlessButtonStyle">@style/Widget.VQueue.Button.Flat</item>
 
-        <!-- Functional Colors -->
-        <item name="functionalGreen">@color/functional_green</item>
-        <item name="functionalGreenRipple">@color/functional_green_ripple</item>
-        <item name="functionalOrange">@color/functional_orange</item>
-        <item name="functionalOrangeRipple">@color/functional_orange_ripple</item>
-        <item name="functionalRed">@color/functional_red</item>
-        <item name="functionalRedRipple">@color/functional_red_ripple</item>
-        <item name="functionalBlue">@color/functional_blue</item>
-        <item name="functionalBlueRipple">@color/functional_blue_ripple</item>
+        <!-- Ripple -->
+        <item name="colorControlHighlight">@color/ripple_material_light</item>
 
-
-
-        <!-- Status Colors -->
-        <item name="statusError">@color/status_error</item>
-
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">16dp</item>
-
-
+        <!-- Enable vector drawables -->
+        <item name="vectorDrawables.useSupportLibrary">true</item>
     </style>
+
+    <!-- Base Button Style (Raised) -->
+    <style name="Widget.VQueue.Button" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/bg_button_raised</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:paddingLeft">@dimen/padding_medium</item>
+        <item name="android:paddingRight">@dimen/padding_medium</item>
+        <item name="android:elevation">@dimen/elevation_button_resting</item>
+        <item name="android:stateListAnimator">@null</item> <!-- We handle elevation in background or custom animator if needed, but for simplicity relying on elevation attribute -->
+    </style>
+
+    <!-- Flat Button Style -->
+    <style name="Widget.VQueue.Button.Flat" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/text_size_button</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:minHeight">@dimen/button_height</item>
+        <item name="android:paddingLeft">@dimen/padding_small</item>
+        <item name="android:paddingRight">@dimen/padding_small</item>
+    </style>
+
+    <!-- Card Style -->
+    <style name="Widget.VQueue.Card" parent="CardView.Light">
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardCornerRadius">@dimen/corner_radius_card</item>
+        <item name="cardElevation">@dimen/elevation_card_resting</item>
+        <item name="cardUseCompatPadding">true</item>
+        <item name="cardPreventCornerOverlap">false</item>
+    </style>
+
+    <!-- Toolbar Style -->
+    <style name="Widget.VQueue.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">@color/primary</item>
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:elevation">@dimen/elevation_toolbar</item>
+    </style>
+
+    <!-- Input Style (EditText) -->
+    <style name="Widget.VQueue.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:theme">@style/ThemeOverlay.VQueue.EditText</item>
+    </style>
+
+    <style name="ThemeOverlay.VQueue.EditText" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlNormal">@color/text_secondary</item>
+        <item name="colorControlActivated">@color/accent</item>
+    </style>
+
+    <!-- Text Styles -->
+    <style name="TextAppearance.VQueue.Headline" parent="TextAppearance.AppCompat.Display1">
+        <item name="android:textSize">@dimen/text_size_headline</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.VQueue.Title" parent="TextAppearance.AppCompat.Title">
+        <item name="android:textSize">@dimen/text_size_title</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.VQueue.Subhead" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textSize">@dimen/text_size_subhead</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.VQueue.Body1" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">@dimen/text_size_body1</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+
+    <style name="TextAppearance.VQueue.Caption" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">@dimen/text_size_caption</item>
+        <item name="android:textColor">@color/text_secondary</item>
+    </style>
+
 </resources>

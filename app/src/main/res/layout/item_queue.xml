@@ -4,30 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
+    android:paddingStart="@dimen/padding_small"
+    android:paddingEnd="@dimen/padding_small"
+    android:paddingTop="@dimen/padding_small"
+    android:paddingBottom="0dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <!-- MD1 Card: Square corners (2dp), proper elevation -->
+    <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
+        style="@style/Widget.VQueue.Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
+        android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="@dimen/padding_medium">
 
-            <!-- Color Circle -->
+            <!-- Color Circle (Avatar/Icon placeholder) -->
+            <!-- Using simple View circle is fine, kept as is but ensured alignment -->
             <View
                 android:id="@+id/colorCircle"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:background="@drawable/circle_background"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -36,13 +38,12 @@
             <!-- Queue Name -->
             <TextView
                 android:id="@+id/queueName"
+                style="@style/TextAppearance.VQueue.Title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:text="Queue Name"
-                android:textSize="18sp"
-                android:textStyle="bold"
                 android:ellipsize="end"
                 android:maxLines="1"
                 app:layout_constraintStart_toEndOf="@id/colorCircle"
@@ -55,12 +56,12 @@
             <!-- Wait Info -->
             <TextView
                 android:id="@+id/queueWaitInfo"
+                style="@style/TextAppearance.VQueue.Body1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/margin_medium"
+                android:layout_marginEnd="@dimen/margin_small"
                 android:text="Wait info"
-                android:textSize="14sp"
                 app:layout_constraintStart_toEndOf="@id/colorCircle"
                 app:layout_constraintEnd_toStartOf="@+id/rssi"
                 app:layout_constraintTop_toBottomOf="@id/queueName"
@@ -70,15 +71,15 @@
             <!-- RSSI -->
             <TextView
                 android:id="@+id/rssi"
+                style="@style/TextAppearance.VQueue.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="-55 dBm"
-                android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

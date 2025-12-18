@@ -6,24 +6,43 @@
     <dimen name="margin_large">24dp</dimen>
     <dimen name="margin_xlarge">32dp</dimen>
     <dimen name="margin_xxlarge">48dp</dimen>
+
     <dimen name="padding_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
     <dimen name="padding_large">24dp</dimen>
 
-    <!-- Text Sizes -->
-    <!-- Text Sizes (Material Design Scale) -->
-    <dimen name="text_size_small">12sp</dimen> <!-- Caption -->
-    <dimen name="text_size_body">12sp</dimen> <!-- Body 2 -->
-    <dimen name="text_size_medium">16sp</dimen> <!-- Body 1 / Subtitle 1 -->
-    <dimen name="text_size_large">18sp</dimen> <!-- Headline 6 -->
-    <dimen name="text_size_title">20sp</dimen> <!-- Headline 5 -->
-    <dimen name="text_size_header">24sp</dimen> <!-- Headline 4 -->
+    <!-- Text Sizes (MD1 Scale) -->
+    <dimen name="text_size_display4">112sp</dimen>
+    <dimen name="text_size_display3">56sp</dimen>
+    <dimen name="text_size_display2">45sp</dimen>
+    <dimen name="text_size_display1">34sp</dimen>
+    <dimen name="text_size_headline">24sp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_subhead">16sp</dimen>
+    <dimen name="text_size_body1">14sp</dimen>
+    <dimen name="text_size_body2">14sp</dimen>
+    <dimen name="text_size_caption">12sp</dimen>
+    <dimen name="text_size_button">14sp</dimen>
 
     <!-- Element Sizes -->
-    <dimen name="button_height">48dp</dimen>
-    <dimen name="button_height_large">56dp</dimen>
-    <dimen name="card_elevation">4dp</dimen>
-    <dimen name="corner_radius">8dp</dimen>
-    <dimen name="corner_radius_large">12dp</dimen>
-    <dimen name="bottom_bar_height">56dp</dimen>
+    <dimen name="button_height">36dp</dimen>
+    <dimen name="fab_size_normal">56dp</dimen>
+    <dimen name="fab_size_mini">40dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+
+    <!-- Elevation -->
+    <dimen name="elevation_flat">0dp</dimen>
+    <dimen name="elevation_card_resting">2dp</dimen>
+    <dimen name="elevation_card_picked_up">8dp</dimen>
+    <dimen name="elevation_button_resting">2dp</dimen>
+    <dimen name="elevation_button_pressed">8dp</dimen>
+    <dimen name="elevation_dialog">24dp</dimen>
+    <dimen name="elevation_drawer">16dp</dimen>
+    <dimen name="elevation_toolbar">4dp</dimen>
+    <dimen name="elevation_fab">6dp</dimen>
+    <dimen name="elevation_fab_pressed">12dp</dimen>
+
+    <!-- Corners -->
+    <dimen name="corner_radius_card">2dp</dimen> <!-- MD1 Cards have 2dp corner radius -->
+    <dimen name="corner_radius_button">2dp</dimen>
 </resources>

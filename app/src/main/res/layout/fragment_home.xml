@@ -4,63 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:colorBackground"
+    android:background="@color/background"
     tools:context=".fragments.HomeFragment">
 
+    <!-- App Bar with parallax for MD1 feel -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        <!-- MD1 emphasizes solid colors or distinct imagery, simplifying to standard toolbar setup with maybe a tab or simple view -->
+        <!-- Going with a simpler setup as "Paper and Ink" prefers clean structural layers -->
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg"
-                android:padding="@dimen/padding_medium"
-                app:layout_collapseMode="parallax">
-
-                <TextView
-                    android:id="@+id/headerText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Available Queues"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="@dimen/text_size_header"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/statusText"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
-                <TextView
-                    android:id="@+id/statusText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Tap a queue to see details or join"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="@dimen/text_size_body"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/headerText" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="VQueue"
+            app:titleTextColor="@color/on_primary"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -70,11 +34,13 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- Using Padding to create the "card on background" feel if items are cards -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/queuesRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
+            android:paddingTop="@dimen/padding_small"
             android:paddingBottom="88dp"
             tools:listitem="@layout/item_queue" />
 
@@ -88,16 +54,19 @@
         android:indeterminate="true"
         android:visibility="gone" />
 
+    <!-- FAB: MD1 spec says accent color for primary action -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabCreateQueue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_medium"
+        android:layout_gravity="bottom|end"
         android:contentDescription="Create a Queue"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="?attr/colorPrimary"
-        app:layout_anchor="@id/queuesRecyclerView"
-        app:layout_anchorGravity="bottom|end"
-        app:tint="?attr/colorOnPrimary" />
+        app:backgroundTint="@color/accent"
+        app:tint="@color/on_accent"
+        app:elevation="@dimen/elevation_fab"
+        app:pressedTranslationZ="@dimen/elevation_fab_pressed"
+        app:useCompatPadding="true"/> <!-- Ensure padding for shadow -->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
