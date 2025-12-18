@@ -66,7 +66,7 @@ public class QueueManagerFragment extends Fragment {
         waiterAdapter = new WaiterAdapter(new ArrayList<>());
         waitersRecyclerView.setAdapter(waiterAdapter);
 
-        queueRepo = QueueRepo.getInstance();
+        queueRepo = QueueRepo.getInstance(requireContext());
     }
 
     private void loadQueueData() {
@@ -148,10 +148,10 @@ public class QueueManagerFragment extends Fragment {
         if (currentQueue != null) {
             int ticketNumber = queueRepo.addWaiter(name);
             if (ticketNumber > 0) {
-                Toast.makeText(getContext(), "Added: " + name + " - Ticket #" + ticketNumber, 
-                    Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Added: " + name + " - Ticket #" + ticketNumber,
+                        Toast.LENGTH_LONG).show();
                 updateQueueInfo();
-                
+
                 // Update advertisement
                 Intent intent = new Intent(getContext(), QueueManagementService.class);
                 intent.putExtra("action", "update_advertisement");
@@ -164,7 +164,7 @@ public class QueueManagerFragment extends Fragment {
 
     private void updateQueueInfo() {
         android.util.Log.i("QueueManager", "updateQueueInfo called");
-        
+
         if (currentQueue != null) {
             queueNameText.setText(currentQueue.getName());
             currentNumberText.setText(String.valueOf(currentQueue.getCurrentNumber()));
@@ -183,7 +183,8 @@ public class QueueManagerFragment extends Fragment {
 
             // Update waiters list
             if (waiterAdapter != null && currentQueue.getWaiters() != null) {
-                android.util.Log.i("QueueManager", "Updating adapter with " + currentQueue.getWaiters().size() + " waiters");
+                android.util.Log.i("QueueManager",
+                        "Updating adapter with " + currentQueue.getWaiters().size() + " waiters");
                 waiterAdapter.updateData(currentQueue.getWaiters(), currentQueue.getCurrentNumber());
 
                 if (currentQueue.getWaiters().isEmpty()) {
@@ -194,7 +195,7 @@ public class QueueManagerFragment extends Fragment {
                     waitersRecyclerView.setVisibility(View.VISIBLE);
                     emptyStateText.setVisibility(View.GONE);
                     android.util.Log.i("QueueManager", "Queue has waiters, calling scrollToCurrentPerson");
-                    
+
                     // Auto-scroll to currently served person
                     scrollToCurrentPerson();
                 }
@@ -209,13 +210,14 @@ public class QueueManagerFragment extends Fragment {
     private void scrollToCurrentPerson() {
         if (currentQueue != null && currentQueue.getWaiters() != null && !currentQueue.getWaiters().isEmpty()) {
             int currentNumber = currentQueue.getCurrentNumber();
-            
+
             // Find the position of the currently served person
             for (int i = 0; i < currentQueue.getWaiters().size(); i++) {
                 if (currentQueue.getWaiters().get(i).getTicketNumber() == currentNumber) {
                     final int position = i;
-                    android.util.Log.i("QueueManager", "Scrolling to position " + position + " (ticket #" + currentNumber + ")");
-                    
+                    android.util.Log.i("QueueManager",
+                            "Scrolling to position " + position + " (ticket #" + currentNumber + ")");
+
                     // Post to ensure RecyclerView layout is complete
                     waitersRecyclerView.post(() -> {
                         waitersRecyclerView.smoothScrollToPosition(position);

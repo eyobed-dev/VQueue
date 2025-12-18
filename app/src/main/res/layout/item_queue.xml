@@ -1,59 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fitsSystemWindows="true"
-    android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurface">
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
+        android:clickable="true"
+        android:focusable="true">
 
-        <TextView
-            android:id="@+id/queueNameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Coffee Shop"
-            android:textSize="@dimen/text_size_large"
-            android:textStyle="bold"
-            android:textColor="?attr/android:textColorPrimary" />
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal">
+            android:padding="16dp">
 
+            <!-- Color Circle -->
+            <View
+                android:id="@+id/colorCircle"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/circle_background"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <!-- Queue Name -->
             <TextView
-                android:id="@+id/currentNumberText"
+                android:id="@+id/queueName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Currently: #5"
-                android:textSize="@dimen/text_size_body"
-                android:textColor="?attr/android:textColorSecondary" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="Queue Name"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxLines="1"
+                app:layout_constraintStart_toEndOf="@id/colorCircle"
+                app:layout_constraintEnd_toStartOf="@+id/rssi"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/queueWaitInfo"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="Dr. Smith's Office"/>
 
+            <!-- Wait Info -->
             <TextView
-                android:id="@+id/waitTimeText"
+                android:id="@+id/queueWaitInfo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Wait: 10 min"
-                android:textSize="@dimen/text_size_body"
-                android:textColor="?attr/android:textColorSecondary"
-                android:gravity="end" />
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="Wait info"
+                android:textSize="14sp"
+                app:layout_constraintStart_toEndOf="@id/colorCircle"
+                app:layout_constraintEnd_toStartOf="@+id/rssi"
+                app:layout_constraintTop_toBottomOf="@id/queueName"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="15 min wait"/>
 
-        </LinearLayout>
+            <!-- RSSI -->
+            <TextView
+                android:id="@+id/rssi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-55 dBm"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

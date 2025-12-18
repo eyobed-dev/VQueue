@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import cz.vut.fit.vqueue.model.AdvertisedQueue;
 import cz.vut.fit.vqueue.utils.AppPreferences;
+import cz.vut.fit.vqueue.utils.Constants;
 
 public class BLEScanner {
     private static final String TAG = "BLEScanner";
@@ -253,14 +254,15 @@ public class BLEScanner {
             int offset = 0;
 
             // Check header (2 bytes) - validates this is a VQueue advertisement
-            if (data[offset++] != (byte) 0xAA || data[offset++] != (byte) 0xBB) {
+            if (data[offset++] != Constants.MAGIC_HEADER_1 || data[offset++] != Constants.MAGIC_HEADER_2) {
                 // Not a VQueue advertisement, silently ignore
                 return null;
             }
 
             // Now check if the VQueue advertisement has enough data
-            if (data.length < 19) {
-                Log.w(TAG, "VQueue advertisement data too short: " + data.length + " bytes (expected 19)");
+            if (data.length < Constants.ADVERTISEMENT_PACKET_SIZE) {
+                Log.w(TAG, "VQueue advertisement data too short: " + data.length + " bytes (expected "
+                        + Constants.ADVERTISEMENT_PACKET_SIZE + ")");
                 return null;
             }
 
@@ -272,12 +274,12 @@ public class BLEScanner {
             offset += 2;
 
             // Queue Name (10 bytes)
-            byte[] nameBytes = new byte[10];
-            System.arraycopy(data, offset, nameBytes, 0, 10);
+            byte[] nameBytes = new byte[Constants.DEVICE_NAME_LENGTH];
+            System.arraycopy(data, offset, nameBytes, 0, Constants.DEVICE_NAME_LENGTH);
             String queueName = new String(nameBytes).trim();
             // Remove null characters
             queueName = queueName.replace("\0", "");
-            offset += 10;
+            offset += Constants.DEVICE_NAME_LENGTH;
 
             // Current Number (2 bytes)
             int currentNumber = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);

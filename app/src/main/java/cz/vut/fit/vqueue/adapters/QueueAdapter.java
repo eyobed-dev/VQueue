@@ -1,5 +1,6 @@
 package cz.vut.fit.vqueue.adapters;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
+
 import java.util.List;
+import java.util.Random;
 
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.model.AdvertisedQueue;
@@ -32,7 +36,7 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     public QueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the new circular layout
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_queue_circle, parent, false);
+                .inflate(R.layout.item_queue, parent, false);
         return new QueueViewHolder(view);
     }
 
@@ -51,7 +55,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         private final TextView queueName;
         private final TextView queueWaitInfo;
         private final TextView rssi;
-        private final View cardView;
+        private final MaterialCardView cardView;
+        private final View colorCircle;
 
         public QueueViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -59,9 +64,33 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
             queueWaitInfo = itemView.findViewById(R.id.queueWaitInfo);
             cardView = itemView.findViewById(R.id.cardView);
             rssi = itemView.findViewById(R.id.rssi);
+            colorCircle = itemView.findViewById(R.id.colorCircle);
         }
 
         public void bind(final AdvertisedQueue queue, final OnQueueClickListener listener) {
+            // Generate a random but deterministic color based on the device address
+            // This ensures the color stays the same for the specific queue but is
+            // unique-ish
+            Random random = new Random(queue.getDeviceAddress().hashCode());
+
+            // Use HSV to generate attractive, vibrant colors (avoiding murky browns/grays)
+            // Hue: Random 0-360
+            // Saturation: 0.6 - 1.0 (Vibrant)
+            // Value: 0.8 - 1.0 (Bright)
+            float[] hsv = new float[3];
+            hsv[0] = random.nextFloat() * 360f;
+            hsv[1] = 0.6f + (random.nextFloat() * 0.4f);
+            hsv[2] = 0.8f + (random.nextFloat() * 0.2f);
+
+            int selectedColor = Color.HSVToColor(hsv);
+
+            // Apply the color to the circle
+            colorCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(selectedColor));
+
+            // Set text colors to black for better contrast on white card
+            queueName.setTextColor(Color.BLACK);
+            queueWaitInfo.setTextColor(Color.BLACK);
+            rssi.setTextColor(Color.BLACK);
             // Set Device/Queue Name
             if (queue.getName() != null && !queue.getName().isEmpty()) {
                 queueName.setText(queue.getName());

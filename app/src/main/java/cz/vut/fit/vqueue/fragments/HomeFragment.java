@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -97,26 +96,25 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     private void initializeViews(View view) {
         fabCreateQueue = view.findViewById(R.id.fabCreateQueue);
-        loadingIndicator = view.findViewById(R.id.loadingIndicator);
         statusText = view.findViewById(R.id.statusText);
         queuesRecyclerView = view.findViewById(R.id.queuesRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        loadingIndicator = view.findViewById(R.id.loadingIndicator);
 
         // Initialize BLE components
         bleScanner = new BLEScanner(getContext());
         bleClientManager = new BLEClientManager(getContext());
-        
+
         // Setup pull-to-refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
             // Trigger a new scan when user pulls to refresh
             startSearch();
         });
-        
+
         // Set refresh colors to match app theme
         swipeRefreshLayout.setColorSchemeResources(
-            R.color.primary,
-            R.color.primary_variant
-        );
+                R.color.primary,
+                R.color.primary_variant);
     }
 
     private void setupClickListeners() {
@@ -135,7 +133,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         availableQueues = new ArrayList<>();
         queueAdapter = new QueueAdapter(availableQueues, this);
 
-        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         queuesRecyclerView.setAdapter(queueAdapter);
 
         // Setup BLE scanner listener
@@ -158,8 +156,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                     availableQueues.add(queue);
                 }
 
-                // Sort the list by RSSI (Received Signal Strength Indicator) in descending order.
-                // This ensures that the queues with the strongest signal (likely the closest ones)
+                // Sort the list by RSSI (Received Signal Strength Indicator) in descending
+                // order.
+                // This ensures that the queues with the strongest signal (likely the closest
+                // ones)
                 // appear at the top of the list.
                 Collections.sort(availableQueues, new Comparator<AdvertisedQueue>() {
                     @Override
@@ -191,7 +191,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             @Override
             public void onScanComplete() {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    loadingIndicator.setVisibility(View.GONE);
                     // Stop refresh animation
                     if (swipeRefreshLayout != null) {
                         swipeRefreshLayout.setRefreshing(false);
@@ -226,7 +225,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                             Toast.LENGTH_LONG).show();
                     // Navigate to WaitFragment with arguments
                     Bundle bundle = new Bundle();
-                    bundle.putString("QUEUE_NAME", pendingQueueName);  // Pass queue name for monitoring
+                    bundle.putString("QUEUE_NAME", pendingQueueName); // Pass queue name for monitoring
                     bundle.putInt("TICKET_NUMBER", ticketNumber);
                     NavHostFragment.findNavController(HomeFragment.this)
                             .navigate(R.id.action_homeFragment_to_waitFragment, bundle);
@@ -243,8 +242,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     }
 
     private void startSearch() {
-        // Show loading state
-        loadingIndicator.setVisibility(View.VISIBLE);
         statusText.setText("Scanning for nearby devices...");
         queuesRecyclerView.setVisibility(View.GONE);
         availableQueues.clear();
@@ -305,7 +302,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             builder.setPositiveButton("Join Queue", (dialog, which) -> {
                 stopScanning();
                 pendingDeviceAddress = queue.getDeviceAddress();
-                pendingQueueName = queue.getName();  // Store queue name for monitoring
+                pendingQueueName = queue.getName(); // Store queue name for monitoring
                 Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
                 bleClientManager.connectAndJoin(queue.getDeviceAddress());
             });

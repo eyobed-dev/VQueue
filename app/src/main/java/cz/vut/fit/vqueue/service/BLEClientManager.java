@@ -11,14 +11,14 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.util.Log;
 import java.util.UUID;
+import cz.vut.fit.vqueue.utils.Constants;
 
 public class BLEClientManager {
     private static final String TAG = "BLEClientManager";
 
     // Service and Characteristic UUIDs (must match server)
-    private static final String SERVICE_UUID = "12345678-1234-1234-1234-123456789ABC";
-    private static final String JOIN_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABD";
-    private static final String STATUS_CHARACTERISTIC_UUID = "12345678-1234-1234-1234-123456789ABE";
+    // Service and Characteristic UUIDs (must match server)
+    // UUIDs moved to Constants class
 
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
@@ -28,6 +28,7 @@ public class BLEClientManager {
 
     public interface OnJoinResultListener {
         void onJoinSuccess(int ticketNumber);
+
         void onJoinFailed(String error);
     }
 
@@ -78,9 +79,9 @@ public class BLEClientManager {
             return;
         }
 
-        BluetoothGattService service = gatt.getService(UUID.fromString(SERVICE_UUID));
+        BluetoothGattService service = gatt.getService(Constants.SERVICE_UUID);
         if (service == null) {
-            Log.e(TAG, "Service not found: " + SERVICE_UUID);
+            Log.e(TAG, "Service not found: " + Constants.SERVICE_UUID);
             if (listener != null) {
                 listener.onJoinFailed("Service not found");
             }
@@ -89,9 +90,9 @@ public class BLEClientManager {
         }
 
         BluetoothGattCharacteristic joinCharacteristic = service
-                .getCharacteristic(UUID.fromString(JOIN_CHARACTERISTIC_UUID));
+                .getCharacteristic(Constants.JOIN_CHARACTERISTIC_UUID);
         if (joinCharacteristic == null) {
-            Log.e(TAG, "Join characteristic not found: " + JOIN_CHARACTERISTIC_UUID);
+            Log.e(TAG, "Join characteristic not found: " + Constants.JOIN_CHARACTERISTIC_UUID);
             if (listener != null) {
                 listener.onJoinFailed("Join characteristic not found");
             }
@@ -116,8 +117,7 @@ public class BLEClientManager {
         Log.i(TAG, "Notification enabled: " + notificationEnabled);
 
         // Write to CCCD to enable notifications on server side
-        BluetoothGattDescriptor descriptor = joinCharacteristic.getDescriptor(
-                UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+        BluetoothGattDescriptor descriptor = joinCharacteristic.getDescriptor(Constants.CCCD_UUID);
         if (descriptor != null) {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             boolean descriptorWritten = gatt.writeDescriptor(descriptor);
@@ -138,15 +138,15 @@ public class BLEClientManager {
             deviceId = deviceId.substring(0, 20);
         }
         byte[] deviceIdBytes = deviceId.getBytes();
-        
+
         Log.i(TAG, "Attempting to write " + deviceIdBytes.length + " bytes to join characteristic");
 
         // Handle API level differences for writing characteristics
         boolean writeSuccess;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             // Android 13+ (API 33+) - Use new API
-            writeSuccess = gatt.writeCharacteristic(joinCharacteristic, deviceIdBytes, 
-                BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) == BluetoothGatt.GATT_SUCCESS;
+            writeSuccess = gatt.writeCharacteristic(joinCharacteristic, deviceIdBytes,
+                    BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) == BluetoothGatt.GATT_SUCCESS;
         } else {
             // Android 12 and below - Use deprecated API
             joinCharacteristic.setValue(deviceIdBytes);
@@ -212,7 +212,7 @@ public class BLEClientManager {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            
+
             Log.i(TAG, "onCharacteristicWrite called - UUID: " + characteristic.getUuid() + ", status: " + status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
@@ -237,7 +237,8 @@ public class BLEClientManager {
                 Log.i(TAG, "Notifications enabled successfully, sending join request");
                 // Now send the join request
                 BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
-                if (characteristic != null && characteristic.getUuid().toString().equalsIgnoreCase(JOIN_CHARACTERISTIC_UUID)) {
+                if (characteristic != null
+                        && characteristic.getUuid().equals(Constants.JOIN_CHARACTERISTIC_UUID)) {
                     sendJoinRequest(characteristic);
                 }
             } else {
@@ -255,7 +256,7 @@ public class BLEClientManager {
             Log.i(TAG, "onCharacteristicChanged called - UUID: " + characteristic.getUuid());
 
             String characteristicUuid = characteristic.getUuid().toString();
-            if (characteristicUuid.equalsIgnoreCase(JOIN_CHARACTERISTIC_UUID)) {
+            if (characteristic.getUuid().equals(Constants.JOIN_CHARACTERISTIC_UUID)) {
                 // Received notification with ticket number!
                 byte[] value = characteristic.getValue();
                 Log.i(TAG, "Notification received, value length: " + (value != null ? value.length : 0));
@@ -283,18 +284,18 @@ public class BLEClientManager {
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicRead(gatt, characteristic, status);
-            
+
             Log.i(TAG, "onCharacteristicRead called - UUID: " + characteristic.getUuid() + ", status: " + status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 String characteristicUuid = characteristic.getUuid().toString();
                 Log.i(TAG, "Read successful for characteristic: " + characteristicUuid);
-                
-                if (characteristicUuid.equalsIgnoreCase(JOIN_CHARACTERISTIC_UUID)) {
+
+                if (characteristic.getUuid().equals(Constants.JOIN_CHARACTERISTIC_UUID)) {
                     // Parse ticket number from response
                     byte[] value = characteristic.getValue();
                     Log.i(TAG, "Read value length: " + (value != null ? value.length : 0));
-                    
+
                     if (value != null && value.length >= 2) {
                         int ticketNumber = (value[0] & 0xFF) | ((value[1] & 0xFF) << 8);
                         Log.i(TAG, "Received ticket number from read: " + ticketNumber);

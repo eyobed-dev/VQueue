@@ -48,8 +48,7 @@ public class CreateQueueBottomSheet extends BottomSheetDialogFragment {
         // Make the bottom sheet resize when keyboard appears
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setSoftInputMode(
-                android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
-            );
+                    android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
     }
 
@@ -57,7 +56,7 @@ public class CreateQueueBottomSheet extends BottomSheetDialogFragment {
         queueNameEditText = view.findViewById(R.id.queueNameEditText);
         waitTimeEditText = view.findViewById(R.id.waitTimeEditText);
         createQueueButton = view.findViewById(R.id.createQueueButton);
-        queueRepo = QueueRepo.getInstance();
+        queueRepo = QueueRepo.getInstance(requireContext());
     }
 
     private void setupClickListeners() {

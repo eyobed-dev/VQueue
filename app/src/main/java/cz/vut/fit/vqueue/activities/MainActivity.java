@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupNavigation() {
+        // Find and setup the global toolbar
+        androidx.appcompat.widget.Toolbar mainToolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(mainToolbar);
+
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainer);
 
@@ -82,6 +86,15 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment).build();
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        // Hide the global toolbar when on HomeFragment, show on others
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.homeFragment) {
+                mainToolbar.setVisibility(android.view.View.GONE);
+            } else {
+                mainToolbar.setVisibility(android.view.View.VISIBLE);
+            }
+        });
     }
 
     @Override
@@ -97,7 +110,8 @@ public class MainActivity extends AppCompatActivity {
         // Implement proper user feedback
         new AlertDialog.Builder(this)
                 .setTitle("Permissions Required")
-                .setMessage("This app requires certain permissions to function properly. You need to grant them in settings")
+                .setMessage(
+                        "This app requires certain permissions to function properly. You need to grant them in settings")
                 .setPositiveButton("OK", null)
                 .show();
     }

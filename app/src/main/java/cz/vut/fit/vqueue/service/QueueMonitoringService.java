@@ -14,11 +14,11 @@ import androidx.core.app.NotificationCompat;
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.activities.MainActivity;
 import cz.vut.fit.vqueue.model.AdvertisedQueue;
+import cz.vut.fit.vqueue.utils.Constants;
 
 public class QueueMonitoringService extends Service {
     private static final String TAG = "QueueMonitoringService";
-    private static final String CHANNEL_ID = "QueueMonitoringChannel";
-    private static final int NOTIFICATION_ID = 2;
+    // Constants used from Constants class
 
     private BLEScanner bleScanner;
     private String targetQueueName;
@@ -44,7 +44,7 @@ public class QueueMonitoringService extends Service {
                 Log.i(TAG, "Starting monitoring - Queue: " + targetQueueName + ", Ticket: " + myTicketNumber);
 
                 if (targetQueueName != null && myTicketNumber != -1) {
-                    startForeground(NOTIFICATION_ID,
+                    startForeground(Constants.NOTIFICATION_ID_QUEUE_MONITORING,
                             createNotification("Monitoring Queue", "Waiting for your turn..."));
                     startMonitoring();
                 } else {
@@ -67,10 +67,10 @@ public class QueueMonitoringService extends Service {
         bleScanner.setOnQueueFoundListener(new BLEScanner.OnQueueFoundListener() {
             @Override
             public void onQueueFound(AdvertisedQueue queue) {
-                Log.i(TAG, "onQueueFound - Queue: " + queue.getName() + 
-                    ", Current#: " + queue.getCurrentNumber() +
-                    ", Target queue: " + targetQueueName);
-                    
+                Log.i(TAG, "onQueueFound - Queue: " + queue.getName() +
+                        ", Current#: " + queue.getCurrentNumber() +
+                        ", Target queue: " + targetQueueName);
+
                 // Match by queue name instead of device address
                 if (queue.getName().equals(targetQueueName)) {
                     Log.i(TAG, "Queue name matches! Checking queue status...");
@@ -91,7 +91,6 @@ public class QueueMonitoringService extends Service {
 
         bleScanner.startScan();
     }
-
 
     private void checkQueueStatus(AdvertisedQueue queue) {
         int currentNumber = queue.getCurrentNumber();
@@ -122,24 +121,33 @@ public class QueueMonitoringService extends Service {
 
     private void triggerAlarm() {
         Log.i(TAG, "triggerAlarm() called - creating notification");
-        
-        // Create an intent to open the app
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+        // Create an intent to open the app
+        // Create an intent to open the app (WaitFragment)
+        android.os.Bundle args = new android.os.Bundle();
+        if (targetQueueName != null) {
+            args.putString("QUEUE_NAME", targetQueueName);
+            args.putInt("TICKET_NUMBER", myTicketNumber);
+        }
+
+        PendingIntent pendingIntent = new androidx.navigation.NavDeepLinkBuilder(this)
+                .setGraph(R.navigation.nav_graph)
+                .setDestination(R.id.waitFragment)
+                .setArguments(args)
+                .createPendingIntent();
+
+        Notification notification = new NotificationCompat.Builder(this, Constants.CHANNEL_ID_MONITORING)
                 .setContentTitle("🔔 It's Your Turn!")
                 .setContentText("Please proceed to the counter now!")
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
-                .setPriority(NotificationCompat.PRIORITY_MAX)  // Maximum priority
+                .setPriority(NotificationCompat.PRIORITY_MAX) // Maximum priority
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(pendingIntent, true)
                 .setAutoCancel(true)
-                .setVibrate(new long[]{0, 500, 200, 500, 200, 500})  // Vibration pattern
-                .setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI)  // Sound
-                .setDefaults(Notification.DEFAULT_ALL)  // All defaults (sound, vibrate, lights)
-                .setOnlyAlertOnce(false)  // Alert every time
+                .setVibrate(new long[] { 0, 500, 200, 500, 200, 500 }) // Vibration pattern
+                .setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI) // Sound
+                .setDefaults(Notification.DEFAULT_ALL) // All defaults (sound, vibrate, lights)
+                .setOnlyAlertOnce(false) // Alert every time
                 .build();
 
         NotificationManager manager = null;
@@ -147,8 +155,8 @@ public class QueueMonitoringService extends Service {
             manager = getSystemService(NotificationManager.class);
         }
         if (manager != null) {
-            Log.i(TAG, "Sending notification with ID: " + (NOTIFICATION_ID + 1));
-            manager.notify(NOTIFICATION_ID + 1, notification);
+            Log.i(TAG, "Sending notification with ID: " + Constants.NOTIFICATION_ID_ALARM);
+            manager.notify(Constants.NOTIFICATION_ID_ALARM, notification);
         } else {
             Log.e(TAG, "NotificationManager is null!");
         }
@@ -162,10 +170,19 @@ public class QueueMonitoringService extends Service {
     }
 
     private Notification createNotification(String title, String content) {
-        Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        android.os.Bundle args = new android.os.Bundle();
+        if (targetQueueName != null) {
+            args.putString("QUEUE_NAME", targetQueueName);
+            args.putInt("TICKET_NUMBER", myTicketNumber);
+        }
 
-        return new NotificationCompat.Builder(this, CHANNEL_ID)
+        PendingIntent pendingIntent = new androidx.navigation.NavDeepLinkBuilder(this)
+                .setGraph(R.navigation.nav_graph)
+                .setDestination(R.id.waitFragment)
+                .setArguments(args)
+                .createPendingIntent();
+
+        return new NotificationCompat.Builder(this, Constants.CHANNEL_ID_MONITORING)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setSmallIcon(R.mipmap.ic_launcher_foreground) // Use valid icon
@@ -179,14 +196,14 @@ public class QueueMonitoringService extends Service {
             manager = getSystemService(NotificationManager.class);
         }
         if (manager != null) {
-            manager.notify(NOTIFICATION_ID, createNotification(title, content));
+            manager.notify(Constants.NOTIFICATION_ID_QUEUE_MONITORING, createNotification(title, content));
         }
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
-                    CHANNEL_ID,
+                    Constants.CHANNEL_ID_MONITORING,
                     "Queue Monitoring Service",
                     NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = getSystemService(NotificationManager.class);

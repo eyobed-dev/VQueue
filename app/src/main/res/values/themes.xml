@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.VQueue" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.VQueue" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_variant</item>

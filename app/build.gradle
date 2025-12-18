@@ -4,14 +4,12 @@ plugins {
 
 android {
     namespace 'cz.vut.fit.vqueue'
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk 35
 
     defaultConfig {
         applicationId "cz.vut.fit.vqueue"
         minSdk 21
-        targetSdk 36
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -28,32 +26,37 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    buildToolsVersion '36.1.0'
 }
 
 dependencies {
     implementation libs.appcompat
     implementation libs.material
 
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
     // Navigation Component
-    implementation 'androidx.navigation:navigation-fragment:2.7.5'
-    implementation 'androidx.navigation:navigation-ui:2.7.5'
-    
+    implementation 'androidx.navigation:navigation-fragment:2.8.5'
+    implementation 'androidx.navigation:navigation-ui:2.8.5'
+
     // ViewModel and LiveData
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
-    
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
+
     // ConstraintLayout
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    
-    // BLE Support
-    implementation 'androidx.core:core:1.12.0'
-    
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
+
+    // BLE Support - Core KTX is recommended for modern Android
+    implementation 'androidx.core:core:1.15.0'
+
     // AndroidX Preference for Settings
     implementation 'androidx.preference:preference:1.2.1'
-    
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    // Room Database
+    implementation libs.room.runtime
+    annotationProcessor libs.room.compiler
 }

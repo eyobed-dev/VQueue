@@ -16,6 +16,7 @@ import java.util.UUID;
 import androidx.core.app.ActivityCompat;
 
 import cz.vut.fit.vqueue.model.Queue;
+import cz.vut.fit.vqueue.utils.Constants;
 
 public class BLEAdvertisementManager {
     private static final String TAG = "BLEAdvertisementManager";
@@ -66,12 +67,12 @@ public class BLEAdvertisementManager {
 
             AdvertiseData data = new AdvertiseData.Builder()
                     .setIncludeDeviceName(false).setIncludeTxPowerLevel(false)
-                    .addManufacturerData(0x1234, formatAdvertisementData(queue))
+                    .addManufacturerData(Constants.MANUFACTURER_ID, formatAdvertisementData(queue))
                     .build();
 
             // Add Service UUID to Scan Response so external scanners can find it
             AdvertiseData scanResponse = new AdvertiseData.Builder()
-                    .addServiceUuid(new ParcelUuid(UUID.fromString(GATTServerManager.SERVICE_UUID)))
+                    .addServiceUuid(new ParcelUuid(Constants.SERVICE_UUID))
                     .build();
 
             bluetoothLeAdvertiser.startAdvertising(settings, data, scanResponse, advertiseCallback);
@@ -110,12 +111,12 @@ public class BLEAdvertisementManager {
         // [WaitTime: 2B] [Status: 1B]
         // Total: 19 bytes (safe for BLE)
 
-        byte[] data = new byte[19];
+        byte[] data = new byte[Constants.ADVERTISEMENT_PACKET_SIZE];
         int offset = 0;
 
         // Header (magic number to identify our packets)
-        data[offset++] = (byte) 0xAA;
-        data[offset++] = (byte) 0xBB;
+        data[offset++] = Constants.MAGIC_HEADER_1;
+        data[offset++] = Constants.MAGIC_HEADER_2;
 
         // Short queue ID (hash of full UUID)
         int idHash = queue.getId().hashCode();
@@ -124,15 +125,15 @@ public class BLEAdvertisementManager {
 
         // Short name (fixed 10 bytes)
         String name = queue.getName();
-        if (name.length() > 10)
-            name = name.substring(0, 10);
+        if (name.length() > Constants.DEVICE_NAME_LENGTH)
+            name = name.substring(0, Constants.DEVICE_NAME_LENGTH);
         byte[] nameBytes = name.getBytes();
         System.arraycopy(nameBytes, 0, data, offset, nameBytes.length);
         // Pad remaining bytes with 0 if name is shorter than 10
-        for (int i = nameBytes.length; i < 10; i++) {
+        for (int i = nameBytes.length; i < Constants.DEVICE_NAME_LENGTH; i++) {
             data[offset + i] = 0;
         }
-        offset += 10;
+        offset += Constants.DEVICE_NAME_LENGTH;
 
         // Current number (2 bytes)
         int current = queue.getCurrentNumber();

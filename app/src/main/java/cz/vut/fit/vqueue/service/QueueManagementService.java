@@ -9,11 +9,11 @@ import androidx.annotation.Nullable;
 import cz.vut.fit.vqueue.R;
 import cz.vut.fit.vqueue.model.Queue;
 import cz.vut.fit.vqueue.repo.QueueRepo;
+import cz.vut.fit.vqueue.utils.Constants;
 
 public class QueueManagementService extends Service {
     private static final String TAG = "QueueManagementService";
-    private static final String CHANNEL_ID = "QueueManagementChannel";
-    private static final int NOTIFICATION_ID = 1;
+    // Constants used from Constants class
 
     private QueueRepo queueRepo;
     private BLEAdvertisementManager bleManager;
@@ -24,7 +24,7 @@ public class QueueManagementService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "QueueManagementService created");
-        queueRepo = QueueRepo.getInstance();
+        queueRepo = QueueRepo.getInstance(this);
         bleManager = new BLEAdvertisementManager(this);
         gattManager = new GATTServerManager(this, bleManager);
         currentQueue = queueRepo.getCurrentQueue();
@@ -34,7 +34,7 @@ public class QueueManagementService extends Service {
     private void createNotificationChannel() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             android.app.NotificationChannel serviceChannel = new android.app.NotificationChannel(
-                    CHANNEL_ID,
+                    Constants.CHANNEL_ID_MANAGEMENT,
                     "Queue Management Service",
                     android.app.NotificationManager.IMPORTANCE_LOW);
             android.app.NotificationManager manager = getSystemService(android.app.NotificationManager.class);
@@ -45,12 +45,12 @@ public class QueueManagementService extends Service {
     }
 
     private android.app.Notification createNotification() {
-        android.content.Intent intent = new android.content.Intent(this,
-                cz.vut.fit.vqueue.activities.MainActivity.class);
-        android.app.PendingIntent pendingIntent = android.app.PendingIntent.getActivity(this, 0, intent,
-                android.app.PendingIntent.FLAG_IMMUTABLE);
+        android.app.PendingIntent pendingIntent = new androidx.navigation.NavDeepLinkBuilder(this)
+                .setGraph(R.navigation.nav_graph)
+                .setDestination(R.id.queueManagerFragment)
+                .createPendingIntent();
 
-        return new androidx.core.app.NotificationCompat.Builder(this, CHANNEL_ID)
+        return new androidx.core.app.NotificationCompat.Builder(this, Constants.CHANNEL_ID_MANAGEMENT)
                 .setContentTitle("Queue Active")
                 .setContentText("Your queue is currently running.")
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
@@ -96,7 +96,7 @@ public class QueueManagementService extends Service {
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue != null) {
             Log.i(TAG, "Starting queue: " + currentQueue.getName());
-            startForeground(NOTIFICATION_ID, createNotification());
+            startForeground(Constants.NOTIFICATION_ID_QUEUE_MANAGEMENT, createNotification());
 
             // Setup GATT server first
             if (gattManager.setupGATTServer()) {
