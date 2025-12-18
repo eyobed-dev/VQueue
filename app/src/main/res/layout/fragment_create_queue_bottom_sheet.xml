@@ -5,45 +5,35 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="@dimen/padding_medium"
-    android:background="?attr/android:colorBackground">
-
-    <!-- Bottom Sheet Handle -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/margin_medium"
-        android:background="@android:color/darker_gray"
-        android:alpha="0.3" />
+    android:background="@color/surface">
 
     <!-- Header -->
     <TextView
         android:id="@+id/headerText"
+        style="@style/TextAppearance.VQueue.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Create a Queue"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="@dimen/text_size_header"
-        android:textStyle="bold"
         android:layout_marginBottom="@dimen/margin_medium" />
 
-    <!-- Queue Name Input -->
+    <!-- Queue Name Input - Using classic line style (implied by styles in themes.xml) -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/queueNameLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
         android:hint="Queue Name"
-        app:boxStrokeColor="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:id="@+id/queueNameEditText"
+            style="@style/Widget.VQueue.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="text"
-            android:textSize="@dimen/text_size_medium"
-            android:fontFamily="sans-serif" />
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,34 +44,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_medium"
         android:hint="Wait Time (min)"
-        app:boxStrokeColor="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <EditText
             android:id="@+id/waitTimeEditText"
+            style="@style/Widget.VQueue.EditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:textSize="@dimen/text_size_medium"
-            android:fontFamily="sans-serif" />
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Create Queue Button -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/createQueueButton"
+        style="@style/Widget.VQueue.Button"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/button_height_large"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
         android:layout_marginBottom="@dimen/margin_medium"
-        android:fontFamily="sans-serif-medium"
-        android:minHeight="@dimen/button_height"
-        android:text="Create"
-        android:textAllCaps="true"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_size_large"
-        app:backgroundTint="?attr/colorPrimary"
-        app:cornerRadius="2dp"
-        app:elevation="@dimen/card_elevation" />
+        android:text="Create" />
 
 </LinearLayout>
