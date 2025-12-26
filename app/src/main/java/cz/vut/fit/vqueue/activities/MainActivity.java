@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String theme = prefs.getString("theme_preference", "system");
 
-        // 3. Apply the theme immediately
+        //Apply the theme immediately
         switch (theme) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -87,14 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        // Hide the global toolbar when on HomeFragment, show on others
-        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
-            if (destination.getId() == R.id.homeFragment) {
-                mainToolbar.setVisibility(android.view.View.GONE);
-            } else {
-                mainToolbar.setVisibility(android.view.View.VISIBLE);
-            }
-        });
     }
 
     @Override
@@ -107,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPermissionDeniedDialog() {
-        // Implement proper user feedback
+        // Implement  user feedback
         new AlertDialog.Builder(this)
                 .setTitle("Permissions Required")
                 .setMessage(

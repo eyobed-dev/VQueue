@@ -31,7 +31,8 @@ public class QueueManagerFragment extends Fragment {
     private MaterialButton stopButton;
     private RecyclerView waitersRecyclerView;
     private WaiterAdapter waiterAdapter;
-    private TextView emptyStateText;
+    private TextView queueSizeText;
+    private View emptyStateContainer;
 
     private QueueRepo queueRepo;
     private Queue currentQueue;
@@ -54,12 +55,13 @@ public class QueueManagerFragment extends Fragment {
         queueNameText = view.findViewById(R.id.queueNameText);
         currentNumberText = view.findViewById(R.id.currentNumberText);
         waitTimeText = view.findViewById(R.id.waitTimeText);
+        queueSizeText = view.findViewById(R.id.queueSizeText);
         nextButton = view.findViewById(R.id.nextButton);
         manualAddButton = view.findViewById(R.id.manualAddButton);
         pauseButton = view.findViewById(R.id.pauseButton);
         stopButton = view.findViewById(R.id.stopButton);
         waitersRecyclerView = view.findViewById(R.id.waitersRecyclerView);
-        emptyStateText = view.findViewById(R.id.emptyStateText);
+        emptyStateContainer = view.findViewById(R.id.emptyStateContainer);
 
         // Setup RecyclerView
         waitersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -67,6 +69,37 @@ public class QueueManagerFragment extends Fragment {
         waitersRecyclerView.setAdapter(waiterAdapter);
 
         queueRepo = QueueRepo.getInstance(requireContext());
+
+        // Add menu provider to existing global action bar
+        requireActivity().addMenuProvider(new androidx.core.view.MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull android.view.Menu menu, @NonNull android.view.MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.queue_manager_menu, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull android.view.MenuItem menuItem) {
+                if (menuItem.getItemId() == R.id.action_clear_queue) {
+                    new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                            .setTitle("Clear Queue")
+                            .setMessage("Are you sure you want to delete the queue?")
+                            .setPositiveButton("Clear", (dialog, which) -> {
+                                queueRepo.clearWaiters();
+                                updateQueueInfo();
+                                Toast.makeText(getContext(), "Queue cleared", Toast.LENGTH_SHORT).show();
+
+                                // Update Service Advertisement
+                                Intent intent = new Intent(getContext(), QueueManagementService.class);
+                                intent.putExtra("action", "update_advertisement");
+                                getContext().startService(intent);
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), androidx.lifecycle.Lifecycle.State.RESUMED);
     }
 
     private void loadQueueData() {
@@ -84,13 +117,23 @@ public class QueueManagerFragment extends Fragment {
 
     private void setupClickListeners() {
         nextButton.setOnClickListener(v -> {
+            if (currentQueue != null) {
+                int totalWaiters = currentQueue.getWaiters() != null ? currentQueue.getWaiters().size() : 0;
+                if (totalWaiters == 0 || currentQueue.getCurrentNumber() >= totalWaiters) {
+                    Toast.makeText(getContext(), "No more people in the queue!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
             Intent intent = new Intent(getContext(), QueueManagementService.class);
             intent.putExtra("action", "call_next");
             getContext().startService(intent);
 
+
             currentQueue = queueRepo.getCurrentQueue();
+
             updateQueueInfo();
-            Toast.makeText(getContext(), "Called number: " + currentQueue.getCurrentNumber(), Toast.LENGTH_SHORT)
+            Toast.makeText(getContext(), "Called number: " + (currentQueue.getCurrentNumber() + 1), Toast.LENGTH_SHORT)
                     .show();
         });
 
@@ -149,7 +192,7 @@ public class QueueManagerFragment extends Fragment {
             int ticketNumber = queueRepo.addWaiter(name);
             if (ticketNumber > 0) {
                 Toast.makeText(getContext(), "Added: " + name + " - Ticket #" + ticketNumber,
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
                 updateQueueInfo();
 
                 // Update advertisement
@@ -170,6 +213,11 @@ public class QueueManagerFragment extends Fragment {
             currentNumberText.setText(String.valueOf(currentQueue.getCurrentNumber()));
             waitTimeText.setText(currentQueue.getWaitTimeMinutes() + " minutes");
 
+            // Update Queue Count
+            int totalWaiters = currentQueue.getWaiters() != null ? currentQueue.getWaiters().size() : 0;
+
+            queueSizeText.setText(String.valueOf(totalWaiters));
+
             android.util.Log.i("QueueManager", "Current number: " + currentQueue.getCurrentNumber());
 
             // Update pause button state
@@ -189,11 +237,11 @@ public class QueueManagerFragment extends Fragment {
 
                 if (currentQueue.getWaiters().isEmpty()) {
                     waitersRecyclerView.setVisibility(View.GONE);
-                    emptyStateText.setVisibility(View.VISIBLE);
+                    emptyStateContainer.setVisibility(View.VISIBLE);
                     android.util.Log.i("QueueManager", "Queue is empty");
                 } else {
                     waitersRecyclerView.setVisibility(View.VISIBLE);
-                    emptyStateText.setVisibility(View.GONE);
+                    emptyStateContainer.setVisibility(View.GONE);
                     android.util.Log.i("QueueManager", "Queue has waiters, calling scrollToCurrentPerson");
 
                     // Auto-scroll to currently served person

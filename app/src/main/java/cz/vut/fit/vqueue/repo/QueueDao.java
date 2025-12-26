@@ -36,9 +36,15 @@ public interface QueueDao {
       @Insert
       long insertWaiter(WaiterEntity waiter);
 
+      @Query("DELETE FROM waiters WHERE queueId = :queueId")
+      void deleteWaiters(String queueId);
+
       @Query("SELECT MAX(ticketNumber) FROM waiters WHERE queueId = :queueId")
       Integer getLastTicketNumber(String queueId);
 
       @Query("SELECT count(*) FROM waiters WHERE queueId = :queueId")
       int getWaiterCount(String queueId);
+
+      @Query("SELECT * FROM waiters WHERE queueId = :queueId ORDER BY ticketNumber ASC")
+      List<WaiterEntity> getWaiters(String queueId);
 }

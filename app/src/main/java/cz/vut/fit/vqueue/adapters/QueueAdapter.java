@@ -1,6 +1,7 @@
 package cz.vut.fit.vqueue.adapters;
 
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
@@ -23,7 +25,9 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     private final OnQueueClickListener listener;
 
     public interface OnQueueClickListener {
-        void onQueueClick(AdvertisedQueue queue);
+        void onQueueDetailsClick(AdvertisedQueue queue);
+
+        void onQueueJoinClick(AdvertisedQueue queue);
     }
 
     public QueueAdapter(List<AdvertisedQueue> queues, OnQueueClickListener listener) {
@@ -34,7 +38,6 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     @NonNull
     @Override
     public QueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the new circular layout
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_queue, parent, false);
         return new QueueViewHolder(view);
@@ -55,8 +58,9 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         private final TextView queueName;
         private final TextView queueWaitInfo;
         private final TextView rssi;
+        private final View headerBackground;
+        private final MaterialButton btnJoin;
         private final MaterialCardView cardView;
-        private final View colorCircle;
 
         public QueueViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,54 +68,67 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
             queueWaitInfo = itemView.findViewById(R.id.queueWaitInfo);
             cardView = itemView.findViewById(R.id.cardView);
             rssi = itemView.findViewById(R.id.rssi);
-            colorCircle = itemView.findViewById(R.id.colorCircle);
+            headerBackground = itemView.findViewById(R.id.headerBackground);
+            btnJoin = itemView.findViewById(R.id.btnJoin);
         }
 
         public void bind(final AdvertisedQueue queue, final OnQueueClickListener listener) {
             // Generate a random but deterministic color based on the device address
-            // This ensures the color stays the same for the specific queue but is
-            // unique-ish
             Random random = new Random(queue.getDeviceAddress().hashCode());
 
-            // Use HSV to generate attractive, vibrant colors (avoiding murky browns/grays)
-            // Hue: Random 0-360
-            // Saturation: 0.6 - 1.0 (Vibrant)
-            // Value: 0.8 - 1.0 (Bright)
+            // Use HSV to generate attractive, vibrant colors
             float[] hsv = new float[3];
             hsv[0] = random.nextFloat() * 360f;
             hsv[1] = 0.6f + (random.nextFloat() * 0.4f);
             hsv[2] = 0.8f + (random.nextFloat() * 0.2f);
 
-            int selectedColor = Color.HSVToColor(hsv);
+            // Create darker shade for left (start)
+            float[] hsvDark = new float[] { hsv[0], hsv[1], hsv[2] * 0.7f };
+            int colorStart = Color.HSVToColor(hsvDark);
 
-            // Apply the color to the circle
-            colorCircle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(selectedColor));
+            // Create lighter shade for right (end)
+            float[] hsvLight = new float[] { hsv[0], hsv[1], Math.min(1.0f, hsv[2] * 1.1f) };
+            int colorEnd = Color.HSVToColor(hsvLight);
 
-            // Set text colors to black for better contrast on white card
-            queueName.setTextColor(Color.BLACK);
-            queueWaitInfo.setTextColor(Color.BLACK);
-            rssi.setTextColor(Color.BLACK);
-            // Set Device/Queue Name
+            // Create gradient (Left to Right)
+            android.graphics.drawable.GradientDrawable gradient = new android.graphics.drawable.GradientDrawable(
+                    android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
+                    new int[] { colorStart, colorEnd });
+
+            // Apply the gradient to the header background
+            if (headerBackground != null) {
+                headerBackground.setBackground(gradient);
+            }
+
             if (queue.getName() != null && !queue.getName().isEmpty()) {
                 queueName.setText(queue.getName());
-                rssi.setText(queue.getRssi() + " dBm");
             } else {
                 queueName.setText("Unknown Device");
             }
 
-            // Set Details (Wait time or generic info)
-            if (queue.getWaitTimeMinutes() >= 0 && queue.getCurrentNumber() >= 0) {
-                queueWaitInfo.setText(queue.getWaitTimeMinutes() + " min wait");
-                queueWaitInfo.setVisibility(View.VISIBLE);
-            } else {
-                // If it's just a device not fully advertising queue stats yet
-                queueWaitInfo.setVisibility(View.GONE);
+            if (rssi != null) {
+                rssi.setText("Signal: " + queue.getRssi() + " dBm");
             }
 
-            // FIX: Set listener on the cardView specifically.
-            // Because the CardView is clickable (for the ripple), it intercepts
-            // clicks before they reach itemView.
-            cardView.setOnClickListener(v -> listener.onQueueClick(queue));
+            // Set Details (Wait time or generic info)
+            if (queueWaitInfo != null) {
+                if (queue.getWaitTimeMinutes() >= 0 && queue.getCurrentNumber() >= 0) {
+                    queueWaitInfo.setText(queue.getWaitTimeMinutes() + " min wait • 3 people ahead");
+                    queueWaitInfo.setVisibility(View.VISIBLE);
+                } else {
+                    queueWaitInfo.setVisibility(View.GONE);
+                }
+            }
+
+            // Set listener on the cardView specifically for Details
+            if (cardView != null) {
+                cardView.setOnClickListener(v -> listener.onQueueDetailsClick(queue));
+            }
+
+            // Set listener on the Join button specifically for Join
+            if (btnJoin != null) {
+                btnJoin.setOnClickListener(v -> listener.onQueueJoinClick(queue));
+            }
         }
     }
 }

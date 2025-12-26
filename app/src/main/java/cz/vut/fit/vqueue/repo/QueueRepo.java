@@ -57,16 +57,33 @@ public class QueueRepo {
     // Helper to map Entity -> Model (Needs corresponding setters in Model)
     private void restoreQueueState(Queue queue, cz.vut.fit.vqueue.model.QueueEntity entity) {
         try {
-            // Use reflection if setters don't exist, but we added setters earlier or will
-            // add them
-            // Wait, Queue.java has getters but setters are limited?
-            // Let's assume we will update Queue.java to support restoring state
-            java.lang.reflect.Field idField = Queue.class.getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(queue, entity.getId());
-
+            // Restore basic properties
+            queue.setId(entity.getId());
             queue.setCurrentNumber(entity.getCurrentNumber());
             queue.setStatus(Queue.QueueStatus.valueOf(entity.getStatus()));
+
+            // Restore Waiters
+            java.util.List<WaiterEntity> waiterEntities = queueDao.getWaiters(entity.getId());
+            java.util.List<Waiter> waiters = new java.util.ArrayList<>();
+            if (waiterEntities != null) {
+                for (WaiterEntity waiterEntity : waiterEntities) {
+                    Waiter waiter = new Waiter(waiterEntity.getTicketNumber(), waiterEntity.getDeviceId());
+                    waiter.setJoinedAt(waiterEntity.getJoinedAtTimestamp());
+                    // Since Waiter.joinedAt is final and set in constructor, we might want to allow
+                    // setting it
+                    // or just accept the new time. Ideally we should restore timestamp too.
+                    // But Waiter constructor sets timestamp to now.
+                    // Let's check Waiter model if needed, but for now getting the correct order
+                    // (ticketNum) is key.
+                    // Actually, let's verify if Waiter allows setting timestamp or if we can pass
+                    // it in constructor.
+                    // Looking at existing code, Waiter seems simple.
+                    // We will just recreate them for now. The order is preserved by DB query.
+                    waiters.add(waiter);
+                }
+            }
+            queue.setWaiters(waiters);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -153,6 +170,20 @@ public class QueueRepo {
     public void clearQueue() {
         // This is usually called after stopping
         currentQueue = null;
+    }
+
+    public void clearWaiters() {
+        if (currentQueue != null) {
+            currentQueue.setWaiters(new java.util.ArrayList<>());
+            currentQueue.setCurrentNumber(0); // Reset current number too? Typically yes.
+            // Queue state update
+            persistQueue(currentQueue);
+
+            // Db delete
+            executor.execute(() -> {
+                queueDao.deleteWaiters(currentQueue.getId());
+            });
+        }
     }
 
     private void persistQueue(Queue queue) {

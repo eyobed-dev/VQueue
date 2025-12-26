@@ -46,6 +46,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private TextView statusText;
     private RecyclerView queuesRecyclerView;
     private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
+    private View emptyStateContainer;
 
     // Data & Logic
     private QueueAdapter queueAdapter;
@@ -54,6 +55,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private BLEClientManager bleClientManager;
     private String pendingDeviceAddress;
     private String pendingQueueName;
+
+    // Scanning Management
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
+    private Runnable scanTimeoutRunnable;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,6 +104,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         statusText = view.findViewById(R.id.statusText);
         queuesRecyclerView = view.findViewById(R.id.queuesRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        emptyStateContainer = view.findViewById(R.id.emptyStateContainer);
         loadingIndicator = view.findViewById(R.id.loadingIndicator);
 
         // Initialize BLE components
@@ -133,7 +139,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         availableQueues = new ArrayList<>();
         queueAdapter = new QueueAdapter(availableQueues, this);
 
-        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+        queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         queuesRecyclerView.setAdapter(queueAdapter);
 
         // Setup BLE scanner listener
@@ -180,10 +186,13 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                     if (queueCount > 0) {
                         statusText.setText(
                                 "Found " + availableQueues.size() + " Queues(s) (" + queueCount + " queue(s))");
+                        statusText.setVisibility(View.VISIBLE);
                     } else {
                         statusText.setText("Found " + availableQueues.size() + " Queues(s) nearby");
+                        statusText.setVisibility(View.VISIBLE);
                     }
                     queuesRecyclerView.setVisibility(View.VISIBLE);
+                    emptyStateContainer.setVisibility(View.GONE);
                     queueAdapter.notifyDataSetChanged();
                 });
             }
@@ -197,7 +206,15 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                     }
                     if (availableQueues.isEmpty()) {
                         statusText.setText("No Queues found nearby");
+                        // statusText.setVisibility(View.GONE); // Optional: Hide text if we rely on
+                        // illustration
+
+                        queuesRecyclerView.setVisibility(View.GONE);
+                        emptyStateContainer.setVisibility(View.VISIBLE);
                     } else {
+                        emptyStateContainer.setVisibility(View.GONE);
+                        queuesRecyclerView.setVisibility(View.VISIBLE);
+
                         int queueCount = 0;
                         for (AdvertisedQueue q : availableQueues) {
                             if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
@@ -211,6 +228,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                             statusText
                                     .setText("Found " + availableQueues.size() + " Queues(s) nearby. No queues found.");
                         }
+                        statusText.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -222,7 +240,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             public void onJoinSuccess(int ticketNumber) {
                 new Handler(Looper.getMainLooper()).post(() -> {
                     Toast.makeText(getContext(), "Successfully joined queue! Your ticket number: #" + ticketNumber,
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     // Navigate to WaitFragment with arguments
                     Bundle bundle = new Bundle();
                     bundle.putString("QUEUE_NAME", pendingQueueName); // Pass queue name for monitoring
@@ -235,39 +253,67 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             @Override
             public void onJoinFailed(String error) {
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getContext(), "Failed to join queue: " + error, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Failed to join queue: " + error, Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
 
     private void startSearch() {
+        // Cancel any pending scan timeout
+        if (scanTimeoutRunnable != null) {
+            mainHandler.removeCallbacks(scanTimeoutRunnable);
+        }
+
+        // Stop any existing scan first to reset state
+        stopScanning();
+
         statusText.setText("Scanning for nearby devices...");
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(true);
+        }
         queuesRecyclerView.setVisibility(View.GONE);
+        if (emptyStateContainer != null)
+            emptyStateContainer.setVisibility(View.GONE);
         availableQueues.clear();
+        if (queueAdapter != null) {
+            queueAdapter.notifyDataSetChanged();
+        }
 
         // Start BLE scanning
         if (bleScanner.isBluetoothEnabled()) {
             bleScanner.startScan();
 
-            // Stop scanning after 10 seconds
-            new Handler(Looper.getMainLooper()).postDelayed(this::stopScanning, 10000);
+            // Schedule stop scanning after 10 seconds
+            scanTimeoutRunnable = this::stopScanning;
+            mainHandler.postDelayed(scanTimeoutRunnable, 10000);
         } else {
             loadingIndicator.setVisibility(View.GONE);
+            if (swipeRefreshLayout != null) {
+                swipeRefreshLayout.setRefreshing(false);
+            }
             statusText.setText("Bluetooth is not enabled. Please enable Bluetooth and try again.");
-            Toast.makeText(getContext(), "Bluetooth is required for queue discovery", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Bluetooth is required for queue discovery", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void stopScanning() {
+        if (scanTimeoutRunnable != null) {
+            mainHandler.removeCallbacks(scanTimeoutRunnable);
+        }
         if (bleScanner != null && bleScanner.isScanning()) {
             bleScanner.stopScan();
         }
     }
 
     @Override
-    public void onQueueClick(AdvertisedQueue queue) {
+    public void onQueueDetailsClick(AdvertisedQueue queue) {
         showQueueDetailsDialog(queue);
+    }
+
+    @Override
+    public void onQueueJoinClick(AdvertisedQueue queue) {
+        showJoinConfirmationDialog(queue);
     }
 
     private void showQueueDetailsDialog(AdvertisedQueue queue) {
@@ -311,9 +357,35 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         builder.show();
     }
 
+    private void showJoinConfirmationDialog(AdvertisedQueue queue) {
+        // Check if this is a real queue (-1 indicates generic device)
+        boolean isQueue = queue.getCurrentNumber() >= 0 && queue.getWaitTimeMinutes() >= 0;
+
+        if (!isQueue) {
+            Toast.makeText(requireContext(), "This device is not advertising a queue.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Join Queue")
+                .setMessage("Do you want to join " + queue.getName() + "?")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Join", (dialog, which) -> {
+                    stopScanning();
+                    pendingDeviceAddress = queue.getDeviceAddress();
+                    pendingQueueName = queue.getName();
+                    Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
+                    bleClientManager.connectAndJoin(queue.getDeviceAddress());
+                })
+                .show();
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (scanTimeoutRunnable != null) {
+            mainHandler.removeCallbacks(scanTimeoutRunnable);
+        }
         stopScanning();
         if (bleClientManager != null) {
             bleClientManager.disconnect();

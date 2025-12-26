@@ -34,8 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_small"
         android:hint="Queue Name"
-        app:boxStrokeColor="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        android:textColor="?attr/colorOnSurface">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/queueNameEditText"
@@ -54,8 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_medium"
         android:hint="Wait Time (min)"
-        app:boxStrokeColor="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        android:textColor="?attr/colorOnSurface">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/waitTimeEditText"
@@ -80,7 +78,7 @@
         android:textAllCaps="true"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_large"
-        app:backgroundTint="?attr/colorPrimary"
+        app:backgroundTint="?attr/colorPrimaryVariant"
         app:cornerRadius="2dp"
         app:elevation="@dimen/card_elevation" />
 

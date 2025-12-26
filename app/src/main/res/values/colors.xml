@@ -39,4 +39,8 @@
     <color name="functional_blue">#2196F3</color>        <!-- Blue 800 -->
     <color name="functional_blue_ripple">#42A5F5</color> <!-- Blue 500 -->
 
+    <!-- Semantic Header Colors -->
+    <color name="header_background">@color/primary</color>
+    <color name="on_header">@color/on_primary</color>
+
 </resources>
