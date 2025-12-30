@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="cz.vut.fit.vqueue.fragments.HomeFragment"
+        android:name="et.dev.eyobed.vqueue.fragments.HomeFragment"
         android:label="VQueue">
         <action
             android:id="@+id/action_homeFragment_to_queueManagerFragment"
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/queueManagerFragment"
-        android:name="cz.vut.fit.vqueue.fragments.QueueManagerFragment"
+        android:name="et.dev.eyobed.vqueue.fragments.QueueManagerFragment"
         android:label="Manage Queue">
         <action
             android:id="@+id/action_queueManagerFragment_to_homeFragment"
@@ -36,7 +36,7 @@
 
     <fragment
         android:id="@+id/waitFragment"
-        android:name="cz.vut.fit.vqueue.fragments.WaitFragment"
+        android:name="et.dev.eyobed.vqueue.fragments.WaitFragment"
         android:label="Waiting in Queue">
         <action
             android:id="@+id/action_waitFragment_to_homeFragment"
@@ -47,11 +47,11 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="cz.vut.fit.vqueue.fragments.SettingsFragment"
+        android:name="et.dev.eyobed.vqueue.fragments.SettingsFragment"
         android:label="Settings" />
 
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="cz.vut.fit.vqueue.fragments.AboutFragment"
+        android:name="et.dev.eyobed.vqueue.fragments.AboutFragment"
         android:label="About" />
 </navigation>

@@ -1,0 +1,305 @@
+package et.dev.eyobed.vqueue.service;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
+import android.content.Context;
+import android.util.Log;
+import android.util.SparseArray;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import et.dev.eyobed.vqueue.model.AdvertisedQueue;
+import et.dev.eyobed.vqueue.utils.AppPreferences;
+import et.dev.eyobed.vqueue.utils.Constants;
+
+public class BLEScanner {
+    private static final String TAG = "BLEScanner";
+
+    private Context context;
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothLeScanner bluetoothLeScanner;
+    private boolean isScanning = false;
+    private ScanCallback scanCallback;
+    private OnQueueFoundListener listener;
+    private List<AdvertisedQueue> foundQueues;
+    private AppPreferences appPreferences;
+
+    public interface OnQueueFoundListener {
+        void onQueueFound(AdvertisedQueue queue);
+
+        void onScanComplete();
+    }
+
+    public BLEScanner(Context context) {
+        this.context = context;
+        this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter != null) {
+            this.bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
+        }
+        this.foundQueues = new ArrayList<>();
+        this.appPreferences = new AppPreferences(context);
+    }
+
+    public boolean isBluetoothEnabled() {
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+    }
+
+    public boolean isScanning() {
+        return isScanning;
+    }
+
+    public void setOnQueueFoundListener(OnQueueFoundListener listener) {
+        this.listener = listener;
+    }
+
+    public void startScan() {
+        if (!isBluetoothEnabled()) {
+            Log.e(TAG, "Bluetooth is not enabled");
+            return;
+        }
+
+        if (bluetoothLeScanner == null) {
+            Log.e(TAG, "BluetoothLeScanner is null");
+            return;
+        }
+
+        if (isScanning) {
+            Log.w(TAG, "Already scanning, stopping first");
+            stopScan();
+        }
+
+        foundQueues.clear();
+
+        // // Check preference: show all devices or only queues
+        // boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
+
+        // List<ScanFilter> filters = null;
+        // if (!showAllDevices) {
+        // // Filter for queue service UUID only
+        // ScanFilter scanFilter = new ScanFilter.Builder()
+        // .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
+        // .build();
+        // filters = new ArrayList<>();
+        // filters.add(scanFilter);
+        // }
+        // // If showAllDevices is true, filters remains null (scan all devices)
+
+        // Configure scan settings
+        ScanSettings settings = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                .build();
+
+        // Create scan callback
+        scanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
+                processScanResult(result);
+            }
+
+            @Override
+            public void onBatchScanResults(List<ScanResult> results) {
+                super.onBatchScanResults(results);
+                for (ScanResult result : results) {
+                    processScanResult(result);
+                }
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                super.onScanFailed(errorCode);
+                isScanning = false;
+                String errorMessage = "Scan failed: ";
+                switch (errorCode) {
+                    case SCAN_FAILED_ALREADY_STARTED:
+                        errorMessage += "Already started";
+                        break;
+                    case SCAN_FAILED_APPLICATION_REGISTRATION_FAILED:
+                        errorMessage += "Application registration failed";
+                        break;
+                    case SCAN_FAILED_FEATURE_UNSUPPORTED:
+                        errorMessage += "Feature unsupported";
+                        break;
+                    case SCAN_FAILED_INTERNAL_ERROR:
+                        errorMessage += "Internal error";
+                        break;
+                    default:
+                        errorMessage += "Unknown error: " + errorCode;
+                        break;
+                }
+                Log.e(TAG, errorMessage);
+            }
+        };
+
+        // Start scanning with or without filters based on preference
+        try {
+            bluetoothLeScanner.startScan(null, settings, scanCallback);
+            isScanning = true;
+            // if (showAllDevices) {
+            // Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
+            // } else {
+            // Log.i(TAG, "Started BLE scanning (queues only)");
+            // }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to start scanning", e);
+            isScanning = false;
+        }
+    }
+
+    public void stopScan() {
+        if (bluetoothLeScanner != null && isScanning && scanCallback != null) {
+            try {
+                bluetoothLeScanner.stopScan(scanCallback);
+                isScanning = false;
+                Log.i(TAG, "Stopped BLE scanning");
+
+                if (listener != null) {
+                    listener.onScanComplete();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to stop scanning", e);
+            }
+        }
+    }
+
+    private void processScanResult(ScanResult result) {
+        // Check preference: show all devices or only queues
+        boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
+        try {
+            String deviceAddress = result.getDevice().getAddress();
+            String deviceName = result.getDevice().getName();
+            int rssi = result.getRssi(); // Capture the RSSI (signal strength)
+            if (deviceName == null || deviceName.isEmpty()) {
+                deviceName = "Unknown Device";
+            }
+
+            AdvertisedQueue queue = null;
+
+            // Scan all manufacturer data entries and validate by header magic number
+            SparseArray<byte[]> manufacturerDataMap = result.getScanRecord().getManufacturerSpecificData();
+            if (manufacturerDataMap != null) {
+                // Iterate through all manufacturer data entries
+                for (int i = 0; i < manufacturerDataMap.size(); i++) {
+                    byte[] manufacturerData = manufacturerDataMap.valueAt(i);
+                    // Try to parse - will return null if header doesn't match
+                    queue = parseAdvertisementData(manufacturerData, deviceAddress, rssi);
+                    if (queue != null) {
+                        // Found valid queue data, stop searching
+                        break;
+                    }
+                }
+            }
+
+            // If not a queue device and showAllDevices is enabled, create a generic entry
+            // for display
+            if (queue == null) {
+                if (showAllDevices) {
+                    // Use a special ID format to identify generic devices
+                    queue = new AdvertisedQueue(
+                            "GENERIC_DEVICE_" + deviceAddress.replace(":", ""),
+                            deviceName,
+                            -1, // currentNumber (-1 indicates not a queue)
+                            -1, // waitTimeMinutes (-1 indicates not a queue)
+                            deviceAddress, rssi); // Pass RSSI to constructor
+                } else {
+                    // In normal mode, ignore non-queue devices
+                    return;
+                }
+            }
+
+            // Check if we already have this device (by device address)
+            boolean exists = false;
+            for (int i = 0; i < foundQueues.size(); i++) {
+                AdvertisedQueue existing = foundQueues.get(i);
+                if (existing.getDeviceAddress().equals(queue.getDeviceAddress())) {
+                    // Update existing entry
+                    foundQueues.set(i, queue);
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists) {
+                foundQueues.add(queue);
+            }
+
+            if (listener != null) {
+                listener.onQueueFound(queue);
+            }
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error processing scan result", e);
+        }
+    }
+
+    private AdvertisedQueue parseAdvertisementData(byte[] data, String deviceAddress, int rssi) {
+        try {
+            // Format: [Header: 2B] [Queue ID: 2B] [Name: 10B]
+            // [Current Number: 2B] [Wait Time: 2B] [Status: 1B]
+            // Total: 19 bytes
+
+            // First check if we have at least the header
+            if (data == null || data.length < 2) {
+                // Silently ignore - likely not a VQueue advertisement
+                return null;
+            }
+
+            int offset = 0;
+
+            // Check header (2 bytes) - validates this is a VQueue advertisement
+            if (data[offset++] != Constants.MAGIC_HEADER_1 || data[offset++] != Constants.MAGIC_HEADER_2) {
+                // Not a VQueue advertisement, silently ignore
+                return null;
+            }
+
+            // Now check if the VQueue advertisement has enough data
+            if (data.length < Constants.ADVERTISEMENT_PACKET_SIZE) {
+                Log.w(TAG, "VQueue advertisement data too short: " + data.length + " bytes (expected "
+                        + Constants.ADVERTISEMENT_PACKET_SIZE + ")");
+                return null;
+            }
+
+            // Queue ID (2 bytes)
+            // Note: Server sends a 2-byte hash, but AdvertisedQueue expects a String ID.
+            // We'll construct a hex string from the hash for now.
+            int idHash = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+            String queueId = String.format("%04X", idHash);
+            offset += 2;
+
+            // Queue Name (10 bytes)
+            byte[] nameBytes = new byte[Constants.DEVICE_NAME_LENGTH];
+            System.arraycopy(data, offset, nameBytes, 0, Constants.DEVICE_NAME_LENGTH);
+            String queueName = new String(nameBytes).trim();
+            // Remove null characters
+            queueName = queueName.replace("\0", "");
+            offset += Constants.DEVICE_NAME_LENGTH;
+
+            // Current Number (2 bytes)
+            int currentNumber = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+            offset += 2;
+
+            // Wait Time (2 bytes)
+            int waitTime = (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+            offset += 2;
+
+            // Status (1 byte)
+            int statusOrdinal = data[offset++] & 0xFF;
+
+            // Create AdvertisedQueue, now including the RSSI value
+            return new AdvertisedQueue(queueId, queueName, currentNumber, waitTime, deviceAddress, rssi);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing advertisement data", e);
+            return null;
+        }
+    }
+
+    public List<AdvertisedQueue> getFoundQueues() {
+        return new ArrayList<>(foundQueues);
+    }
+}
