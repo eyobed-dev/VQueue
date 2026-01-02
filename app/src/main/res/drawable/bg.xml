@@ -13,10 +13,10 @@
 
 
     <!-- Decorative PNG at bottom-right -->
-    <item
-        android:drawable="@drawable/img"
-        android:gravity="bottom|end"
-        android:width="200dp"
-        android:height="200dp"
-        android:tileMode="disabled" />
+<!--    <item-->
+<!--        android:drawable="@drawable/img"-->
+<!--        android:gravity="bottom|end"-->
+<!--        android:width="200dp"-->
+<!--        android:height="200dp"-->
+<!--        android:tileMode="disabled" />-->
 </layer-list>

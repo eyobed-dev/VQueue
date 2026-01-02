@@ -41,10 +41,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     // UI Components
     private FloatingActionButton fabCreateQueue;
     private ProgressBar loadingIndicator;
-    private TextView statusText;
     private RecyclerView queuesRecyclerView;
     private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
     private View emptyStateContainer;
+    private TextView headerTitle;
 
     // Data & Logic
     private QueueAdapter queueAdapter;
@@ -54,6 +54,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private String pendingDeviceAddress;
     private String pendingQueueName;
 
+
     // Scanning Management
     private Handler mainHandler = new Handler(Looper.getMainLooper());
     private Runnable scanTimeoutRunnable;
@@ -61,7 +62,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // Keep the menu (Settings/About) logic
+        // setHasOptionsMenu(true); // Keep the menu (Settings/About) logic
     }
 
     @Nullable
@@ -72,6 +73,22 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         initializeViews(view);
+
+        headerTitle = view.findViewById(R.id.headerTitle);
+        if (headerTitle != null) {
+            headerTitle.setText("Available Queues");
+        }
+
+        View menuButton = view.findViewById(R.id.menuButton);
+        if (menuButton != null) {
+            menuButton.setOnClickListener(v -> {
+                android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+                popup.getMenuInflater().inflate(R.menu.home_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(item -> onOptionsItemSelected(item));
+                popup.show();
+            });
+        }
+
         setupClickListeners();
         setupRecyclerView();
 
@@ -99,7 +116,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     private void initializeViews(View view) {
         fabCreateQueue = view.findViewById(R.id.fabCreateQueue);
-        statusText = view.findViewById(R.id.statusText);
         queuesRecyclerView = view.findViewById(R.id.queuesRecyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         emptyStateContainer = view.findViewById(R.id.emptyStateContainer);
@@ -172,27 +188,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                         return Integer.compare(q2.getRssi(), q1.getRssi());
                     }
                 });
-
-                // Update UI on main thread
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    int queueCount = 0;
-                    for (AdvertisedQueue q : availableQueues) {
-                        if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
-                            queueCount++;
-                        }
-                    }
-                    if (queueCount > 0) {
-                        statusText.setText(
-                                "Found " + availableQueues.size() + " Queues(s) (" + queueCount + " queue(s))");
-                        statusText.setVisibility(View.VISIBLE);
-                    } else {
-                        statusText.setText("Found " + availableQueues.size() + " Queues(s) nearby");
-                        statusText.setVisibility(View.VISIBLE);
-                    }
-                    queuesRecyclerView.setVisibility(View.VISIBLE);
-                    emptyStateContainer.setVisibility(View.GONE);
-                    queueAdapter.notifyDataSetChanged();
-                });
             }
 
             @Override
@@ -203,7 +198,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                         swipeRefreshLayout.setRefreshing(false);
                     }
                     if (availableQueues.isEmpty()) {
-                        statusText.setText("No Queues found nearby");
+
                         // statusText.setVisibility(View.GONE); // Optional: Hide text if we rely on
                         // illustration
 
@@ -213,20 +208,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                         emptyStateContainer.setVisibility(View.GONE);
                         queuesRecyclerView.setVisibility(View.VISIBLE);
 
-                        int queueCount = 0;
-                        for (AdvertisedQueue q : availableQueues) {
-                            if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
-                                queueCount++;
-                            }
-                        }
-                        if (queueCount > 0) {
-                            statusText.setText("Found " + availableQueues.size() + " Queues(s) (" + queueCount
-                                    + " queue(s)). Tap a queue to join.");
-                        } else {
-                            statusText
-                                    .setText("Found " + availableQueues.size() + " Queues(s) nearby. No queues found.");
-                        }
-                        statusText.setVisibility(View.VISIBLE);
+
                     }
                 });
             }
@@ -266,7 +248,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         // Stop any existing scan first to reset state
         stopScanning();
 
-        statusText.setText("Scanning for nearby devices...");
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(true);
         }
@@ -290,7 +271,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(false);
             }
-            statusText.setText("Bluetooth is not enabled. Please enable Bluetooth and try again.");
             Toast.makeText(getContext(), "Bluetooth is required for queue discovery", Toast.LENGTH_SHORT).show();
         }
     }

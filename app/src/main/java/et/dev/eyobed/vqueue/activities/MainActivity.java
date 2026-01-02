@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupNavigation() {
         // Find and setup the global toolbar
-        androidx.appcompat.widget.Toolbar mainToolbar = findViewById(R.id.mainToolbar);
-        setSupportActionBar(mainToolbar);
+//        androidx.appcompat.widget.Toolbar mainToolbar = findViewById(R.id.mainToolbar);
+//        setSupportActionBar(mainToolbar);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentContainer);
@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
         appBarConfiguration = new AppBarConfiguration.Builder(R.id.homeFragment).build();
 
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
     }
 

@@ -15,7 +15,7 @@
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="70dp"
             app:contentScrim="@color/header_background"
             app:layout_scrollFlags="scroll">
 
@@ -28,26 +28,38 @@
                 android:gravity="bottom"
                 app:layout_collapseMode="pin">
 
-                <TextView
-                    android:id="@+id/headerText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Available Queues"
-                    android:textColor="@color/on_header"
-                    android:textSize="@dimen/text_size_header"
-                    android:textStyle="bold" />
+                <!-- Row: Available Queues | (hamburger menu) -->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal"-->
+<!--                    android:gravity="center_vertical">-->
 
-                <TextView
-                    android:id="@+id/statusText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Tap a queue to see details or join"
-                    android:textColor="@color/on_header"
-                    android:textSize="@dimen/text_size_body" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/headerText"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="Available Queues"-->
+<!--                        android:textColor="@color/on_header"-->
+<!--                        android:textSize="@dimen/text_size_header"-->
+<!--                        android:textStyle="bold" />-->
+
+<!--                    <ImageButton-->
+<!--                        android:id="@+id/menuButton"-->
+<!--                        android:layout_width="40dp"-->
+<!--                        android:layout_height="40dp"-->
+<!--                        android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--                        android:contentDescription="Menu"-->
+<!--                        android:src="@drawable/ic_menu"-->
+<!--                        app:tint="@color/on_header" />-->
+<!--                </LinearLayout>-->
+
+                <!-- Header -->
+                <include
+                    layout="@layout/include_header" />
 
             </LinearLayout>
-
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -81,7 +93,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="32dp"
+                android:padding="16dp"
                 android:visibility="gone">
 
                 <ImageView
@@ -106,7 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Pull to refresh to scan again"
+                    android:text="Pull to scan again"
                     android:textColor="?attr/android:textColorSecondary"
                     android:textSize="14sp" />
 

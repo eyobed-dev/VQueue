@@ -25,6 +25,7 @@ public class QueueManagerFragment extends Fragment {
     private TextView queueNameText;
     private TextView currentNumberText;
     private TextView waitTimeText;
+    private TextView headerTitle;
     private MaterialButton nextButton;
     private MaterialButton manualAddButton;
     private MaterialButton pauseButton;
@@ -44,6 +45,44 @@ public class QueueManagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_queue_manager, container, false);
 
         initializeViews(view);
+
+        headerTitle = view.findViewById(R.id.headerTitle);
+        if (headerTitle != null) {
+            headerTitle.setText("Queue Manager");
+        }
+
+        View menuButton = view.findViewById(R.id.menuButton);
+        if (menuButton != null) {
+            menuButton.setOnClickListener(v -> {
+                android.widget.PopupMenu popup = new android.widget.PopupMenu(requireContext(), v);
+                popup.getMenuInflater().inflate(R.menu.queue_manager_menu, popup.getMenu());
+
+                popup.setOnMenuItemClickListener(menuItem -> {
+                    if (menuItem.getItemId() == R.id.action_clear_queue) {
+                        new androidx.appcompat.app.AlertDialog.Builder(getContext())
+                                .setTitle("Clear Queue")
+                                .setMessage("Are you sure you want to delete the queue?")
+                                .setPositiveButton("Clear", (dialog, which) -> {
+                                    queueRepo.clearWaiters();
+                                    updateQueueInfo();
+                                    Toast.makeText(getContext(), "Queue cleared", Toast.LENGTH_SHORT).show();
+
+                                    // Update Service Advertisement
+                                    Intent intent = new Intent(getContext(), QueueManagementService.class);
+                                    intent.putExtra("action", "update_advertisement");
+                                    getContext().startService(intent);
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                        return true;
+                    }
+                    return false;
+                });
+
+                popup.show();
+            });
+        }
+
         setupClickListeners();
         loadQueueData();
         updateQueueInfo();
