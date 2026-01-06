@@ -133,14 +133,15 @@
                         android:lineSpacingMultiplier="1.5"
                         android:fontFamily="sans-serif" />
 
-                    <ImageView
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:contentDescription="Brno University of Technology, Faculty of Information Technology Logo"
-                        android:src="@drawable/fit_logo"
-                        android:maxHeight="@dimen/button_height"
-                        android:scaleType="fitStart" />
+                        android:paddingBottom="@dimen/padding_medium"
+                        android:text="VUT FIT in Brno"
+                        android:textSize="@dimen/text_size_body"
+                        android:textColor="?attr/android:textColorSecondary"
+                        android:lineSpacingMultiplier="1.5"
+                        android:fontFamily="sans-serif" />
 
                 </LinearLayout>
 
@@ -166,7 +167,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/padding_small"
-                        android:text="Contact &amp; Feedback"
+                        android:text="Links"
                         android:textSize="@dimen/text_size_title"
                             android:textColor="?attr/android:textColorPrimary"
                         android:fontFamily="sans-serif-medium" />
@@ -177,7 +178,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/button_height"
-                        android:text="View on GitLab"
+                        android:text="Privacy policy"
                         android:textSize="@dimen/text_size_medium"
                         android:textColor="?attr/colorPrimary"
                         android:fontFamily="sans-serif"
@@ -186,10 +187,7 @@
                         android:paddingEnd="@dimen/padding_medium"
                         android:paddingTop="@dimen/corner_radius_large"
                         android:paddingBottom="@dimen/corner_radius_large"
-                        android:drawablePadding="@dimen/margin_xlarge"
-                        android:drawableTint="?attr/colorPrimary"
-                        android:background="?attr/selectableItemBackground"
-                        app:drawableStartCompat="@drawable/gitlab_icon" />
+                        android:background="?attr/selectableItemBackground" />
 
                     <!-- Divider -->
                     <View
