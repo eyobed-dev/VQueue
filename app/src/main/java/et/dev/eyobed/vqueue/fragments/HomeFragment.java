@@ -17,9 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
+
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -89,12 +87,21 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        NavController navController = NavHostFragment.findNavController(this);
-
-        // Checks if the Menu Item ID matches a Destination ID in the graph.
-        // If they match, it navigates automatically.
-        return NavigationUI.onNavDestinationSelected(item, navController)
-                || super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if (id == R.id.action_homeFragment_to_settingsFragment) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, new SettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
+            return true;
+        } else if (id == R.id.action_homeFragment_to_aboutFragment) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, new AboutFragment())
+                    .addToBackStack(null)
+                    .commit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initializeViews(View view) {
@@ -127,7 +134,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             CreateQueueBottomSheet bottomSheet = new CreateQueueBottomSheet();
             bottomSheet.setOnQueueCreatedListener(queue -> {
                 // Navigate to QueueManagerFragment after queue is created
-                NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_queueManagerFragment);
+                getParentFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, new QueueManagerFragment())
+                        .addToBackStack(null)
+                        .commit();
             });
             bottomSheet.show(getChildFragmentManager(), "CreateQueueBottomSheet");
         });
@@ -243,8 +253,12 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                     Bundle bundle = new Bundle();
                     bundle.putString("QUEUE_NAME", pendingQueueName); // Pass queue name for monitoring
                     bundle.putInt("TICKET_NUMBER", ticketNumber);
-                    NavHostFragment.findNavController(HomeFragment.this)
-                            .navigate(R.id.action_homeFragment_to_waitFragment, bundle);
+                    WaitFragment waitFragment = new WaitFragment();
+                    waitFragment.setArguments(bundle);
+                    getParentFragmentManager().beginTransaction()
+                            .replace(R.id.fragmentContainer, waitFragment)
+                            .addToBackStack(null)
+                            .commit();
                 });
             }
 

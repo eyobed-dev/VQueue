@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPermissionDeniedDialog() {
-        // Implement  user feedback
         new AlertDialog.Builder(this)
                 .setTitle("Permissions Required")
                 .setMessage(

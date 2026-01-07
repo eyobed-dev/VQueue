@@ -62,6 +62,7 @@ dependencies {
 
     // AndroidX Preference for Settings
     implementation 'androidx.preference:preference:1.2.1'
+    implementation libs.cardview
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

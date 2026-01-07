@@ -18,7 +18,7 @@ import et.dev.eyobed.vqueue.R;
 public class AboutFragment extends Fragment {
 
     private TextView versionText;
-    private TextView gitlabLink;
+    private TextView privacyPolicyLink;
     private TextView emailLink;
 
     @Nullable
@@ -33,7 +33,6 @@ public class AboutFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         initializeViews(view);
-        initializeViews(view);
         setupClickListeners();
         setAppVersion();
     }
@@ -45,13 +44,13 @@ public class AboutFragment extends Fragment {
 
     private void initializeViews(View view) {
         versionText = view.findViewById(R.id.versionText);
-        gitlabLink = view.findViewById(R.id.gitlabLink);
+        privacyPolicyLink = view.findViewById(R.id.privacyPolicyLink);
         emailLink = view.findViewById(R.id.emailLink);
     }
 
     private void setupClickListeners() {
-        gitlabLink.setOnClickListener(v -> {
-            String url = "https://gitlab.com/fit-vut1/tama/vqueue";
+        privacyPolicyLink.setOnClickListener(v -> {
+            String url = "https://www.eyobed.dev.et/VQueue/privacy";
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
             startActivity(intent);

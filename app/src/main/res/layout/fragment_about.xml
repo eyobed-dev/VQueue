@@ -87,9 +87,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="VQueue is a Bluetooth Low Energy (BLE) based queue management system that allows devices to create and join virtual queues locally without requiring internet connectivity."
+                        android:text="VQueue is a Bluetooth Low Energy based queue management system that allows devices to create and join virtual queues locally without requiring internet."
                         android:textSize="@dimen/text_size_body"
-                            android:textColor="?attr/android:textColorSecondary"
+                        android:textColor="?attr/android:textColorSecondary"
                         android:lineSpacingMultiplier="1.5"
                         android:fontFamily="sans-serif" />
 
@@ -98,7 +98,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Developer Info Card -->
-            <com.google.android.material.card.MaterialCardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/developerCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,17 +127,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/padding_medium"
-                        android:text="Developed by Eyobed, Kaung, Lucas, Adam and Krystof as part of a project for TAMa at:"
-                        android:textSize="@dimen/text_size_body"
-                            android:textColor="?attr/android:textColorSecondary"
-                        android:lineSpacingMultiplier="1.5"
-                        android:fontFamily="sans-serif" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/padding_medium"
-                        android:text="VUT FIT in Brno"
+                        android:text="Developed by Eyobed, Kaung, Lucas, Adam and Krystof as part of a project for TAMa at VUT FIT in Brno"
                         android:textSize="@dimen/text_size_body"
                         android:textColor="?attr/android:textColorSecondary"
                         android:lineSpacingMultiplier="1.5"
@@ -145,7 +135,7 @@
 
                 </LinearLayout>
 
-            </com.google.android.material.card.MaterialCardView>
+            </androidx.cardview.widget.CardView>
 
             <!-- Contact & Feedback Card -->
             <com.google.android.material.card.MaterialCardView
@@ -172,9 +162,9 @@
                             android:textColor="?attr/android:textColorPrimary"
                         android:fontFamily="sans-serif-medium" />
 
-                    <!-- GitLab Link -->
+                    <!-- Privacy Policy Link -->
                     <TextView
-                        android:id="@+id/gitlabLink"
+                        android:id="@+id/privacyPolicyLink"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:minHeight="@dimen/button_height"
@@ -187,7 +177,10 @@
                         android:paddingEnd="@dimen/padding_medium"
                         android:paddingTop="@dimen/corner_radius_large"
                         android:paddingBottom="@dimen/corner_radius_large"
-                        android:background="?attr/selectableItemBackground" />
+                        android:drawablePadding="@dimen/margin_xlarge"
+                        android:drawableTint="?attr/colorPrimary"
+                        android:background="?attr/selectableItemBackground"
+                        app:drawableStartCompat="@drawable/ic_lock" />
 
                     <!-- Divider -->
                     <View
