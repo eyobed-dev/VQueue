@@ -98,7 +98,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <!-- Developer Info Card -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/developerCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -132,10 +132,10 @@
                         android:textColor="?attr/android:textColorSecondary"
                         android:lineSpacingMultiplier="1.5"
                         android:fontFamily="sans-serif" />
-
+                        
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Contact & Feedback Card -->
             <com.google.android.material.card.MaterialCardView
