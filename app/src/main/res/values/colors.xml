@@ -1,46 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design 3 Color System - Light Theme -->
+    <color name="primary">#D32F2F</color>
+    <color name="primary_variant">#B71C1C</color>
+    <color name="on_primary">#FFFFFF</color>
     
-    <!-- Primary Colors (Red Brand) -->
-    <color name="primary">#D32F2F</color>              <!-- Red 700 -->
-    <color name="primary_variant">#B71C1C</color>      <!-- Red 900 (darker) -->
-    <color name="on_primary">#FFFFFF</color>           <!-- White text on primary -->
+    <color name="secondary">#D32F2F</color>
+    <color name="secondary_variant">#B71C1C</color>
+    <color name="on_secondary">#FFFFFF</color>
     
-    <!-- Secondary Colors (Complementary) -->
-    <color name="secondary">#455A64</color>            <!-- Blue Grey 700 -->
-    <color name="secondary_variant">#263238</color>    <!-- Blue Grey 900 -->
-    <color name="on_secondary">#FFFFFF</color>         <!-- White text on secondary -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#1C1B1F</color>
     
-    <!-- Background & Surface -->
-    <color name="background">#FAFAFA</color>           <!-- Grey 50 -->
-    <color name="surface">#FFFFFF</color>              <!-- White -->
-    <color name="on_surface">#1C1B1F</color>           <!-- Almost black -->
+    <color name="text_primary">#1C1B1F</color>
+    <color name="text_secondary">#49454F</color>
     
-    <!-- Text Colors (Material 3 opacity levels) -->
-    <color name="text_primary">#1C1B1F</color>         <!-- High emphasis (87% opacity equivalent) -->
-    <color name="text_secondary">#49454F</color>       <!-- Medium emphasis (60% opacity equivalent) -->
+    <color name="status_error">#B3261E</color>
+    <color name="on_error">#FFFFFF</color>
     
-    <!-- Error Colors -->
-    <color name="status_error">#B3261E</color>         <!-- Material 3 error color -->
-    <color name="on_error">#FFFFFF</color>             <!-- White text on error -->
+    <color name="divider">#E0E0E0</color>
+    <color name="outline">#79747E</color>
     
-    <!-- Outline & Divider -->
-    <color name="divider">#E0E0E0</color>              <!-- Grey 300 -->
-    <color name="outline">#79747E</color>              <!-- Material 3 outline -->
-    
-    <!-- Functional Colors (Semantic) -->
-    <color name="functional_green">#2E7D32</color>     <!-- Green 800 -->
-    <color name="functional_green_ripple">#4CAF50</color> <!-- Green 500 -->
-    <color name="functional_orange">#EF6C00</color>    <!-- Orange 800 -->
-    <color name="functional_orange_ripple">#FF9800</color> <!-- Orange 500 -->
-    <color name="functional_red">#C62828</color>       <!-- Red 800 -->
-    <color name="functional_red_ripple">#F44336</color> <!-- Red 500 -->
-    <color name="functional_blue">#2196F3</color>        <!-- Blue 800 -->
-    <color name="functional_blue_ripple">#42A5F5</color> <!-- Blue 500 -->
+    <color name="functional_green">#2E7D32</color>
+    <color name="functional_green_ripple">#4CAF50</color>
+    <color name="functional_orange">#EF6C00</color>
+    <color name="functional_orange_ripple">#FF9800</color>
+    <color name="functional_red">#C62828</color>
+    <color name="functional_red_ripple">#F44336</color>
+    <color name="functional_blue">#2196F3</color>
+    <color name="functional_blue_ripple">#42A5F5</color>
 
-    <!-- Semantic Header Colors -->
     <color name="header_background">@color/primary</color>
     <color name="on_header">@color/on_primary</color>
-
 </resources>

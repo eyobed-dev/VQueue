@@ -1,5 +1,6 @@
 package et.dev.eyobed.vqueue.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,8 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -41,7 +46,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     private ProgressBar loadingIndicator;
     private TextView statusText;
     private RecyclerView queuesRecyclerView;
-    private androidx.swiperefreshlayout.widget.SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private View emptyStateContainer;
 
     // Data & Logic
@@ -59,7 +64,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // Keep the menu (Settings/About) logic
+        setHasOptionsMenu(true); // this is to show the menu. deprecated but i don't care
     }
 
     @Nullable
@@ -87,21 +92,10 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_homeFragment_to_settingsFragment) {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, new SettingsFragment())
-                    .addToBackStack(null)
-                    .commit();
-            return true;
-        } else if (id == R.id.action_homeFragment_to_aboutFragment) {
-            getParentFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentContainer, new AboutFragment())
-                    .addToBackStack(null)
-                    .commit();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        NavController navController = NavHostFragment.findNavController(this);
+
+        return NavigationUI.onNavDestinationSelected(item, navController)
+                || super.onOptionsItemSelected(item);
     }
 
     private void initializeViews(View view) {
@@ -133,11 +127,8 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         fabCreateQueue.setOnClickListener(v -> {
             CreateQueueBottomSheet bottomSheet = new CreateQueueBottomSheet();
             bottomSheet.setOnQueueCreatedListener(queue -> {
-                // Navigate to QueueManagerFragment after queue is created
-                getParentFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, new QueueManagerFragment())
-                        .addToBackStack(null)
-                        .commit();
+                // Use Navigation component instead of manual fragment transactions
+                NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_queueManagerFragment);
             });
             bottomSheet.show(getChildFragmentManager(), "CreateQueueBottomSheet");
         });
@@ -145,7 +136,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     private void setupRecyclerView() {
         availableQueues = new ArrayList<>();
-        queueAdapter = new QueueAdapter(availableQueues, this);
+        queueAdapter = new QueueAdapter(this);
 
         queuesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         queuesRecyclerView.setAdapter(queueAdapter);
@@ -154,91 +145,61 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         bleScanner.setOnQueueFoundListener(new BLEScanner.OnQueueFoundListener() {
             @Override
             public void onQueueFound(AdvertisedQueue queue) {
-                // Check if queue already exists
-                boolean exists = false;
-                for (AdvertisedQueue existing : availableQueues) {
-                    if (existing.getDeviceAddress().equals(queue.getDeviceAddress())) {
-                        // Update existing queue
-                        int index = availableQueues.indexOf(existing);
-                        availableQueues.set(index, queue);
-                        exists = true;
-                        break;
-                    }
-                }
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        if (getView() == null) return;
 
-                if (!exists) {
-                    availableQueues.add(queue);
-                }
-
-                // Sort the list by RSSI (Received Signal Strength Indicator) in descending
-                // order.
-                // This ensures that the queues with the strongest signal (likely the closest
-                // ones)
-                // appear at the top of the list.
-                Collections.sort(availableQueues, new Comparator<AdvertisedQueue>() {
-                    @Override
-                    public int compare(AdvertisedQueue q1, AdvertisedQueue q2) {
-                        // A higher RSSI value means a stronger signal.
-                        return Integer.compare(q2.getRssi(), q1.getRssi());
-                    }
-                });
-
-                // Update UI on main thread
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    int queueCount = 0;
-                    for (AdvertisedQueue q : availableQueues) {
-                        if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
-                            queueCount++;
-                        }
-                    }
-                    if (queueCount > 0) {
-                        statusText.setText(
-                                "Found " + availableQueues.size() + " Queues(s) (" + queueCount + " queue(s))");
-                        statusText.setVisibility(View.VISIBLE);
-                    } else {
-                        statusText.setText("Found " + availableQueues.size() + " Queues(s) nearby");
-                        statusText.setVisibility(View.VISIBLE);
-                    }
-                    queuesRecyclerView.setVisibility(View.VISIBLE);
-                    emptyStateContainer.setVisibility(View.GONE);
-                    queueAdapter.notifyDataSetChanged();
-                });
-            }
-
-            @Override
-            public void onScanComplete() {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    // Stop refresh animation
-                    if (swipeRefreshLayout != null) {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                    if (availableQueues.isEmpty()) {
-                        statusText.setText("No Queues found nearby");
-                        // statusText.setVisibility(View.GONE); // Optional: Hide text if we rely on
-                        // illustration
-
-                        queuesRecyclerView.setVisibility(View.GONE);
-                        emptyStateContainer.setVisibility(View.VISIBLE);
-                    } else {
-                        emptyStateContainer.setVisibility(View.GONE);
-                        queuesRecyclerView.setVisibility(View.VISIBLE);
-
-                        int queueCount = 0;
-                        for (AdvertisedQueue q : availableQueues) {
-                            if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
-                                queueCount++;
+                        // Check if queue already exists
+                        boolean exists = false;
+                        for (AdvertisedQueue existing : availableQueues) {
+                            if (existing.getDeviceAddress().equals(queue.getDeviceAddress())) {
+                                // Update existing queue
+                                int index = availableQueues.indexOf(existing);
+                                availableQueues.set(index, queue);
+                                exists = true;
+                                break;
                             }
                         }
-                        if (queueCount > 0) {
-                            statusText.setText("Found " + availableQueues.size() + " Queues(s) (" + queueCount
-                                    + " queue(s)). Tap a queue to join.");
-                        } else {
-                            statusText
-                                    .setText("Found " + availableQueues.size() + " Queues(s) nearby. No queues found.");
+
+                        if (!exists) {
+                            availableQueues.add(queue);
                         }
-                        statusText.setVisibility(View.VISIBLE);
-                    }
-                });
+
+                        // Sort the list by RSSI (descending) so closest devices are first
+                        Collections.sort(availableQueues, new Comparator<AdvertisedQueue>() {
+                            @Override
+                            public int compare(AdvertisedQueue q1, AdvertisedQueue q2) {
+                                return Integer.compare(q2.getRssi(), q1.getRssi());
+                            }
+                        });
+
+                        updateStatusText();
+                        queuesRecyclerView.setVisibility(View.VISIBLE);
+                        emptyStateContainer.setVisibility(View.GONE);
+                        queueAdapter.submitList(new ArrayList<>(availableQueues));
+                    });
+                }
+            }
+
+    @Override
+    public void onScanComplete() {
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        if (getView() != null) {
+                            swipeRefreshLayout.setRefreshing(false);
+                            updateStatusText();
+
+                            if (availableQueues.isEmpty()) {
+                                queuesRecyclerView.setVisibility(View.GONE);
+                                emptyStateContainer.setVisibility(View.VISIBLE);
+                            } else {
+                                emptyStateContainer.setVisibility(View.GONE);
+                                queuesRecyclerView.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                }
             }
         });
 
@@ -246,27 +207,36 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         bleClientManager.setOnJoinResultListener(new BLEClientManager.OnJoinResultListener() {
             @Override
             public void onJoinSuccess(int ticketNumber) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getContext(), "Successfully joined queue! Your ticket number: #" + ticketNumber,
-                            Toast.LENGTH_SHORT).show();
-                    // Navigate to WaitFragment with arguments
-                    Bundle bundle = new Bundle();
-                    bundle.putString("QUEUE_NAME", pendingQueueName); // Pass queue name for monitoring
-                    bundle.putInt("TICKET_NUMBER", ticketNumber);
-                    WaitFragment waitFragment = new WaitFragment();
-                    waitFragment.setArguments(bundle);
-                    getParentFragmentManager().beginTransaction()
-                            .replace(R.id.fragmentContainer, waitFragment)
-                            .addToBackStack(null)
-                            .commit();
-                });
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        if (getView() == null)
+                            return;
+
+                        Toast.makeText(getContext(), getString(R.string.join_success, ticketNumber),
+                                Toast.LENGTH_SHORT).show();
+
+                        // Navigate using the Navigation Component
+                        Bundle bundle = new Bundle();
+                        bundle.putString("QUEUE_NAME", pendingQueueName);
+                        bundle.putInt("TICKET_NUMBER", ticketNumber);
+
+                        NavHostFragment.findNavController(HomeFragment.this)
+                                .navigate(R.id.action_homeFragment_to_waitFragment, bundle);
+                    });
+                }
             }
 
             @Override
             public void onJoinFailed(String error) {
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    Toast.makeText(getContext(), "Failed to join queue: " + error, Toast.LENGTH_SHORT).show();
-                });
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        if (getView() == null)
+                            return;
+                        Toast.makeText(getContext(), getString(R.string.join_failed, error), Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
         });
     }
@@ -280,7 +250,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         // Stop any existing scan first to reset state
         stopScanning();
 
-        statusText.setText("Scanning for nearby devices...");
+        statusText.setText(R.string.scanning_for_queues);
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(true);
         }
@@ -289,7 +259,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             emptyStateContainer.setVisibility(View.GONE);
         availableQueues.clear();
         if (queueAdapter != null) {
-            queueAdapter.notifyDataSetChanged();
+            queueAdapter.submitList(new ArrayList<>());
         }
 
         // Start BLE scanning
@@ -304,9 +274,35 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             if (swipeRefreshLayout != null) {
                 swipeRefreshLayout.setRefreshing(false);
             }
-            statusText.setText("Bluetooth is not enabled. Please enable Bluetooth and try again.");
-            Toast.makeText(getContext(), "Bluetooth is required for queue discovery", Toast.LENGTH_SHORT).show();
+            statusText.setText(R.string.bluetooth_disabled);
+            Toast.makeText(getContext(), R.string.bluetooth_required_discovery, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateStatusText() {
+        if (availableQueues.isEmpty()) {
+            statusText.setText(R.string.no_queues_nearby);
+            return;
+        }
+
+        int queueCount = 0;
+        for (AdvertisedQueue q : availableQueues) {
+            if (q.getCurrentNumber() >= 0 && q.getWaitTimeMinutes() >= 0) {
+                queueCount++;
+            }
+        }
+
+        if (queueCount > 0) {
+            String summary = getResources().getQuantityString(
+                    R.plurals.found_queues_summary,
+                    availableQueues.size(),
+                    availableQueues.size(),
+                    queueCount);
+            statusText.setText(summary);
+        } else {
+            statusText.setText(getString(R.string.found_nearby_no_valid, availableQueues.size()));
+        }
+        statusText.setVisibility(View.VISIBLE);
     }
 
     private void stopScanning() {
@@ -320,76 +316,39 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
 
     @Override
     public void onQueueDetailsClick(AdvertisedQueue queue) {
-        showQueueDetailsDialog(queue);
+        handleQueueSelection(queue);
     }
 
     @Override
     public void onQueueJoinClick(AdvertisedQueue queue) {
-        showJoinConfirmationDialog(queue);
+        handleQueueSelection(queue);
     }
 
-    private void showQueueDetailsDialog(AdvertisedQueue queue) {
-        // Check if this is a real queue (-1 indicates generic device)
-        boolean isQueue = queue.getCurrentNumber() >= 0 && queue.getWaitTimeMinutes() >= 0;
-
-        String message;
-        String title;
-
-        if (isQueue) {
-            title = "Join Queue";
-            message = "Queue: " + queue.getName() + "\n" +
-                    "Currently Serving: #" + queue.getCurrentNumber() + "\n" +
-                    "Estimated Wait: " + queue.getWaitTimeMinutes() + " minutes\n" +
-                    "You would be #" + (queue.getCurrentNumber() + 1) + " in line\n\n" +
-                    "Do you want to join this queue?";
-        } else {
-            title = "Device Info";
-            message = "Device Name: " + queue.getName() + "\n" +
-                    "Address: " + queue.getDeviceAddress() + "\n\n" +
-                    "This device is not advertising a queue.\n" +
-                    "It may not be a VQueue server.";
-        }
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setNegativeButton("Cancel", null);
-
-        // Only show join button for real queues
-        if (isQueue) {
-            builder.setPositiveButton("Join Queue", (dialog, which) -> {
-                stopScanning();
-                pendingDeviceAddress = queue.getDeviceAddress();
-                pendingQueueName = queue.getName(); // Store queue name for monitoring
-                Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
-                bleClientManager.connectAndJoin(queue.getDeviceAddress());
-            });
-        }
-
-        builder.show();
-    }
-
-    private void showJoinConfirmationDialog(AdvertisedQueue queue) {
-        // Check if this is a real queue (-1 indicates generic device)
-        boolean isQueue = queue.getCurrentNumber() >= 0 && queue.getWaitTimeMinutes() >= 0;
-
-        if (!isQueue) {
-            Toast.makeText(requireContext(), "This device is not advertising a queue.", Toast.LENGTH_SHORT).show();
+    private void handleQueueSelection(AdvertisedQueue queue) {
+        if (!queue.isQueue()) {
+            Toast.makeText(requireContext(), R.string.message_device_info, Toast.LENGTH_SHORT).show();
             return;
         }
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Join Queue")
-                .setMessage("Do you want to join " + queue.getName() + "?")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Join", (dialog, which) -> {
-                    stopScanning();
-                    pendingDeviceAddress = queue.getDeviceAddress();
-                    pendingQueueName = queue.getName();
-                    Toast.makeText(getContext(), "Connecting to queue...", Toast.LENGTH_SHORT).show();
-                    bleClientManager.connectAndJoin(queue.getDeviceAddress());
-                })
+                .setTitle(R.string.title_join_queue)
+                .setMessage(getString(R.string.message_join_confirm, queue.getName()))
+                .setNegativeButton(R.string.btn_cancel, null)
+                .setPositiveButton(R.string.btn_join, (dialog, which) -> connectToQueue(queue))
                 .show();
+    }
+
+    private void connectToQueue(AdvertisedQueue queue) {
+        Activity activity = getActivity();
+        if (activity == null)
+            return;
+
+        stopScanning();
+        pendingDeviceAddress = queue.getDeviceAddress();
+        pendingQueueName = queue.getName();
+
+        Toast.makeText(activity, R.string.connecting_to_queue, Toast.LENGTH_SHORT).show();
+        bleClientManager.connectAndJoin(queue.getDeviceAddress());
     }
 
     @Override

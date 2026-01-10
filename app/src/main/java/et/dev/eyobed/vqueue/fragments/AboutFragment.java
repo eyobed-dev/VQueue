@@ -59,7 +59,7 @@ public class AboutFragment extends Fragment {
         emailLink.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:xnuriey00@fit.vut.cz"));
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Feedback on VQueue App");
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.about_feedback_subject));
             startActivity(intent);
         });
     }
@@ -69,10 +69,10 @@ public class AboutFragment extends Fragment {
             PackageInfo pInfo = requireActivity().getPackageManager().getPackageInfo(requireActivity().getPackageName(),
                     0);
             String version = pInfo.versionName;
-            versionText.setText("Version " + version);
+            versionText.setText(getString(R.string.version_format, version));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-            versionText.setText("Version 1.0.0");
+            versionText.setText(R.string.version_default);
         }
     }
 }

@@ -33,10 +33,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        // 4. Check if the changed setting is the theme setting
         if ("theme_preference".equals(key)) {
-
-            // Get the value (default to "system" if not found)
             String themeValue = sharedPreferences.getString(key, "system");
 
             switch (themeValue) {

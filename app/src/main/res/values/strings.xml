@@ -11,4 +11,71 @@
         <item>light</item>
         <item>dark</item>
     </string-array>
+    <string name="scanning_for_queues">Scanning for nearby devices...</string>
+    <string name="no_queues_nearby">No Queues found nearby</string>
+    <string name="bluetooth_disabled">Bluetooth is not enabled. Please enable Bluetooth and try again.</string>
+    <string name="bluetooth_required_discovery">Bluetooth is required for queue discovery</string>
+    <string name="found_nearby_no_valid">Found %1$d device(s) nearby. No queues found.</string>
+    
+    <plurals name="found_queues_summary">
+        <item quantity="one">Found %1$d device (%2$d queue). Tap a queue to join.</item>
+        <item quantity="other">Found %1$d devices (%2$d queues). Tap a queue to join.</item>
+    </plurals>
+    <string name="join_success">Successfully joined queue! Your ticket number: #%1$d</string>
+    <string name="join_failed">Failed to join queue: %1$s</string>
+    <string name="connecting_to_queue">Connecting to queue...</string>
+    
+    <!-- Dialog Strings -->
+    <string name="title_join_queue">Join Queue</string>
+    <string name="title_device_info">Device Info</string>
+    <string name="message_device_info">This device is not advertising a queue.\nIt may not be a VQueue server.</string>
+    <string name="message_join_confirm">Do you want to join %1$s?</string>
+    <string name="btn_join">Join</string>
+    <string name="btn_cancel">Cancel</string>
+
+    <!-- About Fragment -->
+    <string name="about_feedback_subject">Feedback on VQueue App</string>
+    <string name="version_format">Version %1$s</string>
+    <string name="version_default">Version 1.0.0</string>
+
+    <!-- Create Queue -->
+    <string name="error_enter_queue_name">Please enter a queue name</string>
+    <string name="error_wait_time_positive">Wait time must be > 0</string>
+    <string name="error_invalid_wait_time">Please enter a valid number for wait time</string>
+
+    <!-- Queue Manager -->
+    <string name="title_clear_queue">Clear Queue</string>
+    <string name="message_clear_queue">Are you sure you want to delete the queue?</string>
+    <string name="btn_clear">Clear</string>
+    <string name="msg_queue_cleared">Queue cleared</string>
+    <string name="error_no_active_queue">No active queue found</string>
+    <string name="msg_no_more_waiters">No more people in the queue!</string>
+    <string name="msg_called_number">Called number: %1$d</string>
+    <string name="btn_pause">Pause</string>
+    <string name="btn_resume">Resume</string>
+    <string name="msg_queue_resumed">Queue resumed</string>
+    <string name="msg_queue_paused">Queue paused</string>
+    <string name="msg_queue_stopped">Queue stopped</string>
+    <string name="hint_enter_name">Enter name (optional)</string>
+    <string name="title_add_person">Add Person to Queue</string>
+    <string name="message_add_person_manual">Add someone without a smartphone to the queue</string>
+    <string name="btn_add">Add</string>
+    <string name="default_waiter_name">Walk-in</string>
+    <string name="msg_added_waiter_format">Added: %1$s - Ticket #%2$d</string>
+    <string name="error_failed_add_person">Failed to add person</string>
+    <string name="wait_time_format">%1$d minutes</string>
+
+    <!-- Wait Fragment -->
+    <string name="msg_left_queue">Left the queue</string>
+    <string name="position_format">Position: #%1$d</string>
+    <string name="estimated_wait_format">Estimated Wait: %1$d minutes</string>
+    <string name="serving_format">Currently Serving: #%1$d</string>
+
+    <!-- Service Notifications -->
+    <string name="notification_title_queue_active">Queue Active</string>
+    <string name="notification_content_queue_running">Your queue is currently running.</string>
+    <string name="notification_channel_management">Queue Management Service</string>
+    <string name="notification_action_pause">Pause</string>
+    <string name="notification_action_resume">Resume</string>
+    <string name="notification_action_stop">Stop</string>
 </resources>

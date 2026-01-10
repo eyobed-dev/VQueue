@@ -93,7 +93,7 @@ public class WaitFragment extends Fragment {
 
     private void setupClickListeners() {
         leaveQueueButton.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Left the queue", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.msg_left_queue, Toast.LENGTH_SHORT).show();
             androidx.navigation.fragment.NavHostFragment.findNavController(this)
                     .navigate(R.id.action_waitFragment_to_homeFragment);
         });
@@ -104,18 +104,14 @@ public class WaitFragment extends Fragment {
     }
 
     private void updateQueueStatus() {
-        positionText.setText("Position: #" + userPosition);
-        estimatedWaitText.setText("Estimated Wait: " + estimatedWaitMinutes + " minutes");
-        currentNumberText.setText("Currently Serving: #" + currentServing);
+        positionText.setText(getString(R.string.position_format, userPosition));
+        estimatedWaitText.setText(getString(R.string.estimated_wait_format, estimatedWaitMinutes));
+        currentNumberText.setText(getString(R.string.serving_format, currentServing));
 
         // Update progress bar (simplified calculation)
         int progress = Math.max(0, 100 - (userPosition - currentServing) * 20);
         waitProgressBar.setProgress(progress);
     }
-
-
-
-
 
     private void startMonitoring() {
         // Start QueueMonitoringService

@@ -7,94 +7,80 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="4dp"
     app:cardElevation="4dp"
     app:rippleColor="?attr/colorControlHighlight">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp">
+        android:orientation="vertical"
+        android:paddingBottom="4dp">
 
-        <!-- Header Background -->
-        <View
-            android:id="@+id/headerBackground"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:background="?attr/colorPrimary"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
 
-        <!-- Queue Icon -->
-        <ImageView
-            android:id="@+id/queueIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/ic_queue"
-            app:tint="?attr/colorOnPrimary"
-            android:layout_marginStart="16dp"
-            android:elevation="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/headerBackground"
-            app:layout_constraintTop_toTopOf="@id/headerBackground"
-            app:layout_constraintStart_toStartOf="parent"
-            android:contentDescription="Queue Icon" />
+            <View
+                android:id="@+id/headerBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="?attr/colorPrimary" />
 
-        <!-- Queue Name -->
+            <ImageView
+                android:id="@+id/queueIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="16dp"
+                android:contentDescription="Queue Icon"
+                android:src="@drawable/ic_queue"
+                app:tint="?attr/colorOnPrimary" />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/queueName"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            tools:text="Dr. Smith's Office"
             android:textAppearance="?attr/textAppearanceHeadline6"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/headerBackground"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            tools:text="Dr. Smith's Office" />
 
-        <!-- Wait Info -->
         <TextView
             android:id="@+id/queueWaitInfo"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            tools:text="15 min • 3 people ahead"
-            android:textAppearance="?attr/textAppearanceBody2"
-            android:textColor="?android:attr/textColorSecondary"
-            app:layout_constraintTop_toBottomOf="@id/queueName"
-            app:layout_constraintStart_toStartOf="@id/queueName" />
-
-        <!-- RSSI -->
-        <TextView
-            android:id="@+id/rssi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            tools:text="Signal: -55 dBm"
-            android:textAppearance="?attr/textAppearanceCaption"
-            android:textColor="?android:attr/textColorSecondary"
-            app:layout_constraintTop_toBottomOf="@id/queueWaitInfo"
-            app:layout_constraintStart_toStartOf="@id/queueName" />
-
-        <!-- Join Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnJoin"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="JOIN"
-            style="@style/Widget.MaterialComponents.Button"
-            app:layout_constraintTop_toBottomOf="@id/rssi"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="?android:attr/textColorSecondary"
+            tools:text="15 min • 3 people ahead" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/rssi"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="?attr/textAppearanceCaption"
+            android:textColor="?android:attr/textColorSecondary"
+            tools:text="Signal: -55 dBm" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnJoin"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="JOIN" />
+
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

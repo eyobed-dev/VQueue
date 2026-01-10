@@ -1,44 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Material Design 3 Color System - Dark Theme -->
 
-    <!-- Primary Colors (Red Brand) -->
-    <color name="primary">#D32F2F</color>              <!-- Red 700 -->
-    <color name="primary_variant">#B71C1C</color>      <!-- Red 900 (darker) -->
-    <color name="on_primary">#FFFFFF</color>            <!-- Black text on light primary -->
-    
-    <!-- Secondary Colors (Complementary) -->
-    <color name="secondary">#B0BEC5</color>            <!-- Blue Grey 200 -->
-    <color name="secondary_variant">#37474F</color>    <!-- Blue Grey 800 -->
-    <color name="on_secondary">#1C1B1F</color>         <!-- Dark text -->
-    
-    <!-- Background & Surface (Material 3 Dark) -->
-    <color name="background">#121212</color>           <!-- Material 3 dark background -->
-    <color name="surface">#1C1B1F</color>              <!-- Same as background -->
-    <color name="on_surface">#E6E1E5</color>           <!-- Light text -->
-    
-    <!-- Text Colors (Material 3 dark theme) -->
-    <color name="text_primary">#E6E1E5</color>         <!-- High emphasis -->
-    <color name="text_secondary">#CAC4D0</color>       <!-- Medium emphasis -->
-    
-    <!-- Error Colors (Dark theme) -->
-    <color name="status_error">#F2B8B5</color>         <!-- Light error for dark mode -->
-    <color name="on_error">#601410</color>             <!-- Dark text on error -->
-    
-    <!-- Outline & Divider (Dark theme) -->
-    <color name="divider">#49454F</color>              <!-- Subtle divider -->
-    <color name="outline">#938F99</color>              <!-- Material 3 outline dark -->
 
-    <!-- Functional Colors (Semantic) -->
-    <color name="functional_green">#2E7D32</color>     <!-- Green 800 -->
-    <color name="functional_green_ripple">#4CAF50</color> <!-- Green 500 -->
-    <color name="functional_orange">#EF6C00</color>    <!-- Orange 800 -->
-    <color name="functional_orange_ripple">#FF9800</color> <!-- Orange 500 -->
-    <color name="functional_red">#C62828</color>       <!-- Red 800 -->
-    <color name="functional_red_ripple">#F44336</color> <!-- Red 500 -->
-    <color name="functional_blue">#2196F3</color>        <!-- Blue 800 -->
-    <color name="functional_blue_ripple">#42A5F5</color> <!-- Blue 500 -->
-    <!-- Semantic Header Colors -->
+    <color name="primary">#D32F2F</color>             
+    <color name="primary_variant">#B71C1C</color>     
+    <color name="on_primary">#FFFFFF</color>            
+    
+    <color name="secondary">#D32F2F</color>            
+    <color name="secondary_variant">#B71C1C</color>
+    <color name="on_secondary">#1C1B1F</color>         
+    
+    <color name="background">#121212</color>           
+    <color name="surface">#1C1B1F</color>              
+    <color name="on_surface">#E6E1E5</color>           
+    
+    <color name="text_primary">#E6E1E5</color>         
+    <color name="text_secondary">#CAC4D0</color>       
+    
+    <color name="status_error">#F2B8B5</color>         
+    <color name="on_error">#601410</color>             
+    
+    <color name="divider">#49454F</color>              
+    <color name="outline">#938F99</color>              
+
+    <color name="functional_green">#2E7D32</color>     
+    <color name="functional_green_ripple">#4CAF50</color> 
+    <color name="functional_orange">#EF6C00</color>    
+    <color name="functional_orange_ripple">#FF9800</color> 
+    <color name="functional_red">#C62828</color>       
+    <color name="functional_red_ripple">#F44336</color> 
+    <color name="functional_blue">#2196F3</color>        
+    <color name="functional_blue_ripple">#42A5F5</color> 
+    
     <color name="header_background">@color/primary</color>
     <color name="on_header">@color/on_primary</color>
 </resources>

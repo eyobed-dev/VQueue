@@ -15,6 +15,11 @@ import et.dev.eyobed.vqueue.R;
 import et.dev.eyobed.vqueue.utils.PermissionGranter;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
+import android.view.View;
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
     private NavController navController;
@@ -23,10 +28,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String theme = prefs.getString("theme_preference", "system");
 
-        //Apply the theme immediately
+        // Apply the theme immediately
         switch (theme) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -39,6 +46,22 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         setContentView(R.layout.activity_main);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_root), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            // Apply bottom padding to the root view (navigation bar)
+            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), systemBars.bottom);
+
+            // Apply top padding to the toolbar (status bar)
+            View toolbar = findViewById(R.id.mainToolbar);
+            if (toolbar != null) {
+                toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(),
+                        toolbar.getPaddingBottom());
+            }
+
+            return insets;
+        });
 
         setupPermissions();
         setupNavigation();

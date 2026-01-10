@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -18,9 +20,8 @@ import java.util.Random;
 import et.dev.eyobed.vqueue.R;
 import et.dev.eyobed.vqueue.model.AdvertisedQueue;
 
-public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHolder> {
+public class QueueAdapter extends ListAdapter<AdvertisedQueue, QueueAdapter.QueueViewHolder> {
 
-    private final List<AdvertisedQueue> queues;
     private final OnQueueClickListener listener;
 
     public interface OnQueueClickListener {
@@ -29,8 +30,23 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
         void onQueueJoinClick(AdvertisedQueue queue);
     }
 
-    public QueueAdapter(List<AdvertisedQueue> queues, OnQueueClickListener listener) {
-        this.queues = queues;
+    public QueueAdapter(OnQueueClickListener listener) {
+        super(new DiffUtil.ItemCallback<AdvertisedQueue>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull AdvertisedQueue oldItem, @NonNull AdvertisedQueue newItem) {
+                // Check if the business ID is the same
+                return oldItem.getDeviceAddress().equals(newItem.getDeviceAddress());
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull AdvertisedQueue oldItem, @NonNull AdvertisedQueue newItem) {
+                // Check content that affects the UI
+                return oldItem.getName().equals(newItem.getName()) &&
+                        oldItem.getWaitTimeMinutes() == newItem.getWaitTimeMinutes() &&
+                        oldItem.getCurrentNumber() == newItem.getCurrentNumber() &&
+                        oldItem.getRssi() == newItem.getRssi();
+            }
+        });
         this.listener = listener;
     }
 
@@ -44,13 +60,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
 
     @Override
     public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
-        AdvertisedQueue queue = queues.get(position);
+        AdvertisedQueue queue = getItem(position);
         holder.bind(queue, listener);
-    }
-
-    @Override
-    public int getItemCount() {
-        return queues.size();
     }
 
     static class QueueViewHolder extends RecyclerView.ViewHolder {
@@ -109,10 +120,10 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
                 rssi.setText("Signal: " + queue.getRssi() + " dBm");
             }
 
-            // Set Details (Wait time or generic info)
+            // Set Details 
             if (queueWaitInfo != null) {
                 if (queue.getWaitTimeMinutes() >= 0 && queue.getCurrentNumber() >= 0) {
-                    queueWaitInfo.setText(queue.getWaitTimeMinutes() + " min wait • 3 people ahead");
+                    queueWaitInfo.setText(queue.getWaitTimeMinutes() + " min wait");
                     queueWaitInfo.setVisibility(View.VISIBLE);
                 } else {
                     queueWaitInfo.setVisibility(View.GONE);

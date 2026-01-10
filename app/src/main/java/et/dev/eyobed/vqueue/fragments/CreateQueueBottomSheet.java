@@ -32,12 +32,21 @@ public class CreateQueueBottomSheet extends BottomSheetDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_create_queue_bottom_sheet, container, false);
+        View view = inflater.inflate(
+                R.layout.fragment_create_queue_bottom_sheet,
+                container,
+                false);
 
-        initializeViews(view);
-        setupClickListeners();
+        queueNameEditText = view.findViewById(R.id.queueNameEditText);
+        waitTimeEditText = view.findViewById(R.id.waitTimeEditText);
+        createQueueButton = view.findViewById(R.id.createQueueButton);
+        queueRepo = QueueRepo.getInstance(requireContext());
+
+        createQueueButton.setOnClickListener(v -> createQueue());
 
         return view;
     }
@@ -45,56 +54,49 @@ public class CreateQueueBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        // Make the bottom sheet resize when keyboard appears
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setSoftInputMode(
                     android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
     }
 
-    private void initializeViews(View view) {
-        queueNameEditText = view.findViewById(R.id.queueNameEditText);
-        waitTimeEditText = view.findViewById(R.id.waitTimeEditText);
-        createQueueButton = view.findViewById(R.id.createQueueButton);
-        queueRepo = QueueRepo.getInstance(requireContext());
+    private void createQueue() {
+        String name = textOf(queueNameEditText);
+        String waitStr = textOf(waitTimeEditText);
+
+        if (name.isEmpty()) {
+            toast(R.string.error_enter_queue_name);
+            return;
+        }
+
+        int waitTime;
+        try {
+            waitTime = Integer.parseInt(waitStr);
+            if (waitTime <= 0) {
+                toast(R.string.error_wait_time_positive);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            toast(R.string.error_invalid_wait_time);
+            return;
+        }
+
+        Queue queue = queueRepo.createQueue(name, waitTime);
+
+        if (listener != null) {
+            listener.onQueueCreated(queue);
+        }
+
+        dismiss();
     }
 
-    private void setupClickListeners() {
-        createQueueButton.setOnClickListener(v -> {
-            String queueName = queueNameEditText.getText().toString().trim();
-            String waitTimeStr = waitTimeEditText.getText().toString().trim();
+    private String textOf(TextInputEditText editText) {
+        return editText.getText() == null
+                ? ""
+                : editText.getText().toString().trim();
+    }
 
-            if (queueName.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter a queue name", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (waitTimeStr.isEmpty()) {
-                Toast.makeText(getContext(), "Please enter wait time", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            try {
-                int waitTime = Integer.parseInt(waitTimeStr);
-                if (waitTime <= 0) {
-                    Toast.makeText(getContext(), "Wait time must be greater than 0", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Create queue using QueueRepository
-                Queue queue = queueRepo.createQueue(queueName, waitTime);
-
-                // Notify listener
-                if (listener != null) {
-                    listener.onQueueCreated(queue);
-                }
-
-                // Dismiss bottom sheet
-                dismiss();
-
-            } catch (NumberFormatException e) {
-                Toast.makeText(getContext(), "Please enter a valid number for wait time", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void toast(int resId) {
+        Toast.makeText(requireContext(), resId, Toast.LENGTH_SHORT).show();
     }
 }

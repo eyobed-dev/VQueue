@@ -80,20 +80,17 @@ public class QueueManagerFragment extends Fragment {
             @Override
             public boolean onMenuItemSelected(@NonNull android.view.MenuItem menuItem) {
                 if (menuItem.getItemId() == R.id.action_clear_queue) {
-                    new androidx.appcompat.app.AlertDialog.Builder(getContext())
-                            .setTitle("Clear Queue")
-                            .setMessage("Are you sure you want to delete the queue?")
-                            .setPositiveButton("Clear", (dialog, which) -> {
+                    new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.title_clear_queue)
+                            .setMessage(R.string.message_clear_queue)
+                            .setPositiveButton(R.string.btn_clear, (dialog, which) -> {
                                 queueRepo.clearWaiters();
                                 updateQueueInfo();
-                                Toast.makeText(getContext(), "Queue cleared", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), R.string.msg_queue_cleared, Toast.LENGTH_SHORT).show();
 
-                                // Update Service Advertisement
-                                Intent intent = new Intent(getContext(), QueueManagementService.class);
-                                intent.putExtra("action", "update_advertisement");
-                                getContext().startService(intent);
+                                notifyServiceOfChange();
                             })
-                            .setNegativeButton("Cancel", null)
+                            .setNegativeButton(R.string.btn_cancel, null)
                             .show();
                     return true;
                 }
@@ -105,13 +102,10 @@ public class QueueManagerFragment extends Fragment {
     private void loadQueueData() {
         currentQueue = queueRepo.getCurrentQueue();
         if (currentQueue == null) {
-            Toast.makeText(getContext(), "No active queue found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error_no_active_queue, Toast.LENGTH_SHORT).show();
             androidx.navigation.fragment.NavHostFragment.findNavController(this).popBackStack();
         } else {
-            // Start the queue service and begin advertising
-            Intent intent = new Intent(getContext(), QueueManagementService.class);
-            intent.putExtra("action", "start_queue");
-            getContext().startService(intent);
+            sendCommandToService(QueueManagementService.ACTION_START_QUEUE);
         }
     }
 
@@ -120,46 +114,40 @@ public class QueueManagerFragment extends Fragment {
             if (currentQueue != null) {
                 int totalWaiters = currentQueue.getWaiters() != null ? currentQueue.getWaiters().size() : 0;
                 if (totalWaiters == 0 || currentQueue.getCurrentNumber() >= totalWaiters) {
-                    Toast.makeText(getContext(), "No more people in the queue!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.msg_no_more_waiters, Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
 
-            Intent intent = new Intent(getContext(), QueueManagementService.class);
-            intent.putExtra("action", "call_next");
-            getContext().startService(intent);
-
+            sendCommandToService(QueueManagementService.ACTION_CALL_NEXT);
 
             currentQueue = queueRepo.getCurrentQueue();
 
             updateQueueInfo();
-            Toast.makeText(getContext(), "Called number: " + (currentQueue.getCurrentNumber() + 1), Toast.LENGTH_SHORT)
+            Toast.makeText(getContext(), getString(R.string.msg_called_number, currentQueue.getCurrentNumber() + 1),
+                    Toast.LENGTH_SHORT)
                     .show();
         });
 
         manualAddButton.setOnClickListener(v -> showManualAddDialog());
 
         pauseButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), QueueManagementService.class);
             if (currentQueue.isPaused()) {
-                intent.putExtra("action", "resume_queue");
-                pauseButton.setText("Pause");
-                Toast.makeText(getContext(), "Queue resumed", Toast.LENGTH_SHORT).show();
+                sendCommandToService(QueueManagementService.ACTION_RESUME_QUEUE);
+                pauseButton.setText(R.string.btn_pause);
+                Toast.makeText(getContext(), R.string.msg_queue_resumed, Toast.LENGTH_SHORT).show();
             } else {
-                intent.putExtra("action", "pause_queue");
-                pauseButton.setText("Resume");
-                Toast.makeText(getContext(), "Queue paused", Toast.LENGTH_SHORT).show();
+                sendCommandToService(QueueManagementService.ACTION_PAUSE_QUEUE);
+                pauseButton.setText(R.string.btn_resume);
+                Toast.makeText(getContext(), R.string.msg_queue_paused, Toast.LENGTH_SHORT).show();
             }
-            getContext().startService(intent);
             currentQueue = queueRepo.getCurrentQueue();
         });
 
         stopButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), QueueManagementService.class);
-            intent.putExtra("action", "stop_queue");
-            getContext().startService(intent);
+            sendCommandToService(QueueManagementService.ACTION_STOP_QUEUE);
 
-            Toast.makeText(getContext(), "Queue stopped", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.msg_queue_stopped, Toast.LENGTH_SHORT).show();
             // Go back to home
             androidx.navigation.fragment.NavHostFragment.findNavController(this)
                     .navigate(R.id.action_queueManagerFragment_to_homeFragment);
@@ -169,21 +157,21 @@ public class QueueManagerFragment extends Fragment {
 
     private void showManualAddDialog() {
         android.widget.EditText input = new android.widget.EditText(getContext());
-        input.setHint("Enter name (optional)");
+        input.setHint(R.string.hint_enter_name);
         input.setPadding(50, 30, 50, 30);
 
-        new androidx.appcompat.app.AlertDialog.Builder(getContext())
-                .setTitle("Add Person to Queue")
-                .setMessage("Add someone without a smartphone to the queue")
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(R.string.title_add_person)
+                .setMessage(R.string.message_add_person_manual)
                 .setView(input)
-                .setPositiveButton("Add", (dialog, which) -> {
+                .setPositiveButton(R.string.btn_add, (dialog, which) -> {
                     String name = input.getText().toString().trim();
                     if (name.isEmpty()) {
-                        name = "Walk-in";
+                        name = getString(R.string.default_waiter_name);
                     }
                     addManualWaiter(name);
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton(R.string.btn_cancel, null)
                 .show();
     }
 
@@ -191,16 +179,13 @@ public class QueueManagerFragment extends Fragment {
         if (currentQueue != null) {
             int ticketNumber = queueRepo.addWaiter(name);
             if (ticketNumber > 0) {
-                Toast.makeText(getContext(), "Added: " + name + " - Ticket #" + ticketNumber,
+                Toast.makeText(getContext(), getString(R.string.msg_added_waiter_format, name, ticketNumber),
                         Toast.LENGTH_SHORT).show();
                 updateQueueInfo();
 
-                // Update advertisement
-                Intent intent = new Intent(getContext(), QueueManagementService.class);
-                intent.putExtra("action", "update_advertisement");
-                getContext().startService(intent);
+                notifyServiceOfChange();
             } else {
-                Toast.makeText(getContext(), "Failed to add person", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.error_failed_add_person, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -211,7 +196,7 @@ public class QueueManagerFragment extends Fragment {
         if (currentQueue != null) {
             queueNameText.setText(currentQueue.getName());
             currentNumberText.setText(String.valueOf(currentQueue.getCurrentNumber()));
-            waitTimeText.setText(currentQueue.getWaitTimeMinutes() + " minutes");
+            waitTimeText.setText(getString(R.string.wait_time_format, currentQueue.getWaitTimeMinutes()));
 
             // Update Queue Count
             int totalWaiters = currentQueue.getWaiters() != null ? currentQueue.getWaiters().size() : 0;
@@ -223,9 +208,9 @@ public class QueueManagerFragment extends Fragment {
             // Update pause button state
             if (pauseButton != null) {
                 if (currentQueue.isPaused()) {
-                    pauseButton.setText("Resume");
+                    pauseButton.setText(R.string.btn_resume);
                 } else {
-                    pauseButton.setText("Pause");
+                    pauseButton.setText(R.string.btn_pause);
                 }
             }
 
@@ -274,6 +259,18 @@ public class QueueManagerFragment extends Fragment {
                     break;
                 }
             }
+        }
+    }
+
+    private void notifyServiceOfChange() {
+        sendCommandToService(QueueManagementService.ACTION_UPDATE_ADVERTISEMENT);
+    }
+
+    private void sendCommandToService(String action) {
+        if (getContext() != null) {
+            Intent intent = new Intent(getContext(), QueueManagementService.class);
+            intent.setAction(action);
+            getContext().startService(intent);
         }
     }
 }
