@@ -44,7 +44,8 @@ public class QueueMonitoringService extends Service {
 
                 if (targetQueueName != null && myTicketNumber != -1) {
                     startForeground(Constants.NOTIFICATION_ID_QUEUE_MONITORING,
-                            createNotification("Monitoring Queue", "Waiting for your turn..."));
+                            createNotification(getString(R.string.notification_title_monitoring),
+                                    getString(R.string.notification_content_waiting)));
                     startMonitoring();
                 } else {
                     Log.e(TAG, "Missing queue name or ticket number");
@@ -66,16 +67,9 @@ public class QueueMonitoringService extends Service {
         bleScanner.setOnQueueFoundListener(new BLEScanner.OnQueueFoundListener() {
             @Override
             public void onQueueFound(AdvertisedQueue queue) {
-                Log.i(TAG, "onQueueFound - Queue: " + queue.getName() +
-                        ", Current#: " + queue.getCurrentNumber() +
-                        ", Target queue: " + targetQueueName);
-
                 // Match by queue name instead of device address
                 if (queue.getName().equals(targetQueueName)) {
-                    Log.i(TAG, "Queue name matches! Checking queue status...");
                     checkQueueStatus(queue);
-                } else {
-                    Log.d(TAG, "Queue name doesn't match, ignoring");
                 }
             }
 
@@ -95,34 +89,28 @@ public class QueueMonitoringService extends Service {
         int currentNumber = queue.getCurrentNumber();
         int waitTime = queue.getWaitTimeMinutes();
 
-        Log.i(TAG, "checkQueueStatus - Current: " + currentNumber + ", MyTicket: " + myTicketNumber);
-
         // Broadcast queue status to WaitFragment
         Intent broadcastIntent = new Intent("QUEUE_STATUS_UPDATE");
         broadcastIntent.putExtra("CURRENT_NUMBER", currentNumber);
         broadcastIntent.putExtra("MY_TICKET", myTicketNumber);
         broadcastIntent.putExtra("WAIT_TIME", waitTime);
         sendBroadcast(broadcastIntent);
-        Log.i(TAG, "Broadcast sent - Current: " + currentNumber);
 
         if (currentNumber >= myTicketNumber) {
             // It's your turn!
-            Log.i(TAG, "IT'S YOUR TURN! Triggering alarm...");
             triggerAlarm();
             stopMonitoring();
             stopSelf();
         } else {
             // Update notification with estimated wait time
-            Log.i(TAG, "Not your turn yet. Updating notification...");
-            updateNotification("Queue Update", "Currently serving: #" + currentNumber + ". You are #" + myTicketNumber);
+            updateNotification(getString(R.string.notification_title_queue_update),
+                    getString(R.string.notification_content_update_format, currentNumber, myTicketNumber));
         }
     }
 
     private void triggerAlarm() {
         Log.i(TAG, "triggerAlarm() called - creating notification");
 
-        // Create an intent to open the app
-        // Create an intent to open the app (WaitFragment)
         android.os.Bundle args = new android.os.Bundle();
         if (targetQueueName != null) {
             args.putString("QUEUE_NAME", targetQueueName);
@@ -136,16 +124,16 @@ public class QueueMonitoringService extends Service {
                 .createPendingIntent();
 
         Notification notification = new NotificationCompat.Builder(this, Constants.CHANNEL_ID_MONITORING)
-                .setContentTitle("🔔 It's Your Turn!")
-                .setContentText("Please proceed to the counter now!")
+                .setContentTitle(getString(R.string.notification_title_turn_alarm))
+                .setContentText(getString(R.string.notification_content_turn_alarm))
                 .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setPriority(NotificationCompat.PRIORITY_MAX) // Maximum priority
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setFullScreenIntent(pendingIntent, true)
                 .setAutoCancel(true)
-                .setVibrate(new long[] { 0, 500, 200, 500, 200, 500 }) // Vibration pattern
+                .setVibrate(new long[] { 0, 500, 200, 500, 200, 500 }) // Some crazy vibration
                 .setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI) // Sound
-                .setDefaults(Notification.DEFAULT_ALL) // All defaults (sound, vibrate, lights)
+                .setDefaults(Notification.DEFAULT_ALL)
                 .setOnlyAlertOnce(false) // Alert every time
                 .build();
 
@@ -181,11 +169,24 @@ public class QueueMonitoringService extends Service {
                 .setArguments(args)
                 .createPendingIntent();
 
+        // Create Leave Queue action
+        Intent leaveIntent = new Intent(this, QueueMonitoringService.class);
+        leaveIntent.setAction("STOP_MONITORING");
+        PendingIntent leavePendingIntent = PendingIntent.getService(
+                this,
+                0,
+                leaveIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
         return new NotificationCompat.Builder(this, Constants.CHANNEL_ID_MONITORING)
                 .setContentTitle(title)
                 .setContentText(content)
                 .setSmallIcon(R.mipmap.ic_launcher_foreground) // Use valid icon
                 .setContentIntent(pendingIntent)
+                .addAction(R.drawable.ic_stop, "Leave Queue", leavePendingIntent)  // Leave action
+                .setOnlyAlertOnce(true)  // Only alert on first notification, not on updates
+                .setSilent(true)  // Silent notification (no sound/vibration)
                 .build();
     }
 
@@ -203,8 +204,20 @@ public class QueueMonitoringService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel serviceChannel = new NotificationChannel(
                     Constants.CHANNEL_ID_MONITORING,
-                    "Queue Monitoring Service",
-                    NotificationManager.IMPORTANCE_LOW);
+                    getString(R.string.notification_channel_monitoring),
+                    NotificationManager.IMPORTANCE_HIGH);  // HIGH for alarm with sound/vibration
+            
+            // Enable vibration and sound on the channel
+            serviceChannel.enableVibration(true);
+            serviceChannel.setVibrationPattern(new long[] { 0, 500, 200, 500, 200, 500 });
+            serviceChannel.setSound(
+                android.provider.Settings.System.DEFAULT_NOTIFICATION_URI,
+                new android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_ALARM)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            );
+            
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
                 manager.createNotificationChannel(serviceChannel);

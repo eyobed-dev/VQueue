@@ -42,13 +42,7 @@
             </intent-filter>
         </activity>
         
-        <!-- Queue Connection Service -->
-        <service
-            android:name=".service.QueueConnectionService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="connectedDevice" />
-            
+
         <!-- Queue Management Service -->
         <service
             android:name=".service.QueueManagementService"

@@ -11,11 +11,12 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="8dp">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="128dp"
             app:contentScrim="@color/header_background"
             app:layout_scrollFlags="scroll">
 
@@ -32,7 +33,7 @@
                     android:id="@+id/headerText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Available Queues"
+                    android:text="@string/available_queues"
                     android:textColor="@color/on_header"
                     android:textSize="@dimen/text_size_header"
                     android:textStyle="bold" />
@@ -42,7 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Tap a queue to see details or join"
+                    android:text="@string/tap_a_queue_to_see_details_or_join"
                     android:textColor="@color/on_header"
                     android:textSize="@dimen/text_size_body" />
 
@@ -89,7 +90,7 @@
                     android:layout_height="100dp"
                     android:layout_marginBottom="16dp"
                     android:alpha="0.4"
-                    android:contentDescription="Empty Queue"
+                    android:contentDescription="@string/empty_queue"
                     android:src="@drawable/ic_empty_queue_state"
                     app:tint="?attr/colorOnSurface" />
 
@@ -97,7 +98,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:text="No queues found nearby"
+                    android:text="@string/no_queues_found_nearby"
                     android:textColor="?attr/android:textColorPrimary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -106,7 +107,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Pull to refresh to scan again"
+                    android:text="@string/pull_to_refresh_to_scan_again"
                     android:textColor="?attr/android:textColorSecondary"
                     android:textSize="14sp" />
 
@@ -130,9 +131,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/margin_medium"
-        android:contentDescription="Create a Queue"
+        android:contentDescription="@string/create_a_queue"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="?attr/colorPrimaryVariant"
+        app:backgroundTint="?attr/colorPrimary"
         app:tint="?attr/colorOnPrimary" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true); // this is to show the menu. deprecated but i don't care
+        setHasOptionsMenu(true); // this is to show the menu. old way
     }
 
     @Nullable
@@ -110,24 +110,22 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         bleScanner = new BLEScanner(getContext());
         bleClientManager = new BLEClientManager(getContext());
 
-        // Setup pull-to-refresh
+        // Setup refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            // Trigger a new scan when user pulls to refresh
             startSearch();
         });
 
-        // Set refresh colors to match app theme
+        // Set refresh colors 
         swipeRefreshLayout.setColorSchemeResources(
                 R.color.primary,
                 R.color.primary_variant);
     }
 
     private void setupClickListeners() {
-        // The FAB shows a bottom sheet to create a queue
+        // bottom sheet to create a queue
         fabCreateQueue.setOnClickListener(v -> {
             CreateQueueBottomSheet bottomSheet = new CreateQueueBottomSheet();
             bottomSheet.setOnQueueCreatedListener(queue -> {
-                // Use Navigation component instead of manual fragment transactions
                 NavHostFragment.findNavController(this).navigate(R.id.action_homeFragment_to_queueManagerFragment);
             });
             bottomSheet.show(getChildFragmentManager(), "CreateQueueBottomSheet");
@@ -147,7 +145,8 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
             public void onQueueFound(AdvertisedQueue queue) {
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        if (getView() == null) return;
+                        if (getView() == null)
+                            return;
 
                         // Check if queue already exists
                         boolean exists = false;
@@ -181,8 +180,8 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
                 }
             }
 
-    @Override
-    public void onScanComplete() {
+            @Override
+            public void onScanComplete() {
                 Activity activity = getActivity();
                 if (activity != null) {
                     activity.runOnUiThread(() -> {
@@ -295,7 +294,6 @@ public class HomeFragment extends Fragment implements QueueAdapter.OnQueueClickL
         if (queueCount > 0) {
             String summary = getResources().getQuantityString(
                     R.plurals.found_queues_summary,
-                    availableQueues.size(),
                     availableQueues.size(),
                     queueCount);
             statusText.setText(summary);

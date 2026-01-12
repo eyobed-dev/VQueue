@@ -1,131 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/android:colorBackground"
-    android:fillViewport="true">
+    android:background="?attr/android:colorBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_large">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:elevation="8dp">
 
-        <!-- Header -->
-        <TextView
-            android:id="@+id/headerText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="You're in Queue"
-            android:textSize="@dimen/text_size_header"
-            android:textStyle="bold"
-                    android:textColor="?attr/android:textColorPrimary"
-            android:gravity="center"
-            android:layout_marginTop="@dimen/margin_xlarge"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Queue Status Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/queueStatusCard"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_xlarge"
-            app:cardElevation="@dimen/card_elevation"
-            app:cardBackgroundColor="?attr/colorSurface"
-            app:layout_constraintTop_toBottomOf="@id/headerText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            app:contentScrim="@color/header_background"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg"
+                android:gravity="bottom"
                 android:orientation="vertical"
-                android:padding="@dimen/padding_large">
+                android:padding="@dimen/padding_medium"
+                app:layout_collapseMode="parallax">
 
                 <TextView
+                    android:id="@+id/headerText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Your Position"
-                    android:textSize="@dimen/text_size_title"
-                    android:textStyle="bold"
-                            android:textColor="?attr/android:textColorPrimary"
-                    android:layout_marginBottom="@dimen/margin_medium" />
+                    android:text="You're in Queue"
+                    android:textColor="@color/on_header"
+                    android:textSize="@dimen/text_size_header"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/positionText"
+                    android:id="@+id/statusText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Position: #3"
-                    android:textSize="@dimen/text_size_title"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="@dimen/margin_small" />
-
-                <TextView
-                    android:id="@+id/estimatedWaitText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Estimated Wait: 15 minutes"
-                    android:textSize="@dimen/text_size_medium"
-            android:textColor="?attr/android:textColorSecondary"
-                    android:layout_marginBottom="@dimen/margin_small" />
-
-                <TextView
-                    android:id="@+id/currentNumberText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Currently Serving: #2"
-                    android:textSize="@dimen/text_size_medium"
-            android:textColor="?attr/android:textColorSecondary" />
+                    android:layout_marginTop="8dp"
+                    android:text="You'll be notified when it's your turn"
+                    android:textColor="@color/on_header"
+                    android:textSize="@dimen/text_size_body" />
 
             </LinearLayout>
 
-        </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
 
-        <!-- Progress Indicator -->
-        <ProgressBar
-            android:id="@+id/waitProgressBar"
-            android:layout_width="0dp"
-            android:layout_height="8dp"
-            android:layout_marginTop="@dimen/margin_xlarge"
-            android:progress="60"
-            android:max="100"
-            style="?android:attr/progressBarStyleHorizontal"
-            app:layout_constraintTop_toBottomOf="@id/queueStatusCard"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <!-- Status Text -->
-        <TextView
-            android:id="@+id/statusText"
-            android:layout_width="0dp"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="@dimen/bottom_bar_height"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_medium"
-            android:text="Please wait... You will be notified when it's your turn. Tap Home to leave the app if you want"
-            android:textSize="@dimen/text_size_body"
-            android:textColor="?attr/android:textColorSecondary"
-            android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/waitProgressBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:orientation="vertical"
+            android:padding="@dimen/padding_medium">
 
-        <!-- Leave Queue Button -->
+            <!-- Queue Status Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/queueStatusCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_medium"
+                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardCornerRadius="2dp"
+                app:cardElevation="2dp"
+                app:cardUseCompatPadding="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/padding_medium">
+
+                    <!-- Your Position -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/padding_small">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif"
+                            android:text="Your Position"
+                            android:textColor="?attr/android:textColorSecondary"
+                            android:textSize="@dimen/text_size_body" />
+
+                        <TextView
+                            android:id="@+id/positionText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="#3"
+                            android:textColor="?attr/android:textColorPrimary"
+                            android:textSize="@dimen/text_size_title" />
+
+                    </LinearLayout>
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?attr/dividerColor" />
+
+                    <!-- Currently Serving -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/padding_small">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif"
+                            android:text="Currently Serving"
+                            android:textColor="?attr/android:textColorSecondary"
+                            android:textSize="@dimen/text_size_body" />
+
+                        <TextView
+                            android:id="@+id/currentNumberText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="#2"
+                            android:textColor="?attr/android:textColorPrimary"
+                            android:textSize="@dimen/text_size_medium" />
+
+                    </LinearLayout>
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?attr/dividerColor" />
+
+                    <!-- Estimated Wait -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="@dimen/padding_small">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="sans-serif"
+                            android:text="Estimated Wait Time"
+                            android:textColor="?attr/android:textColorSecondary"
+                            android:textSize="@dimen/text_size_body" />
+
+                        <TextView
+                            android:id="@+id/estimatedWaitText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="15 min"
+                            android:textColor="?attr/android:textColorPrimary"
+                            android:textSize="@dimen/text_size_medium" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/waitProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:layout_marginBottom="@dimen/margin_medium"
+                android:max="100"
+                android:progress="60" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Action Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_bar_height"
+        android:layout_gravity="bottom"
+        android:background="?attr/colorSurface"
+        android:elevation="8dp"
+        android:orientation="horizontal">
+
+        <!-- Leave Queue Button (Red) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/leaveQueueButton"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/button_height_large"
-            android:layout_marginTop="@dimen/margin_xxlarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-medium"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:letterSpacing="0.1"
             android:text="Leave Queue"
-            android:textSize="@dimen/text_size_body"
-            android:textColor="?attr/colorOnSurface"
-            app:backgroundTint="?attr/colorSurface"
-            app:strokeWidth="2dp"
-            app:layout_constraintTop_toBottomOf="@id/statusText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:textAllCaps="true"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_size_button"
+            app:backgroundTint="?attr/functionalRed"
+            app:cornerRadius="0dp"
+            app:icon="@drawable/ic_stop"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@android:color/white"
+            app:rippleColor="?attr/functionalRedRipple" />
 
+    </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

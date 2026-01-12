@@ -10,8 +10,8 @@ android {
         applicationId "et.dev.eyobed.vqueue"
         minSdk 21
         targetSdk 35
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -51,21 +51,21 @@ dependencies {
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    // Navigation Component
+ 
     implementation 'androidx.navigation:navigation-fragment:2.8.5'
     implementation 'androidx.navigation:navigation-ui:2.8.5'
 
-    // ViewModel and LiveData
+   
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.8.7'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.8.7'
 
-    // ConstraintLayout
+
     implementation 'androidx.constraintlayout:constraintlayout:2.2.0'
 
-    // BLE Support - Core KTX is recommended for modern Android
+
     implementation 'androidx.core:core:1.15.0'
 
-    // AndroidX Preference for Settings
+
     implementation 'androidx.preference:preference:1.2.1'
     implementation libs.cardview
 
@@ -73,7 +73,6 @@ dependencies {
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 
-    // Room Database
     implementation libs.room.runtime
     annotationProcessor libs.room.compiler
 }

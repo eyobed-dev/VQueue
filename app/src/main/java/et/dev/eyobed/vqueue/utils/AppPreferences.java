@@ -6,7 +6,6 @@ import androidx.preference.PreferenceManager;
 
 /**
  * Utility class for managing app preferences.
- * Uses default SharedPreferences to stay in sync with PreferenceFragmentCompat.
  */
 public class AppPreferences {
 

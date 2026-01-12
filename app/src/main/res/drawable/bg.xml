@@ -1,22 +1,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Base color -->
     <item>
         <shape android:shape="rectangle">
             <gradient
-                android:type="linear"
-                android:startColor="@color/header_background"
-                android:endColor="@color/header_background"
-                android:angle="45" />
+                android:angle="270"
+                android:startColor="@color/primary"
+                android:endColor="@color/primary_variant"
+                android:type="linear" />
         </shape>
     </item>
 
-
-    <!-- Decorative PNG at bottom-right -->
-    <item
-        android:drawable="@drawable/img"
-        android:gravity="bottom|end"
-        android:width="200dp"
-        android:height="200dp"
-        android:tileMode="disabled" />
+  
 </layer-list>

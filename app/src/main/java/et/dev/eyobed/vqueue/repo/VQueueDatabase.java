@@ -26,8 +26,8 @@ public abstract class VQueueDatabase extends RoomDatabase {
                         if (INSTANCE == null) {
                               INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                                           VQueueDatabase.class, "vqueue_database")
-                                          .fallbackToDestructiveMigration() // Build prototype fast, don't worry about
-                                                                            // migrations yet
+                                          .fallbackToDestructiveMigration()
+
                                           .build();
                         }
                   }

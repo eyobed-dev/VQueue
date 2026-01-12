@@ -65,12 +65,7 @@ public class BLEAdvertisementManager {
                     .addManufacturerData(Constants.MANUFACTURER_ID, formatAdvertisementData(queue))
                     .build();
 
-            // Add Service UUID to Scan Response so external scanners can find it
-            AdvertiseData scanResponse = new AdvertiseData.Builder()
-                    .addServiceUuid(new ParcelUuid(Constants.SERVICE_UUID))
-                    .build();
-
-            bluetoothLeAdvertiser.startAdvertising(settings, data, scanResponse, advertiseCallback);
+            bluetoothLeAdvertiser.startAdvertising(settings, data, null, advertiseCallback);
             Log.i(TAG, "Started advertising queue: " + queue.getName());
 
         } catch (Exception e) {
@@ -94,13 +89,14 @@ public class BLEAdvertisementManager {
         if (isAdvertising) {
             Log.i(TAG, "Updating advertisement for queue: " + queue.getName());
             stopAdvertising();
-            // Small delay to ensure stop is processed
+            // Small delay
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
                 startAdvertising(queue);
             }, 100);
         }
     }
 
+    // Advertisement genius
     private byte[] formatAdvertisementData(Queue queue) {
         // [Header: 2B] [QueueID short hash: 2B] [ShortName: 10B] [Current#: 2B]
         // [WaitTime: 2B] [Status: 1B]
@@ -109,7 +105,7 @@ public class BLEAdvertisementManager {
         byte[] data = new byte[Constants.ADVERTISEMENT_PACKET_SIZE];
         int offset = 0;
 
-        // Header (magic number to identify our packets)
+        // Header + magic number to identify our packets
         data[offset++] = Constants.MAGIC_HEADER_1;
         data[offset++] = Constants.MAGIC_HEADER_2;
 
@@ -118,11 +114,11 @@ public class BLEAdvertisementManager {
         data[offset++] = (byte) (idHash & 0xFF);
         data[offset++] = (byte) ((idHash >> 8) & 0xFF);
 
-        // Short name (fixed 10 bytes)
+        // Short name fixed 10 bytes
         String name = queue.getName();
         if (name.length() > Constants.DEVICE_NAME_LENGTH)
             name = name.substring(0, Constants.DEVICE_NAME_LENGTH);
-        byte[] nameBytes = name.getBytes();
+        byte[] nameBytes = name.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         System.arraycopy(nameBytes, 0, data, offset, nameBytes.length);
         // Pad remaining bytes with 0 if name is shorter than 10
         for (int i = nameBytes.length; i < Constants.DEVICE_NAME_LENGTH; i++) {
@@ -130,17 +126,17 @@ public class BLEAdvertisementManager {
         }
         offset += Constants.DEVICE_NAME_LENGTH;
 
-        // Current number (2 bytes)
+        // Current number 2 bytes
         int current = queue.getCurrentNumber();
         data[offset++] = (byte) (current & 0xFF);
         data[offset++] = (byte) ((current >> 8) & 0xFF);
 
-        // Wait time (2 bytes)
+        // Wait time 2 bytes
         int wait = queue.getWaitTimeMinutes();
         data[offset++] = (byte) (wait & 0xFF);
         data[offset++] = (byte) ((wait >> 8) & 0xFF);
 
-        // Status (1 byte)
+        // Status 1 byte
         data[offset++] = (byte) queue.getStatus().ordinal();
 
         return data;

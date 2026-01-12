@@ -38,9 +38,10 @@
         <!-- Status Colors -->
         <item name="statusError">@color/status_error</item>
 
+
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">16dp</item>
 
-
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
 </resources>

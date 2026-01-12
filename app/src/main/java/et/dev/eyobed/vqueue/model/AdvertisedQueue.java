@@ -1,12 +1,12 @@
 package et.dev.eyobed.vqueue.model;
 
 public class AdvertisedQueue {
-    private String id; // This could be a unique identifier extracted from advertisement
+    private String id;
     private String name;
     private int currentNumber;
     private int waitTimeMinutes;
-    private String deviceAddress; // The BLE address of the advertising device
-    private int rssi; // The Received Signal Strength Indicator for sorting
+    private String deviceAddress;
+    private int rssi;
 
     public AdvertisedQueue(String id, String name, int currentNumber, int waitTimeMinutes, String deviceAddress, int rssi) {
         this.id = id;

@@ -16,9 +16,8 @@ import et.dev.eyobed.vqueue.utils.Constants;
 public class BLEClientManager {
     private static final String TAG = "BLEClientManager";
 
-    // Service and Characteristic UUIDs (must match server)
-    // Service and Characteristic UUIDs (must match server)
-    // UUIDs moved to Constants class
+
+    // UUIDs moved to Constants class from now on
 
     private Context context;
     private BluetoothAdapter bluetoothAdapter;
@@ -72,6 +71,7 @@ public class BLEClientManager {
     }
 
     private void joinQueue() {
+        //checks
         if (gatt == null) {
             if (listener != null) {
                 listener.onJoinFailed("Not connected to device");
@@ -100,7 +100,7 @@ public class BLEClientManager {
             return;
         }
 
-        // Verify characteristic has WRITE property
+        // Verify characteristic has WRITE
         int properties = joinCharacteristic.getProperties();
         if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) == 0) {
             Log.e(TAG, "Characteristic does not support WRITE. Properties: " + properties);
@@ -111,7 +111,7 @@ public class BLEClientManager {
             return;
         }
 
-        // Enable notifications to receive ticket number (Android 13+ compatible!)
+        // Enable notifications to receive ticket number (Android 13+ compatible!ugh)
         Log.i(TAG, "Enabling notifications on join characteristic");
         boolean notificationEnabled = gatt.setCharacteristicNotification(joinCharacteristic, true);
         Log.i(TAG, "Notification enabled: " + notificationEnabled);
@@ -133,7 +133,7 @@ public class BLEClientManager {
     private void sendJoinRequest(BluetoothGattCharacteristic joinCharacteristic) {
         // Send device ID to join the queue
         String deviceId = android.os.Build.MODEL;
-        // Truncate to 20 bytes (BLE default MTU payload limit)
+        // Truncate to 20 bytes for reasonable length
         if (deviceId.length() > 20) {
             deviceId = deviceId.substring(0, 20);
         }
@@ -141,14 +141,14 @@ public class BLEClientManager {
 
         Log.i(TAG, "Attempting to write " + deviceIdBytes.length + " bytes to join characteristic");
 
-        // Handle API level differences for writing characteristics
+        // Handle API level differences
         boolean writeSuccess;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            // Android 13+ (API 33+) - Use new API
+            // Android 13+ 
             writeSuccess = gatt.writeCharacteristic(joinCharacteristic, deviceIdBytes,
                     BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) == BluetoothGatt.GATT_SUCCESS;
         } else {
-            // Android 12 and below - Use deprecated API
+            // Android 12 and below 
             joinCharacteristic.setValue(deviceIdBytes);
             joinCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
             writeSuccess = gatt.writeCharacteristic(joinCharacteristic);
@@ -172,10 +172,8 @@ public class BLEClientManager {
 
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Connected to GATT server, status: " + status);
-                // Request larger MTU for better data transfer (default is 23 bytes)
-                boolean mtuRequested = gatt.requestMtu(512);
-                Log.i(TAG, "MTU request initiated: " + mtuRequested);
-                // Note: Service discovery will happen in onMtuChanged callback
+                Log.i(TAG, "Discovering services.....");
+                gatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "Disconnected from GATT server, status: " + status);
                 if (BLEClientManager.this.gatt != null) {
@@ -186,20 +184,12 @@ public class BLEClientManager {
         }
 
         @Override
-        public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-            super.onMtuChanged(gatt, mtu, status);
-            Log.i(TAG, "MTU changed to: " + mtu + ", status: " + status);
-            // Now discover services after MTU is set
-            gatt.discoverServices();
-        }
-
-        @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.i(TAG, "Services discovered");
-                // Now we can join the queue
+                // Now we can join the queue finally yes
                 joinQueue();
             } else {
                 if (listener != null) {
@@ -213,16 +203,16 @@ public class BLEClientManager {
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
 
-            Log.i(TAG, "onCharacteristicWrite called - UUID: " + characteristic.getUuid() + ", status: " + status);
+            Log.i(TAG, "onCharacteristicWrite called. UUID: " + characteristic.getUuid() + ", status: " + status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.i(TAG, "Write successful - waiting for notification with ticket number");
-                // Ticket number will be delivered via notification (onCharacteristicChanged)
+                Log.i(TAG, "Write successful. congrats");
+
                 // No action needed here
             } else {
-                Log.e(TAG, "Write failed with status: " + status);
+                Log.e(TAG, "Write failed  status: " + status);
                 if (listener != null) {
-                    listener.onJoinFailed("Failed to write characteristic (status: " + status + ")");
+                    listener.onJoinFailed("Failed to write  (status: " + status + ")");
                 }
                 disconnect();
             }
@@ -231,10 +221,10 @@ public class BLEClientManager {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
-            Log.i(TAG, "onDescriptorWrite called - UUID: " + descriptor.getUuid() + ", status: " + status);
+            Log.i(TAG, "onDescriptorWrite called UUID: " + descriptor.getUuid() + ", status: " + status);
 
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                Log.i(TAG, "Notifications enabled successfully, sending join request");
+                Log.i(TAG, "Notifications enabled , sending join request");
                 // Now send the join request
                 BluetoothGattCharacteristic characteristic = descriptor.getCharacteristic();
                 if (characteristic != null

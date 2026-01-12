@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -27,13 +28,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        super.onCreate(savedInstanceState);        
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String theme = prefs.getString("theme_preference", "system");
 
-        // Apply the theme immediately
+        // Apply the theme fast
         switch (theme) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -47,13 +48,15 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        // window insets for edge to edge stuff
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_root), (v, insets) -> {
+            // Extract system bar insets 
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
-            // Apply bottom padding to the root view (navigation bar)
+            // Apply bottom padding to the root view to accommodate the navigation bar
             v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), systemBars.bottom);
 
-            // Apply top padding to the toolbar (status bar)
+            // Apply top padding for the status bar
             View toolbar = findViewById(R.id.mainToolbar);
             if (toolbar != null) {
                 toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(),
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         setupNavigation();
     }
 
+    //deals with permissions
     private void setupPermissions() {
         ActivityResultLauncher<String[]> permissionLauncher = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -91,9 +95,10 @@ public class MainActivity extends AppCompatActivity {
         permissionHandler.requestAllIfNeeded();
     }
 
+    //deals with navigation
     private void setupNavigation() {
         // Find and setup the global toolbar
-        androidx.appcompat.widget.Toolbar mainToolbar = findViewById(R.id.mainToolbar);
+        Toolbar mainToolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(mainToolbar);
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
@@ -112,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //deals with permission denied dialog
+    private void showPermissionDeniedDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permissions Required")
+                .setMessage(
+                        "This app requires certain permissions to function properly. You need to grant them in settings")
+                .setPositiveButton("OK", null)
+                .show();
+    }
+    
     @Override
     public boolean onSupportNavigateUp() {
         if (navController == null) {
@@ -121,12 +136,5 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    private void showPermissionDeniedDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Permissions Required")
-                .setMessage(
-                        "This app requires certain permissions to function properly. You need to grant them in settings")
-                .setPositiveButton("OK", null)
-                .show();
-    }
+
 }

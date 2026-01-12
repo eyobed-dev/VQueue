@@ -86,26 +86,26 @@ public class QueueAdapter extends ListAdapter<AdvertisedQueue, QueueAdapter.Queu
             // Generate a random but deterministic color based on the device address
             Random random = new Random(queue.getDeviceAddress().hashCode());
 
-            // Use HSV to generate attractive, vibrant colors
+            // Use HSV to generate difrent colors
             float[] hsv = new float[3];
             hsv[0] = random.nextFloat() * 360f;
             hsv[1] = 0.6f + (random.nextFloat() * 0.4f);
             hsv[2] = 0.8f + (random.nextFloat() * 0.2f);
 
-            // Create darker shade for left (start)
+            // Create darker  for left
             float[] hsvDark = new float[] { hsv[0], hsv[1], hsv[2] * 0.7f };
             int colorStart = Color.HSVToColor(hsvDark);
 
-            // Create lighter shade for right (end)
+            // Create lighter  for right
             float[] hsvLight = new float[] { hsv[0], hsv[1], Math.min(1.0f, hsv[2] * 1.1f) };
             int colorEnd = Color.HSVToColor(hsvLight);
 
-            // Create gradient (Left to Right)
+            // Create gradient
             android.graphics.drawable.GradientDrawable gradient = new android.graphics.drawable.GradientDrawable(
                     android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT,
                     new int[] { colorStart, colorEnd });
 
-            // Apply the gradient to the header background
+            // Apply the gradient 
             if (headerBackground != null) {
                 headerBackground.setBackground(gradient);
             }
@@ -130,12 +130,12 @@ public class QueueAdapter extends ListAdapter<AdvertisedQueue, QueueAdapter.Queu
                 }
             }
 
-            // Set listener on the cardView specifically for Details
+            // Set listener on the cardView for Details
             if (cardView != null) {
                 cardView.setOnClickListener(v -> listener.onQueueDetailsClick(queue));
             }
 
-            // Set listener on the Join button specifically for Join
+            // Set listener on the Join button for Join
             if (btnJoin != null) {
                 btnJoin.setOnClickListener(v -> listener.onQueueJoinClick(queue));
             }

@@ -74,18 +74,7 @@ public class BLEScanner {
 
         foundQueues.clear();
 
-        // // Check preference: show all devices or only queues
-        // boolean showAllDevices = appPreferences.isShowAllDevicesEnabled();
 
-        // List<ScanFilter> filters = null;
-        // if (!showAllDevices) {
-        // // Filter for queue service UUID only
-        // ScanFilter scanFilter = new ScanFilter.Builder()
-        // .setServiceUuid(ParcelUuid.fromString(SERVICE_UUID))
-        // .build();
-        // filters = new ArrayList<>();
-        // filters.add(scanFilter);
-        // }
         // // If showAllDevices is true, filters remains null (scan all devices)
 
         // Configure scan settings
@@ -140,11 +129,7 @@ public class BLEScanner {
         try {
             bluetoothLeScanner.startScan(null, settings, scanCallback);
             isScanning = true;
-            // if (showAllDevices) {
-            // Log.i(TAG, "Started BLE scanning (all devices - testing mode)");
-            // } else {
-            // Log.i(TAG, "Started BLE scanning (queues only)");
-            // }
+
         } catch (Exception e) {
             Log.e(TAG, "Failed to start scanning", e);
             isScanning = false;
@@ -180,7 +165,7 @@ public class BLEScanner {
 
             AdvertisedQueue queue = null;
 
-            // Scan all manufacturer data entries and validate by header magic number
+            // Scan all manufacturer data entries and check by header magic number
             SparseArray<byte[]> manufacturerDataMap = result.getScanRecord().getManufacturerSpecificData();
             if (manufacturerDataMap != null) {
                 // Iterate through all manufacturer data entries
@@ -196,7 +181,6 @@ public class BLEScanner {
             }
 
             // If not a queue device and showAllDevices is enabled, create a generic entry
-            // for display
             if (queue == null) {
                 if (showAllDevices) {
                     // Use a special ID format to identify generic devices
@@ -207,12 +191,13 @@ public class BLEScanner {
                             -1, // waitTimeMinutes (-1 indicates not a queue)
                             deviceAddress, rssi); // Pass RSSI to constructor
                 } else {
-                    // In normal mode, ignore non-queue devices
+                    // In normal mode, ignore non queue devices
                     return;
                 }
             }
 
-            // Check if we already have this device (by device address)
+            // Check if we already have this device in the list
+            // If so, update it
             boolean exists = false;
             for (int i = 0; i < foundQueues.size(); i++) {
                 AdvertisedQueue existing = foundQueues.get(i);
@@ -274,7 +259,9 @@ public class BLEScanner {
             // Queue Name (10 bytes)
             byte[] nameBytes = new byte[Constants.DEVICE_NAME_LENGTH];
             System.arraycopy(data, offset, nameBytes, 0, Constants.DEVICE_NAME_LENGTH);
-            String queueName = new String(nameBytes).trim();
+
+            // band aid fix it must be bytes not utf-8
+            String queueName = new String(nameBytes, java.nio.charset.StandardCharsets.UTF_8).trim();
             // Remove null characters
             queueName = queueName.replace("\0", "");
             offset += Constants.DEVICE_NAME_LENGTH;

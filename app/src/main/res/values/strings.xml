@@ -11,19 +11,19 @@
         <item>light</item>
         <item>dark</item>
     </string-array>
-    <string name="scanning_for_queues">Scanning for nearby devices...</string>
+    <string name="scanning_for_queues">Scanning for nearby devices…</string>
     <string name="no_queues_nearby">No Queues found nearby</string>
     <string name="bluetooth_disabled">Bluetooth is not enabled. Please enable Bluetooth and try again.</string>
     <string name="bluetooth_required_discovery">Bluetooth is required for queue discovery</string>
     <string name="found_nearby_no_valid">Found %1$d device(s) nearby. No queues found.</string>
     
     <plurals name="found_queues_summary">
-        <item quantity="one">Found %1$d device (%2$d queue). Tap a queue to join.</item>
-        <item quantity="other">Found %1$d devices (%2$d queues). Tap a queue to join.</item>
+        <item quantity="one">Found %1$d queue. Tap to join.</item>
+        <item quantity="other">Found %1$d queues. Tap to join your selection.</item>
     </plurals>
     <string name="join_success">Successfully joined queue! Your ticket number: #%1$d</string>
     <string name="join_failed">Failed to join queue: %1$s</string>
-    <string name="connecting_to_queue">Connecting to queue...</string>
+    <string name="connecting_to_queue">Connecting to queue…</string>
     
     <!-- Dialog Strings -->
     <string name="title_join_queue">Join Queue</string>
@@ -78,4 +78,21 @@
     <string name="notification_action_pause">Pause</string>
     <string name="notification_action_resume">Resume</string>
     <string name="notification_action_stop">Stop</string>
+
+    <!-- Queue Monitoring Service -->
+    <string name="notification_channel_monitoring">Queue Monitoring Service</string>
+    <string name="notification_title_monitoring">Monitoring Queue</string>
+    <string name="notification_content_waiting">Waiting for your turn…</string>
+    <string name="notification_title_queue_update">Queue Update</string>
+    <string name="notification_content_update_format">Currently serving: #%1$d. You are #%2$d</string>
+    <string name="notification_title_turn_alarm">🔔 It\'s Your Turn!</string>
+    <string name="notification_content_turn_alarm">Please proceed to the counter now!</string>
+
+    <!-- Queue Details -->
+    <string name="create_a_queue">Create a Queue</string>
+    <string name="available_queues">Available Queues</string>
+    <string name="tap_a_queue_to_see_details_or_join">Tap a queue to see details or join</string>
+    <string name="empty_queue">Empty Queue</string>
+    <string name="no_queues_found_nearby">No queues found nearby</string>
+    <string name="pull_to_refresh_to_scan_again">Pull to refresh to scan again</string>
 </resources>

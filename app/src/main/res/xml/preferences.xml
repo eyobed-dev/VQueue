@@ -2,18 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory
-        app:title="Testing Features"
-        app:iconSpaceReserved="false">
-
-        <SwitchPreferenceCompat
-            app:key="show_all_devices"
-            app:title="Show All BLE Devices"
-            app:iconSpaceReserved="false"
-            app:summary="Display all nearby Bluetooth devices in queue search (for testing)"
-            app:defaultValue="false" />
-
-    </PreferenceCategory>
 
     <PreferenceCategory
         app:title="General"
@@ -31,4 +19,16 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:title="Testing"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="show_all_devices"
+            app:title="Show All Devices"
+            app:iconSpaceReserved="false"
+            app:summary="Display all nearby Bluetooth LE devices in queue search"
+            app:defaultValue="false" />
+
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -40,18 +40,14 @@ public class PermissionGranter {
 
         // Location permissions - needed for BLE on Android < 12
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 12+ doesn't need location for BLE if you use neverForLocation flag
-            // But include if you actually need location data
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         } else {
             permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
             permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
 
-        // Foreground service (manifest-only, but added for Android 14+)
+        // Foreground service
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14+
-            // Note: This still needs manifest declaration
-            // Including here for completeness, though it's not runtime-requested
         }
 
         return permissions.toArray(new String[0]);

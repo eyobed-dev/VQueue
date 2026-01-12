@@ -19,7 +19,7 @@ import et.dev.eyobed.vqueue.repo.QueueRepo;
 public class GATTServerManager {
     private static final String TAG = "GATTServerManager";
 
-    // Service and Characteristic UUIDs used from Constants class
+    // Service and Characteristic UUIDs used from Constants class from now on
 
     private Context context;
     private BluetoothManager bluetoothManager;
@@ -52,8 +52,8 @@ public class GATTServerManager {
                     Constants.SERVICE_UUID,
                     BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
-            // Create join characteristic (for clients to join the queue)
-            // Added NOTIFY property for Android 13+ compatibility
+
+            // Android 13+ fix
             BluetoothGattCharacteristic joinCharacteristic = new BluetoothGattCharacteristic(
                     Constants.JOIN_CHARACTERISTIC_UUID,
                     BluetoothGattCharacteristic.PROPERTY_WRITE |
@@ -62,8 +62,7 @@ public class GATTServerManager {
                     BluetoothGattCharacteristic.PERMISSION_WRITE |
                             BluetoothGattCharacteristic.PERMISSION_READ);
 
-            // Add Client Characteristic Configuration Descriptor (required for
-            // notifications)
+            // Add Client Characteristic Configuration Descriptor (required for notifications)
             BluetoothGattDescriptor descriptor = new BluetoothGattDescriptor(
                     Constants.CCCD_UUID, // Standard CCCD UUID
                     BluetoothGattDescriptor.PERMISSION_READ | BluetoothGattDescriptor.PERMISSION_WRITE);
@@ -75,7 +74,7 @@ public class GATTServerManager {
             // Add service to GATT server
             boolean success = gattServer.addService(service);
             if (success) {
-                Log.i(TAG, "GATT server setup successful");
+                Log.i(TAG, "GATT server setup success");
                 return true;
             } else {
                 Log.e(TAG, "Failed to add service to GATT server");
@@ -136,23 +135,15 @@ public class GATTServerManager {
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset,
                     value);
 
-            Log.i(TAG, "onCharacteristicWriteRequest called!");
-            Log.i(TAG, "  Device: " + device.getAddress());
-            Log.i(TAG, "  RequestId: " + requestId);
-            Log.i(TAG, "  Characteristic UUID: " + characteristic.getUuid());
-            Log.i(TAG, "  PreparedWrite: " + preparedWrite);
-            Log.i(TAG, "  ResponseNeeded: " + responseNeeded);
-            Log.i(TAG, "  Offset: " + offset);
-            Log.i(TAG, "  Value length: " + (value != null ? value.length : 0));
 
             String characteristicUuid = characteristic.getUuid().toString();
             Log.i(TAG, "  Comparing UUID: " + characteristicUuid + " with " + Constants.JOIN_CHARACTERISTIC_UUID);
 
             if (characteristic.getUuid().equals(Constants.JOIN_CHARACTERISTIC_UUID)) {
-                Log.i(TAG, "  UUID match! Handling join request");
+                Log.i(TAG, "  UUID match! Handling join ");
                 handleJoinRequest(device, requestId, value, responseNeeded);
             } else {
-                Log.w(TAG, "  UUID mismatch! Rejecting write request");
+                Log.w(TAG, "  UUID mismatch! Rejecting write ");
                 // Reject other write requests
                 if (responseNeeded) {
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_FAILURE, 0, null);
@@ -166,12 +157,8 @@ public class GATTServerManager {
                 int offset, byte[] value) {
             super.onDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
 
-            Log.i(TAG, "onDescriptorWriteRequest called!");
-            Log.i(TAG, "  Device: " + device.getAddress());
-            Log.i(TAG, "  Descriptor UUID: " + descriptor.getUuid());
-            Log.i(TAG, "  ResponseNeeded: " + responseNeeded);
 
-            // Check if this is the CCCD descriptor (for enabling notifications)
+            // Check if this is the CCCD descriptor
             if (descriptor.getUuid().equals(Constants.CCCD_UUID)) {
                 Log.i(TAG, "  CCCD write request - client enabling notifications");
 
@@ -202,11 +189,11 @@ public class GATTServerManager {
                 BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
 
-            String characteristicUuid = characteristic.getUuid().toString();
+            characteristic.getUuid().toString();
 
             if (characteristic.getUuid().equals(Constants.JOIN_CHARACTERISTIC_UUID)) {
                 // Return the assigned ticket number
-                // The value was set in handleJoinRequest
+
                 byte[] value = characteristic.getValue();
                 if (value != null) {
                     gattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, 0, value);
@@ -262,6 +249,12 @@ public class GATTServerManager {
                 if (currentQueue != null) {
                     bleManager.updateAdvertisement(currentQueue);
                 }
+
+                // Notify UI that queue has been updated
+                android.content.Intent broadcast = new android.content.Intent(Constants.ACTION_QUEUE_UPDATED);
+                context.sendBroadcast(broadcast);
+                Log.i(TAG, "Broadcast sent: Queue updated");
+
 
             } else {
                 // Failed to add waiter

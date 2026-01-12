@@ -23,6 +23,17 @@ public class Constants {
   public static final String CHANNEL_ID_MANAGEMENT = "QueueManagementChannel";
   public static final String CHANNEL_ID_MONITORING = "QueueMonitoringChannel";
 
+  // Service Actions
+  public static final String ACTION_START_QUEUE = "et.dev.eyobed.vqueue.START_QUEUE";
+  public static final String ACTION_STOP_QUEUE = "et.dev.eyobed.vqueue.STOP_QUEUE";
+  public static final String ACTION_CALL_NEXT = "et.dev.eyobed.vqueue.CALL_NEXT";
+  public static final String ACTION_PAUSE_QUEUE = "et.dev.eyobed.vqueue.PAUSE_QUEUE";
+  public static final String ACTION_RESUME_QUEUE = "et.dev.eyobed.vqueue.RESUME_QUEUE";
+  public static final String ACTION_UPDATE_ADVERTISEMENT = "et.dev.eyobed.vqueue.UPDATE_ADVERTISEMENT";
+
+  // Broadcast Actions
+  public static final String ACTION_QUEUE_UPDATED = "et.dev.eyobed.vqueue.QUEUE_UPDATED";
+
   // Protocol Magic Numbers
   public static final byte MAGIC_HEADER_1 = (byte) 0xAA;
   public static final byte MAGIC_HEADER_2 = (byte) 0xBB;
